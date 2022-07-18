@@ -1,5 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
-import axios from "axios";
+import React, { Component } from 'react';
 import Books from "./Books";
 import { Button } from "react-bootstrap";
 
@@ -31,7 +30,12 @@ export default class BookStore extends Component {
     componentDidMount = () => {
         const href = window.location.search;
         const params = new URLSearchParams(href)
-        const userId = params.get('id');
+        const userId = parseInt(params.get('id'));
+
+        if(userId === null || isNaN(userId)){
+            this.setState({error: true});
+            return;
+        }
 
         fetch(get_user_url + userId)
             .then(response => response.json())
@@ -67,14 +71,14 @@ export default class BookStore extends Component {
             return (
                 <div>
                     <h1>No books found.</h1>
-                    {this.state.isAdmin && <Button>Add Book</Button>}
+                    {this.state.isAdmin && <Button href='add'>Add Book</Button>}
                 </div>
             )
         }
         return (
             <div>
                 <h1>Books</h1>
-                {this.state.isAdmin && <Button>Add Book</Button>}
+                {this.state.isAdmin && <Button href='add'>Add Book</Button>}
                 <Books books={this.state.books} isAdmin={this.state.isAdmin} />
             </div>
         );

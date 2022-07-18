@@ -3,7 +3,7 @@ import {Button, Form} from "react-bootstrap";
 
 const server_url = 'https://localhost:7180/create-book';
 
-class LoadBook extends React.Component
+export default class LoadBook extends React.Component
 {
     constructor(props) {
         super(props);
@@ -14,12 +14,41 @@ class LoadBook extends React.Component
             image: '',
             author: '',
         };
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleGenreChange = this.handleGenreChange.bind(this);
-        this.handleInfoChange = this.handleInfoChange.bind(this);
-        this.handleImageChange = this.handleImageChange.bind(this);
-        this.handleAuthorChange = this.handleAuthorChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    validatedData = () => {
+        const name = this.state.name;
+        const info = this.state.info;
+        const author = this.state.author;
+        const image = this.state.image;
+        const genre = this.state.genre;
+
+        if (name.length < 6 || name.length > 36) {
+            document.getElementById('l_name').setCustomValidity("Name must be from 6 to 36 symbols.");
+            document.getElementById('l_name').reportValidity();
+            return false;
+        }
+        else if (genre.length < 6 || genre.length > 36) {
+            document.getElementById('l_genre').setCustomValidity("Genres must be from 6 to 36 symbols.");
+            document.getElementById('l_genre').reportValidity();
+            return false;
+        }
+        else if (author.length < 6 || author.length > 36) {
+            document.getElementById('l_author').setCustomValidity("Author name must be from 6 to 36 symbols.");
+            document.getElementById('l_author').reportValidity();
+            return false;
+        }
+        else if (image.length < 10 || image.length > 1000) {
+            document.getElementById('l_image').setCustomValidity("Image url must be from 10 to 1000 symbols.");
+            document.getElementById('l_image').reportValidity();
+            return false;
+        }
+        else if (info.length < 10 || info.length > 400) {
+            document.getElementById('l_textarea').setCustomValidity("Description must be from 10 to 400 symbols.");
+            document.getElementById('l_textarea').reportValidity();
+            return false;
+        }
+        return true;
     }
 
     handleNameChange = (e) => {
@@ -52,13 +81,6 @@ class LoadBook extends React.Component
         });
     }
 
-    ifValid(data) {
-        return !data.error;
-    }
-
-    login(data) {
-        alert("The book "+data.name+" is successfully uploaded!");
-    }
 
     raiseErr(data) {
         let errText;
@@ -87,23 +109,40 @@ class LoadBook extends React.Component
         }
     }
 
-    handleSubmit = (e) => {
+    ifErrorUploading = (data) => {
+        return data !== "Create Successful";
+    }
+    catchUploadError = (message) => {
+        document.getElementById('u_name').setCustomValidity(message);
+        document.getElementById('u_name').reportValidity();
+    }
+    onUploadSuccess = (message) => {
+        window.location.href = "books?id=1";
+        alert(message);
+    }
+
+    onUploadClicked = () => {
+        if (!this.validatedData()) {
+            return;
+        }
         const requestOptions = {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 name: this.state.name,
-                genre: this.state.genre,
                 info: this.state.info,
+                author: this.state.author,
                 image: this.state.image,
-                author: this.state.author
+                genre: this.state.genre,
             }),
         }
-        fetch(server_url, requestOptions).then((response)=>
-            response.json()
-        ).then((data)=>this.ifValid(data)?this.login(data):this.raiseErr(data));
+        fetch(server_url, requestOptions)
+            .then(response => response.json())
+            .then( data => 
+                this.ifErrorUploading(data) ? this.catchUploadError(data)
+                    : this.onUploadSuccess(data)
+            );
     }
-
 
     render(){
         return(
@@ -113,74 +152,66 @@ class LoadBook extends React.Component
                 <Form.Label>Name</Form.Label>
                 <Form.Control
                     onChange={this.handleNameChange}
-                    placeHolder="Cinderella in the woods"
-                    id="r_name"
-                    required
+                    value={this.state.name}
+                    id="l_name"
                 />
                 <Form.Text className="text-warning">
                     The name must have minimum 3 letters and maximum 40.
                 </Form.Text>
-                <br/>
+                <br />
 
                 <Form.Label>Author</Form.Label>
                 <Form.Control
                     onChange={this.handleAuthorChange}
-                    placeHolder="Mark Twain"
-                    id="r_author"
+                    value={this.state.author}
+                    id="l_author"
                     required
                 />
                 <Form.Text className="text-warning">
                     Here you put at least one genre name, separator is a whitespace.
                 </Form.Text>
-                <br/>
+                <br />
 
 
                 <Form.Label>Genres</Form.Label>
                 <Form.Control
                     onChange={this.handleGenreChange}
-                    placeHolder="action horror fantazy"
-                    id="r_genre"
-                    required
+                    value={this.state.genre}
+                    id="l_genre"
                 />
                 <Form.Text className="text-warning">
                     Here you put at least one genre name, separator is a whitespace.
                 </Form.Text>
-                <br/>
+                <br />
 
                 <Form.Label>Description</Form.Label>
 
                 <Form.Control
                     onChange={this.handleInfoChange}
-                    placeHolder="I am John Rockefeller and i'm playing chess for 5 years now..."
+                    value={this.state.info}
                     as="textarea"
                     rows={4}
-                    id="textarea"
-                    minLength={100} maxLength={200}
+                    id="l_textarea"
                     required
                 />
                 <Form.Text className="text-warning">
                     Your textarea must be 100-200 characters long.
                 </Form.Text>
-                <br/>
+                <br />
 
                 <Form.Label>Choose book image</Form.Label>
 
                 <Form.Control
                     onChange={this.handleImageChange}
-                    id="r_image"
-                    placeholder="https://media.gettyimages.com/photos/stack-of-books-picture-id157482029?s=612x612"
-                    aria-required
+                    id="l_image"
+                    value={this.state.image}
                 />
                 <Form.Text className="text-warning">
                     Enter image url.
                 </Form.Text>
-                <br/>
-
-                <Button className="one_but" onClick={this.handleSubmit}>Upload</Button>
+                <br />
+                <Button onClick={this.onUploadClicked}>Upload</Button>
             </Form>
         )
     }
 }
-
-
-export default LoadBook;

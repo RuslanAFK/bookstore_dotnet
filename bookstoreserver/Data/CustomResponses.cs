@@ -12,7 +12,15 @@
         }
         public static IResult OnCreate()
         {
-            return Results.Json("Book with that name already exists or you entered wrong data.");
+            return Results.Json("Book with that name already exists.");
+        }
+        public static IResult OnUpdate()
+        {
+            return Results.Json("Book with that name does not exist.");
+        }
+        public static IResult OnDelete()
+        {
+            return Results.Json("Book with that name does not exist.");
         }
         public static IResult UserNotFound()
         {

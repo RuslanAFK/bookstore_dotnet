@@ -1,13 +1,14 @@
 import React from "react";
 import { Button, Form } from "react-bootstrap";
 
-const update_url = 'https://localhost:7180/update-book/';
+const update_url = 'https://localhost:7180/update-book';
 const get_url = 'https://localhost:7180/get-book/';
 
-class ChangeBook extends React.Component {
+export default class ChangeBook extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: 0,
             name: '',
             genre: '',
             info: '',
@@ -16,11 +17,6 @@ class ChangeBook extends React.Component {
             loading: true,
             error: false,
         };
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleGenreChange = this.handleGenreChange.bind(this);
-        this.handleInfoChange = this.handleInfoChange.bind(this);
-        this.handleImageChange = this.handleImageChange.bind(this);
-        this.handleAuthorChange = this.handleAuthorChange.bind(this);
     }
 
 
@@ -55,42 +51,29 @@ class ChangeBook extends React.Component {
     }
 
 
-    ifValid(data) {
-        return !data.error;
-    }
-
-    login(data) {
-        alert("The book " + data.name + " is successfully edited!");
-    }
-
-    raiseErr(data) {
-        let errText;
-        if (data.error.name) {
-            errText = data.error.name[0];
-            document.getElementById('c_name').setCustomValidity(errText);
-            document.getElementById('c_name').reportValidity();
-        } else if (data.error.image) {
-            errText = data.error.image[0];
-            document.getElementById('c_image').setCustomValidity(errText);
-            document.getElementById('c_image').reportValidity();
-        } else {
-            console.log(data);
-        }
-    }
-
     ifError = (data) => {
-        return data.name === null;
+        return data === "Not found.";
     }
 
     componentDidMount = () => {
         const href = window.location.search;
         const params = new URLSearchParams(href);
-        const bookId = params.get('userId');
+        const bookId = parseInt(params.get('bookId'));
+
+        if (bookId === null || isNaN(bookId)) {
+            this.setState({
+                error: true,
+                loading: false,
+            })
+            return;
+        }
+
         fetch(get_url + bookId)
             .then(response => response.json())
             .then(data =>
-                this.ifError(data) ? this.setState({ error: true })
+                this.ifError(data) ? this.setState({ error: true, loading: false })
                     : this.setState({
+                        id: data.id,
                         name: data.name,
                         genre: data.genre,
                         info: data.info,
@@ -100,23 +83,91 @@ class ChangeBook extends React.Component {
                     })
             )
     }
-    handleSubmit = () => {
 
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: this.state.name,
-                image: this.state.image,
-            })
+    validatedData = () => {
+        const name = this.state.name;
+        const info = this.state.info;
+        const author = this.state.author;
+        const image = this.state.image;
+        const genre = this.state.genre;
+
+        if (name.length < 6 || name.length > 36) {
+            document.getElementById('u_name').setCustomValidity("Name must be from 6 to 36 symbols.");
+            document.getElementById('u_name').reportValidity();
+            return false;
         }
-        fetch(update_url, requestOptions).then((response) =>
-            response.json()
-        ).then((data) => this.ifValid(data) ? this.login(data) : this.raiseErr(data));
+        else if (genre.length < 6 || genre.length > 36) {
+            document.getElementById('u_genre').setCustomValidity("Genres must be from 6 to 36 symbols.");
+            document.getElementById('u_genre').reportValidity();
+            return false;
+        }
+        else if (author.length < 6 || author.length > 36) {
+            document.getElementById('u_author').setCustomValidity("Author name must be from 6 to 36 symbols.");
+            document.getElementById('u_author').reportValidity();
+            return false;
+        }
+        else if (image.length < 10 || image.length > 1000) {
+            document.getElementById('u_image').setCustomValidity("Image url must be from 10 to 1000 symbols.");
+            document.getElementById('u_image').reportValidity();
+            return false;
+        }
+        else if (info.length < 10 || info.length > 400) {
+            document.getElementById('u_textarea').setCustomValidity("Description must be from 10 to 400 symbols.");
+            document.getElementById('u_textarea').reportValidity();
+            return false;
+        }
+        return true;
+    }
+
+    ifErrorUpdating = (data) => {
+        return data != "Update Successful";
+    }
+    catchUpdateError = (message) => {
+        document.getElementById('u_name').setCustomValidity(message);
+        document.getElementById('u_name').reportValidity();
+    }
+    onUpdateSuccess = (message) => {
+        window.location.href = "books?id=1";
+        alert(message);
+    }
+
+    onChangeClicked = () => {
+        if (!this.validatedData()) {
+            return;
+        }
+        const requestOptions = {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                id: this.state.id,
+                name: this.state.name,
+                info: this.state.info,
+                author: this.state.author,
+                image: this.state.image,
+                genre: this.state.genre,
+            }),
+        }
+        fetch(update_url, requestOptions)
+            .then(response => response.json())
+            .then( data => 
+                this.ifErrorUpdating(data) ? this.catchUpdateError(data)
+                    : this.onUpdateSuccess(data)
+            );
     }
 
 
+
     render() {
+        if (this.state.loading) {
+            return (
+                <h1>Loading...</h1>
+            )
+        }
+        else if (this.state.error) {
+            return (
+                <h1>Error 404: NOT FOUND.</h1>
+            )
+        }
         return (
             <Form className="rl_form">
 
@@ -163,8 +214,7 @@ class ChangeBook extends React.Component {
                     value={this.state.info}
                     as="textarea"
                     rows={4}
-                    id="utextarea"
-                    minLength={100} maxLength={200}
+                    id="u_textarea"
                     required
                 />
                 <Form.Text className="text-warning">
@@ -183,12 +233,9 @@ class ChangeBook extends React.Component {
                     Enter image url.
                 </Form.Text>
                 <br />
-
+                <Button onClick={this.onChangeClicked}>Change</Button>
 
             </Form>
         )
     }
 }
-
-
-export default ChangeBook;

@@ -28,7 +28,16 @@ class BookView extends Component {
     getBookDetails() {
         const href = window.location.search;
         const params = new URLSearchParams(href);
-        const bookId = params.get('bookId');
+        const bookId = parseInt(params.get('bookId'));
+
+        if (bookId === null || isNaN(bookId)) {
+            this.setState({
+                found: false,
+                loading: false,
+            })
+            return;
+        }
+
         fetch(server_url + bookId).then((response) => response.json())
             .then((data) => this.ifValid(data) ? (
                 this.setState({

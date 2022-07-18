@@ -1,77 +1,92 @@
 import React from "react";
-import {Button, Form} from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
-const server_url = 'https://localhost:7180/delete-book';
+const delete_url = 'https://localhost:7180/delete-book/';
+const get_url = 'https://localhost:7180/get-book/';
 
-class DeleteBook extends React.Component
-{
+
+export default class DeleteBook extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: 0,
             name: '',
+            loading: true,
+            found: true,
         };
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleNameChange = (e) => {
-        this.setState({
-            name: e.target.value,
-        });
+
+    handleDelete = () => {
+        const requestOptions = {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+        }
+        fetch(delete_url + this.state.id, requestOptions).then((response) =>
+            response.json()
+        ).then(data => {
+            alert(data);
+            window.location.href = "books?id=1";
+        }
+        );
     }
 
     ifValid(data) {
-        return !data.error;
+        return data.name != null;
     }
 
-    login(data) {
-        alert("The book "+data.name+", is successfully deleted!");
+    componentDidMount = () => {
+        this.getBookDetails();
     }
 
-    raiseErr(data) {
-        let errText;
-        if(data.error.name){
-            errText = data.error.name[0];
-            document.getElementById('d_name').setCustomValidity(errText);
-            document.getElementById('d_name').reportValidity();
+    getBookDetails() {
+        const href = window.location.search;
+        const params = new URLSearchParams(href);
+        const bookId = parseInt(params.get('bookId'));
+
+        if (bookId === null || isNaN(bookId)) {
+            this.setState({
+                found: false,
+                loading: false,
+            })
+            return;
         }
-        console.log(data);
+
+        fetch(get_url + bookId).then((response) => response.json())
+            .then((data) => this.ifValid(data) ? (
+                this.setState({
+                    id: data.id,
+                    name: data.name,
+                    info: data.info,
+                    genre: data.genre,
+                    image: data.image,
+                    author: data.author,
+                    loading: false,
+                })) : this.setState({
+                    found: false,
+                    loading: false,
+                }));
     }
 
-    handleSubmit = (e) => {
-        const requestOptions = {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                name: this.state.name
-            }),
+
+
+    render() {
+        if (this.state.loading) {
+            return (
+                <h1>Loading...</h1>
+            )
         }
-        fetch(server_url, requestOptions).then((response)=>
-            response.json()
-        ).then((data)=>this.ifValid(data)?this.login(data):this.raiseErr(data));
-    }
-
-    render(){
-        return(
-            <Form className="rl_form">
-                <h1>Delete Book</h1>
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                    onChange={this.handleNameChange}
-                    placeHolder="Cinderella in the woods"
-                    pattern=".{3,40}"
-                    id="d_name"
-                    required
-                />
-                <Form.Text className="text-warning">
-                    One book must be with this name.
-                </Form.Text>
-                <br/>
-
-                <Button className="one_but" onClick={this.handleSubmit}>Delete</Button>
-            </Form>
-        )
+        else if (!this.state.found) {
+            return (
+                <h1>Error 404: NOT FOUND.</h1>
+            )
+        }
+        else return (
+            <div>
+                <h1>Do you want to delete {this.state.name}?</h1>
+                <Button onClick={this.handleDelete}>Yes</Button>
+                <Button href="books?id=1">No</Button>
+            </div>
+        );
     }
 }
-
-export default DeleteBook;

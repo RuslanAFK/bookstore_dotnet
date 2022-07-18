@@ -66,15 +66,23 @@ namespace bookstoreserver
             {
                 app.MapGet("/get-book/{bookId}", async (int bookId) =>
                 {
-                    Book bookToReturn = await BooksRepository.GetBookByIdAsync(bookId);
-                    if (bookToReturn != null)
+                    try
                     {
-                        return Results.Ok(bookToReturn);
+                        Book bookToReturn = await BooksRepository.GetBookByIdAsync(bookId);
+                        if (bookToReturn != null)
+                        {
+                            return Results.Ok(bookToReturn);
+                        }
+                        else
+                        {
+                            return Results.Json("Not found.");
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        return Results.Ok("Not found.");
+                        return Results.Json("Not found.");
                     }
+                    
                 }).WithTags("Book Endpoints");
             }
             public static void Create(WebApplication app)
@@ -104,7 +112,7 @@ namespace bookstoreserver
                     }
                     else
                     {
-                        return CustomResponses.OnCreate();
+                        return CustomResponses.OnUpdate();
                     }
                 }).WithTags("Book Endpoints");
 
@@ -120,7 +128,7 @@ namespace bookstoreserver
                     }
                     else
                     {
-                        return Results.NotFound();
+                        return CustomResponses.OnDelete();
                     }
                 }).WithTags("Book Endpoints");
 
