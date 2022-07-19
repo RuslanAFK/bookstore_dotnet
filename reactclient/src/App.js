@@ -1,22 +1,15 @@
 import React, { Component } from "react";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoadBook from "./LoadBook";
-import ChangeBook from "./ChangeBook";
-import DeleteBook from "./DeleteBook";
-import Login from "./Login";
-import Signup from "./Signup";
-import BookView from "./BookView";
-import BookStore from "./BookStore";
+import LoadBook from "./components/LoadBook";
+import ChangeBook from "./components/ChangeBook";
+import DeleteBook from "./components/DeleteBook";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import BookView from "./components/BookView";
+import BookStore from "./components/BookStore";
 
 export default class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: '',
-            is_admin: false,
-        };
-    }
 
     render() {
         return (

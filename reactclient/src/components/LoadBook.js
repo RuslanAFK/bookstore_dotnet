@@ -1,10 +1,9 @@
 import React from "react";
-import {Button, Form} from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 
 const server_url = 'https://localhost:7180/create-book';
 
-export default class LoadBook extends React.Component
-{
+export default class LoadBook extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -57,7 +56,7 @@ export default class LoadBook extends React.Component
         });
     }
 
-    handleGenreChange= (e) => {
+    handleGenreChange = (e) => {
         this.setState({
             genre: e.target.value,
         });
@@ -84,27 +83,27 @@ export default class LoadBook extends React.Component
 
     raiseErr(data) {
         let errText;
-        if(data.error.name){
+        if (data.error.name) {
             errText = data.error.name[0];
             document.getElementById('r_name').setCustomValidity(errText);
             document.getElementById('r_name').reportValidity();
-        }else if(data.error.genre){
+        } else if (data.error.genre) {
             errText = data.error.genre[0];
             document.getElementById('r_genre').setCustomValidity(errText);
             document.getElementById('r_genre').reportValidity();
-        }else if(data.error.image){
+        } else if (data.error.image) {
             errText = data.error.image[0];
             document.getElementById('r_image').setCustomValidity(errText);
             document.getElementById('r_image').reportValidity();
-        }else if(data.error.info){
+        } else if (data.error.info) {
             errText = data.error.info[0];
             document.getElementById('textarea').setCustomValidity(errText);
             document.getElementById('textarea').reportValidity();
-        }else if(data.error.author){
+        } else if (data.error.author) {
             errText = data.error.author[0];
             document.getElementById('r_author').setCustomValidity(errText);
             document.getElementById('r_author').reportValidity();
-        }else {
+        } else {
             console.log(data);
         }
     }
@@ -127,7 +126,7 @@ export default class LoadBook extends React.Component
         }
         const requestOptions = {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: this.state.name,
                 info: this.state.info,
@@ -138,79 +137,87 @@ export default class LoadBook extends React.Component
         }
         fetch(server_url, requestOptions)
             .then(response => response.json())
-            .then( data => 
+            .then(data =>
                 this.ifErrorUploading(data) ? this.catchUploadError(data)
                     : this.onUploadSuccess(data)
             );
     }
 
-    render(){
-        return(
-            <Form className="rl_form">
-
+    render() {
+        return (
+            <Form className="w-50 p-3 mx-auto">
                 <h1>Upload Book</h1>
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                    onChange={this.handleNameChange}
-                    value={this.state.name}
-                    id="l_name"
-                />
-                <Form.Text className="text-warning">
-                    The name must have minimum 3 letters and maximum 40.
-                </Form.Text>
-                <br />
 
-                <Form.Label>Author</Form.Label>
-                <Form.Control
-                    onChange={this.handleAuthorChange}
-                    value={this.state.author}
-                    id="l_author"
-                    required
-                />
-                <Form.Text className="text-warning">
-                    Here you put at least one genre name, separator is a whitespace.
-                </Form.Text>
-                <br />
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Name</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        value={this.state.name}
+                        id="l_name"
+                    />
+                    <Form.Text className="text-warning">
+                        The name must have minimum 6 letters and maximum 36.
+                    </Form.Text>
+                </div>
 
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Author</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        onChange={this.handleAuthorChange}
+                        id="l_author"
+                    />
+                    <Form.Text className="text-warning">
+                        Here you put the author of a book.
+                    </Form.Text>
+                </div>
 
-                <Form.Label>Genres</Form.Label>
-                <Form.Control
-                    onChange={this.handleGenreChange}
-                    value={this.state.genre}
-                    id="l_genre"
-                />
-                <Form.Text className="text-warning">
-                    Here you put at least one genre name, separator is a whitespace.
-                </Form.Text>
-                <br />
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Genres</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        onChange={this.handleGenreChange}
+                        value={this.state.genre}
+                        id="l_genre"
+                    />
+                    <Form.Text className="text-warning">
+                        Here you put at least one genre name.
+                    </Form.Text>
+                </div>
 
-                <Form.Label>Description</Form.Label>
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Description</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        onChange={this.handleInfoChange}
+                        value={this.state.info}
+                        as="textarea"
+                        rows={4}
+                        id="l_textarea"
+                    />
+                    <Form.Text className="text-warning">
+                        Your textarea must be 10-400 characters long.
+                    </Form.Text>
+                </div>
 
-                <Form.Control
-                    onChange={this.handleInfoChange}
-                    value={this.state.info}
-                    as="textarea"
-                    rows={4}
-                    id="l_textarea"
-                    required
-                />
-                <Form.Text className="text-warning">
-                    Your textarea must be 100-200 characters long.
-                </Form.Text>
-                <br />
-
-                <Form.Label>Choose book image</Form.Label>
-
-                <Form.Control
-                    onChange={this.handleImageChange}
-                    id="l_image"
-                    value={this.state.image}
-                />
-                <Form.Text className="text-warning">
-                    Enter image url.
-                </Form.Text>
-                <br />
-                <Button onClick={this.onUploadClicked}>Upload</Button>
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Book image url</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        onChange={this.handleImageChange}
+                        id="l_image"
+                        value={this.state.image}
+                    />
+                    <Form.Text className="text-warning">
+                        Enter image url.
+                    </Form.Text>
+                </div>
+                <Button className="w-100" onClick={this.onUploadClicked}>Upload</Button>
             </Form>
         )
     }

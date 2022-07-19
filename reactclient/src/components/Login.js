@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Form } from "react-bootstrap";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const server_url = 'https://localhost:7180/login';
 
@@ -33,7 +33,7 @@ export default class Login extends React.Component {
     }
 
     login(data) {
-       window.location.href = `books?id=${data.id}`;
+        window.location.href = `books?id=${data.id}`;
     }
 
     raiseErr(data) {
@@ -44,12 +44,12 @@ export default class Login extends React.Component {
     validatedData = () => {
         const username = this.state.username;
         const password = this.state.password;
-        if(username.length < 6 || username.length > 16){
+        if (username.length < 6 || username.length > 16) {
             document.getElementById('l_username').setCustomValidity("Username must be from 6 to 16 symbols.");
             document.getElementById('l_username').reportValidity();
             return false;
         }
-        else if(password.length < 6 || password.length > 16){
+        else if (password.length < 6 || password.length > 16) {
             document.getElementById('l_password').setCustomValidity("Password must be from 6 to 16 symbols.");
             document.getElementById('l_password').reportValidity();
             return false;
@@ -58,7 +58,7 @@ export default class Login extends React.Component {
     }
 
     handleSubmit = () => {
-        if(!this.validatedData()){
+        if (!this.validatedData()) {
             return;
         }
         let requestOptions = {
@@ -77,44 +77,42 @@ export default class Login extends React.Component {
 
     render() {
         return (
-            <div>
-                <Form className="rl_form" id="login_form">
-                    <h1>Log In</h1>
+            <Form className="w-50 p-3 mx-auto">
+                <h1>Log In</h1>
 
-                    <Form.Label htmlFor="inputUsername">Username</Form.Label>
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Username</strong></mark>
+                    </Form.Label>
                     <Form.Control
                         onChange={this.handleUsernameChange}
-                        name="username"
                         placeholder="My Username"
                         id="l_username"
                     />
                     <Form.Text className="text-warning">
-                        Your username must be valid.
+                        Your username must contain 6-16 symbols.
                     </Form.Text>
-                    <br />
+                </div>
 
-                    <Form.Label htmlFor="inputPassword">Password</Form.Label>
+                <div className="my-2">
+                    <Form.Label>
+                        <mark><strong>Password</strong></mark>
+                    </Form.Label>
                     <Form.Control
                         onChange={this.handlePasswordChange}
-                        name="password"
                         placeholder="1111abc"
                         type="password"
                         id="l_password"
                     />
                     <Form.Text className="text-warning">
-                        Your password must be same as in database.
+                        Your password must be 6-16 characters long.
                     </Form.Text>
-                    <br />
+                </div>
+                <Link className="my-2" to="signup">Not Registered yet?</Link>
 
-                    <Link to='/signup'>Not registed yet?</Link>
-                    <br />
-                    <br />
 
-                    <Button onClick={this.handleSubmit}>Log In</Button>
-                </Form>
-
-            </div>
-
+                <Button className="my-2 w-100" onClick={this.handleSubmit}>Log In</Button>
+            </Form>
         )
     }
 }

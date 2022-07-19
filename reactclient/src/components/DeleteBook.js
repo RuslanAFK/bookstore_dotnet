@@ -68,24 +68,22 @@ export default class DeleteBook extends React.Component {
                 }));
     }
 
-
-
     render() {
         if (this.state.loading) {
             return (
-                <h1>Loading...</h1>
+                <h1 className='text-center my-5'>Loading...</h1>
             )
         }
         else if (!this.state.found) {
             return (
-                <h1>Error 404: NOT FOUND.</h1>
+                <h1 className='text-center my-5'>Error 404: NOT FOUND.</h1>
             )
         }
         else return (
-            <div>
-                <h1>Do you want to delete {this.state.name}?</h1>
-                <Button onClick={this.handleDelete}>Yes</Button>
-                <Button href="books?id=1">No</Button>
+            <div className="mx-3 my-3">
+                <h1 className="my-3">Do you want to delete <mark>{this.state.name}</mark>?</h1>
+                <Button className="w-25 my-2" onClick={this.handleDelete}>Yes</Button>
+                <Button className="w-25 my-2" href="books?id=1">No</Button>
             </div>
         );
     }

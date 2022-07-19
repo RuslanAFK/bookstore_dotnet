@@ -78,7 +78,7 @@ export default class ChangeBook extends React.Component {
                         genre: data.genre,
                         info: data.info,
                         image: data.image,
-                        author: data.image,
+                        author: data.author,
                         loading: false
                     })
             )
@@ -120,7 +120,7 @@ export default class ChangeBook extends React.Component {
     }
 
     ifErrorUpdating = (data) => {
-        return data != "Update Successful";
+        return data !== "Update Successful";
     }
     catchUpdateError = (message) => {
         document.getElementById('u_name').setCustomValidity(message);
@@ -137,7 +137,7 @@ export default class ChangeBook extends React.Component {
         }
         const requestOptions = {
             method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 id: this.state.id,
                 name: this.state.name,
@@ -149,92 +149,99 @@ export default class ChangeBook extends React.Component {
         }
         fetch(update_url, requestOptions)
             .then(response => response.json())
-            .then( data => 
+            .then(data =>
                 this.ifErrorUpdating(data) ? this.catchUpdateError(data)
                     : this.onUpdateSuccess(data)
             );
     }
 
-
-
     render() {
         if (this.state.loading) {
             return (
-                <h1>Loading...</h1>
+                <h1 className='text-center my-5'>Loading...</h1>
             )
         }
         else if (this.state.error) {
             return (
-                <h1>Error 404: NOT FOUND.</h1>
+                <h1 className='text-center my-5'>Error 404: NOT FOUND.</h1>
             )
         }
         return (
-            <Form className="rl_form">
-
+            <Form className="w-50 p-3 mx-auto">
                 <h1>Edit Book</h1>
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                    onChange={this.handleNameChange}
-                    value={this.state.name}
-                    id="u_name"
-                />
-                <Form.Text className="text-warning">
-                    The name must have minimum 3 letters and maximum 40.
-                </Form.Text>
-                <br />
 
-                <Form.Label>Author</Form.Label>
-                <Form.Control
-                    onChange={this.handleAuthorChange}
-                    value={this.state.author}
-                    id="u_author"
-                    required
-                />
-                <Form.Text className="text-warning">
-                    Here you put at least one genre name, separator is a whitespace.
-                </Form.Text>
-                <br />
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Name</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        value={this.state.name}
+                        id="u_name"
+                    />
+                    <Form.Text className="text-warning">
+                        The name must have minimum 6 letters and maximum 36.
+                    </Form.Text>
+                </div>
 
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Author</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        onChange={this.handleAuthorChange}
+                        value={this.state.author}
+                        id="u_author"
+                    />
+                    <Form.Text className="text-warning">
+                        Here you put the author of a book.
+                    </Form.Text>
+                </div>
 
-                <Form.Label>Genres</Form.Label>
-                <Form.Control
-                    onChange={this.handleGenreChange}
-                    value={this.state.genre}
-                    id="u_genre"
-                />
-                <Form.Text className="text-warning">
-                    Here you put at least one genre name, separator is a whitespace.
-                </Form.Text>
-                <br />
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Genres</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        onChange={this.handleGenreChange}
+                        value={this.state.genre}
+                        id="u_genre"
+                    />
+                    <Form.Text className="text-warning">
+                        Here you put at least one genre name.
+                    </Form.Text>
+                </div>
 
-                <Form.Label>Description</Form.Label>
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Description</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        onChange={this.handleInfoChange}
+                        value={this.state.info}
+                        as="textarea"
+                        rows={4}
+                        id="u_textarea"
+                    />
+                    <Form.Text className="text-warning">
+                        Your textarea must be 10-400 characters long.
+                    </Form.Text>
+                </div>
 
-                <Form.Control
-                    onChange={this.handleInfoChange}
-                    value={this.state.info}
-                    as="textarea"
-                    rows={4}
-                    id="u_textarea"
-                    required
-                />
-                <Form.Text className="text-warning">
-                    Your textarea must be 100-200 characters long.
-                </Form.Text>
-                <br />
+                <div className="my-4">
+                    <Form.Label>
+                        <mark><strong>Book image url</strong></mark>
+                    </Form.Label>
+                    <Form.Control
+                        onChange={this.handleImageChange}
+                        id="u_image"
+                        value={this.state.image}
+                    />
+                    <Form.Text className="text-warning">
+                        Enter image url.
+                    </Form.Text>
+                </div>
 
-                <Form.Label>Choose book image</Form.Label>
-
-                <Form.Control
-                    onChange={this.handleImageChange}
-                    id="u_image"
-                    value={this.state.image}
-                />
-                <Form.Text className="text-warning">
-                    Enter image url.
-                </Form.Text>
-                <br />
-                <Button onClick={this.onChangeClicked}>Change</Button>
-
+                <Button className="w-100" onClick={this.onChangeClicked}>Change</Button>
             </Form>
         )
     }

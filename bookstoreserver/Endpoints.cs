@@ -46,7 +46,7 @@ namespace bookstoreserver
                     bool createSuccesfull = await UsersRepository.SignupAsync(userToCreate);
                     if (createSuccesfull)
                     {
-                        return Results.Ok("Signup Successfull");
+                        return Results.Ok("Signup Successful");
                     }
                     else
                     {

@@ -4,10 +4,6 @@ import { Button, Image } from "react-bootstrap"
 
 
 export default class Books extends Component {
-    constructor(props) {
-        super(props);
-    }
-    
 
     render = () => {
         return (
@@ -22,8 +18,8 @@ export default class Books extends Component {
                                 </Link>
                                 {this.props.isAdmin &&
                                     <div>
-                                        <Button href={"change?bookId=" + book.id}>Change</Button>
-                                        <Button href={"delete?bookId=" + book.id}>Delete</Button>
+                                        <Button className='w-50 my-2' href={"change?bookId=" + book.id}>Change</Button>
+                                        <Button className='w-50 my-2' href={"delete?bookId=" + book.id}>Delete</Button>
                                     </div>
                                 }
                             </div>

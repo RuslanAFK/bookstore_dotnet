@@ -56,23 +56,23 @@ class BookView extends Component {
 
 
     render() {
-        if(this.state.loading){
-            return(
-                <h1>Loading...</h1>
+        if (this.state.loading) {
+            return (
+                <h1 className='text-center my-5'>Loading...</h1>
             )
         }
-        else if(!this.state.found){
-            return(
-                <h1>Error 404: NOT FOUND.</h1>
+        else if (!this.state.found) {
+            return (
+                <h1 className='text-center my-5'>Error 404: NOT FOUND.</h1>
             )
         }
         else return (
             <div>
-                <Image src={this.state.image} alt="Image" width={350} height={500} />
-                <h1>Book {this.state.name}</h1>
-                <p>Author: {this.state.author}</p>
-                <p>Tags: {this.state.genre}</p>
-                <p>Description: {this.state.info}</p>
+                <h1 className='mx-3 my-3'>Book {this.state.name}</h1>
+                <Image className='mx-3 my-3' src={this.state.image} alt="Image" width={350} height={500} />
+                <p className='mx-3 my-2'>Author: {this.state.author}</p>
+                <p className='mx-3 my-2'>Tags: {this.state.genre}</p>
+                <p className='mx-3 my-2'>Description: {this.state.info}</p>
             </div>
         );
     }

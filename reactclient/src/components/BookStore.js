@@ -32,8 +32,8 @@ export default class BookStore extends Component {
         const params = new URLSearchParams(href)
         const userId = parseInt(params.get('id'));
 
-        if(userId === null || isNaN(userId)){
-            this.setState({error: true});
+        if (userId === null || isNaN(userId)) {
+            this.setState({ error: true });
             return;
         }
 
@@ -59,12 +59,12 @@ export default class BookStore extends Component {
     render = () => {
         if (this.state.loading) {
             return (
-                <h1>Loading...</h1>
+                <h1 className='text-center my-5'>Loading...</h1>
             )
         }
         else if (this.state.error) {
             return (
-                <h1>Error 404: NOT FOUND.</h1>
+                <h1 className='text-center my-5'>Error 404: NOT FOUND.</h1>
             )
         }
         else if (this.state.empty) {
@@ -77,8 +77,10 @@ export default class BookStore extends Component {
         }
         return (
             <div>
-                <h1>Books</h1>
-                {this.state.isAdmin && <Button href='add'>Add Book</Button>}
+                <div className="d-flex mx-3 my-3">
+                    <h1 className='mx-2 my-2'>Books</h1>
+                    {this.state.isAdmin && <Button className='mx-2 my-3' href='add'>Add Book</Button>}
+                </div>
                 <Books books={this.state.books} isAdmin={this.state.isAdmin} />
             </div>
         );
