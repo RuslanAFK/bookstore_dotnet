@@ -1,248 +1,167 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import { throwHttpError } from "../helpers/ErrorThrowers";
+import { GET_BOOK_URL, UPDATE_BOOK_URL } from "../helpers/Urls";
+import { isBookDataValid } from "../helpers/Validators";
 
-const update_url = 'https://localhost:7180/update-book';
-const get_url = 'https://localhost:7180/get-book/';
+const ChangeBook = () => {
+    const [info, setInfo] = useState('');
+    const [genre, setGenre] = useState('');
+    const [author, setAuthor] = useState('');
+    const [image, setImage] = useState('');
+    const [name, setName] = useState('');
+    const [id, setId] = useState(0);
 
-export default class ChangeBook extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            id: 0,
-            name: '',
-            genre: '',
-            info: '',
-            image: '',
-            author: '',
-            loading: true,
-            error: false,
-        };
-    }
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-
-    handleNameChange = (e) => {
-        this.setState({
-            name: e.target.value,
-        });
-    }
-
-    handleGenreChange = (e) => {
-        this.setState({
-            genre: e.target.value,
-        });
-    }
-
-    handleInfoChange = (e) => {
-        this.setState({
-            info: e.target.value,
-        });
-    }
-
-    handleImageChange = (e) => {
-        this.setState({
-            image: e.target.value,
-        });
-    }
-
-    handleAuthorChange = (e) => {
-        this.setState({
-            author: e.target.value,
-        });
-    }
-
-
-    ifError = (data) => {
-        return data === "Not found.";
-    }
-
-    componentDidMount = () => {
+    useEffect(() => {
         const href = window.location.search;
         const params = new URLSearchParams(href);
         const bookId = parseInt(params.get('bookId'));
 
         if (bookId === null || isNaN(bookId)) {
-            this.setState({
-                error: true,
-                loading: false,
-            })
+            setError(true);
+            setLoading(false);
             return;
         }
 
-        fetch(get_url + bookId)
+        fetch(GET_BOOK_URL + bookId)
+            .then(response => throwHttpError(response))
             .then(response => response.json())
-            .then(data =>
-                this.ifError(data) ? this.setState({ error: true, loading: false })
-                    : this.setState({
-                        id: data.id,
-                        name: data.name,
-                        genre: data.genre,
-                        info: data.info,
-                        image: data.image,
-                        author: data.author,
-                        loading: false
-                    })
-            )
-    }
+            .then(data => {
+                setId(data.id);
+                setAuthor(data.author);
+                setGenre(data.genre);
+                setName(data.name);
+                setInfo(data.info);
+                setImage(data.image);
+                setLoading(false);
+            })
+            .catch(errorMessage => {
+                setError(true);
+                setLoading(false);
+                alert(errorMessage);
+            })
+    }, [])
 
-    validatedData = () => {
-        const name = this.state.name;
-        const info = this.state.info;
-        const author = this.state.author;
-        const image = this.state.image;
-        const genre = this.state.genre;
-
-        if (name.length < 6 || name.length > 36) {
-            document.getElementById('u_name').setCustomValidity("Name must be from 6 to 36 symbols.");
-            document.getElementById('u_name').reportValidity();
-            return false;
-        }
-        else if (genre.length < 6 || genre.length > 36) {
-            document.getElementById('u_genre').setCustomValidity("Genres must be from 6 to 36 symbols.");
-            document.getElementById('u_genre').reportValidity();
-            return false;
-        }
-        else if (author.length < 6 || author.length > 36) {
-            document.getElementById('u_author').setCustomValidity("Author name must be from 6 to 36 symbols.");
-            document.getElementById('u_author').reportValidity();
-            return false;
-        }
-        else if (image.length < 10 || image.length > 1000) {
-            document.getElementById('u_image').setCustomValidity("Image url must be from 10 to 1000 symbols.");
-            document.getElementById('u_image').reportValidity();
-            return false;
-        }
-        else if (info.length < 10 || info.length > 400) {
-            document.getElementById('u_textarea').setCustomValidity("Description must be from 10 to 400 symbols.");
-            document.getElementById('u_textarea').reportValidity();
-            return false;
-        }
-        return true;
-    }
-
-    ifErrorUpdating = (data) => {
-        return data !== "Update Successful";
-    }
-    catchUpdateError = (message) => {
-        document.getElementById('u_name').setCustomValidity(message);
-        document.getElementById('u_name').reportValidity();
-    }
-    onUpdateSuccess = (message) => {
+    const onUpdateSuccess = () => {
         window.location.href = "books?id=1";
-        alert(message);
+        alert("Change successfull");
     }
 
-    onChangeClicked = () => {
-        if (!this.validatedData()) {
+    const onChangeClicked = () => {
+        const bookData = {
+            id,
+            name,
+            info,
+            author,
+            image,
+            genre,
+        }
+        if (!isBookDataValid(bookData)) {
             return;
         }
         const requestOptions = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id: this.state.id,
-                name: this.state.name,
-                info: this.state.info,
-                author: this.state.author,
-                image: this.state.image,
-                genre: this.state.genre,
-            }),
+            body: JSON.stringify(bookData),
         }
-        fetch(update_url, requestOptions)
+        fetch(UPDATE_BOOK_URL, requestOptions)
+            .then(response => throwHttpError(response))
             .then(response => response.json())
-            .then(data =>
-                this.ifErrorUpdating(data) ? this.catchUpdateError(data)
-                    : this.onUpdateSuccess(data)
-            );
+            .then(() =>
+                onUpdateSuccess()
+            )
+            .catch(error => {
+                alert(error.message)
+            });
     }
 
-    render() {
-        if (this.state.loading) {
-            return (
-                <h1 className='text-center my-5'>Loading...</h1>
-            )
-        }
-        else if (this.state.error) {
-            return (
-                <h1 className='text-center my-5'>Error 404: NOT FOUND.</h1>
-            )
-        }
+    if (loading) {
         return (
-            <Form className="w-50 p-3 mx-auto">
-                <h1>Edit Book</h1>
-
-                <div className="my-4">
-                    <Form.Label>
-                        <mark><strong>Name</strong></mark>
-                    </Form.Label>
-                    <Form.Control
-                        value={this.state.name}
-                        id="u_name"
-                    />
-                    <Form.Text className="text-warning">
-                        The name must have minimum 6 letters and maximum 36.
-                    </Form.Text>
-                </div>
-
-                <div className="my-4">
-                    <Form.Label>
-                        <mark><strong>Author</strong></mark>
-                    </Form.Label>
-                    <Form.Control
-                        onChange={this.handleAuthorChange}
-                        value={this.state.author}
-                        id="u_author"
-                    />
-                    <Form.Text className="text-warning">
-                        Here you put the author of a book.
-                    </Form.Text>
-                </div>
-
-                <div className="my-4">
-                    <Form.Label>
-                        <mark><strong>Genres</strong></mark>
-                    </Form.Label>
-                    <Form.Control
-                        onChange={this.handleGenreChange}
-                        value={this.state.genre}
-                        id="u_genre"
-                    />
-                    <Form.Text className="text-warning">
-                        Here you put at least one genre name.
-                    </Form.Text>
-                </div>
-
-                <div className="my-4">
-                    <Form.Label>
-                        <mark><strong>Description</strong></mark>
-                    </Form.Label>
-                    <Form.Control
-                        onChange={this.handleInfoChange}
-                        value={this.state.info}
-                        as="textarea"
-                        rows={4}
-                        id="u_textarea"
-                    />
-                    <Form.Text className="text-warning">
-                        Your textarea must be 10-400 characters long.
-                    </Form.Text>
-                </div>
-
-                <div className="my-4">
-                    <Form.Label>
-                        <mark><strong>Book image url</strong></mark>
-                    </Form.Label>
-                    <Form.Control
-                        onChange={this.handleImageChange}
-                        id="u_image"
-                        value={this.state.image}
-                    />
-                    <Form.Text className="text-warning">
-                        Enter image url.
-                    </Form.Text>
-                </div>
-
-                <Button className="w-100" onClick={this.onChangeClicked}>Change</Button>
-            </Form>
+            <h1 className='text-center my-5'>Loading...</h1>
         )
     }
+    else if (error) {
+        return (
+            <h1 className='text-center my-5'>Error 404: NOT FOUND.</h1>
+        )
+    }
+    return (
+        <Form className="w-50 p-3 mx-auto">
+            <h1>Edit Book</h1>
+
+            <div className="my-4">
+                <Form.Label>
+                    <mark><strong>Name</strong></mark>
+                </Form.Label>
+                <Form.Control
+                    disabled
+                    value={name}
+                />
+                <Form.Text className="text-warning">
+                    The name must have minimum 6 letters and maximum 36.
+                </Form.Text>
+            </div>
+
+            <div className="my-4">
+                <Form.Label>
+                    <mark><strong>Author</strong></mark>
+                </Form.Label>
+                <Form.Control
+                    onChange={(e) => setAuthor(e.target.value)}
+                    value={author}
+                />
+                <Form.Text className="text-warning">
+                    Here you put the author of a book.
+                </Form.Text>
+            </div>
+
+            <div className="my-4">
+                <Form.Label>
+                    <mark><strong>Genres</strong></mark>
+                </Form.Label>
+                <Form.Control
+                    onChange={(e) => setGenre(e.target.value)}
+                    value={genre}
+                />
+                <Form.Text className="text-warning">
+                    Here you put at least one genre name.
+                </Form.Text>
+            </div>
+
+            <div className="my-4">
+                <Form.Label>
+                    <mark><strong>Description</strong></mark>
+                </Form.Label>
+                <Form.Control
+                    onChange={(e) => setInfo(e.target.value)}
+                    value={info}
+                    as="textarea"
+                    rows={4}
+                />
+                <Form.Text className="text-warning">
+                    Your textarea must be 10-400 characters long.
+                </Form.Text>
+            </div>
+
+            <div className="my-4">
+                <Form.Label>
+                    <mark><strong>Book image url</strong></mark>
+                </Form.Label>
+                <Form.Control
+                    onChange={(e) => setImage(e.target.value)}
+                    value={image}
+                />
+                <Form.Text className="text-warning">
+                    Enter image url.
+                </Form.Text>
+            </div>
+
+            <Button className="w-100" onClick={onChangeClicked}>Change</Button>
+        </Form>
+    )
 }
+
+export default ChangeBook;

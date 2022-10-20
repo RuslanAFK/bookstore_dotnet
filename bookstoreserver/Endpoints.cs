@@ -18,7 +18,7 @@ namespace bookstoreserver
                     }
                     else
                     {
-                        return CustomResponses.UserNotFound();
+                        return Results.NotFound();
                     }
                 }).WithTags("User Endpoints");
 
@@ -34,7 +34,7 @@ namespace bookstoreserver
                     }
                     else
                     {
-                        return CustomResponses.LoginError();
+                        return Results.Conflict(CustomResponses.LoginError);
                     }
                 }).WithTags("User Endpoints");
 
@@ -46,11 +46,11 @@ namespace bookstoreserver
                     bool createSuccesfull = await UsersRepository.SignupAsync(userToCreate);
                     if (createSuccesfull)
                     {
-                        return Results.Ok("Signup Successful");
+                        return Results.Ok(userToCreate);
                     }
                     else
                     {
-                        return CustomResponses.UserFound();
+                        return Results.Conflict(CustomResponses.UserFound);
                     }
                 }).WithTags("User Endpoints");
 
@@ -75,14 +75,14 @@ namespace bookstoreserver
                         }
                         else
                         {
-                            return Results.Json("Not found.");
+                            return Results.NotFound();
                         }
                     }
                     catch (Exception ex)
                     {
-                        return Results.Json("Not found.");
+                        return Results.NotFound();
                     }
-                    
+
                 }).WithTags("Book Endpoints");
             }
             public static void Create(WebApplication app)
@@ -92,11 +92,11 @@ namespace bookstoreserver
                     bool createSuccesfull = await BooksRepository.CreateBookAsync(bookToCreate);
                     if (createSuccesfull)
                     {
-                        return Results.Ok("Create Successful");
+                        return Results.Ok(bookToCreate);
                     }
                     else
                     {
-                        return CustomResponses.OnCreate();
+                        return Results.Conflict(CustomResponses.OnCreate);
                     }
                 }).WithTags("Book Endpoints");
 
@@ -108,11 +108,11 @@ namespace bookstoreserver
                     bool updateSuccesfull = await BooksRepository.UpdateBookAsync(bookToUpdate);
                     if (updateSuccesfull)
                     {
-                        return Results.Ok("Update Successful");
+                        return Results.Ok(bookToUpdate);
                     }
                     else
                     {
-                        return CustomResponses.OnUpdate();
+                        return Results.Conflict(CustomResponses.OnUpdate);
                     }
                 }).WithTags("Book Endpoints");
 
@@ -121,14 +121,15 @@ namespace bookstoreserver
             {
                 app.MapDelete("/delete-book/{bookId}", async (int bookId) =>
                 {
+                    Book bookToDelete = await BooksRepository.GetBookByIdAsync(bookId);
                     bool deleteSuccesfull = await BooksRepository.DeleteBookAsync(bookId);
                     if (deleteSuccesfull)
                     {
-                        return Results.Ok("Delete Successfull");
+                        return Results.Ok(bookToDelete);
                     }
                     else
                     {
-                        return CustomResponses.OnDelete();
+                        return Results.Conflict(CustomResponses.OnDelete);
                     }
                 }).WithTags("Book Endpoints");
 

@@ -1,90 +1,80 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
+import { throwHttpError } from "../helpers/ErrorThrowers";
+import { DELETE_BOOK_URL, GET_BOOK_URL } from "../helpers/Urls";
 
-const delete_url = 'https://localhost:7180/delete-book/';
-const get_url = 'https://localhost:7180/get-book/';
+const DeleteBook = () => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [found, setFound] = useState(true);
 
-
-export default class DeleteBook extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            id: 0,
-            name: '',
-            loading: true,
-            found: true,
-        };
-    }
-
-
-    handleDelete = () => {
+    const handleDelete = () => {
         const requestOptions = {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
         }
-        fetch(delete_url + this.state.id, requestOptions).then((response) =>
-            response.json()
-        ).then(data => {
-            alert(data);
-            window.location.href = "books?id=1";
-        }
-        );
+        fetch(DELETE_BOOK_URL + user.id, requestOptions)
+            .then(response => throwHttpError(response))
+            .then((response) => response.json())
+            .then((data) => {
+                alert(`Book ${data.name} deleted`);
+                window.location.href = "books?id=1";
+            })
+            .catch(errorMessage => alert(errorMessage))
     }
 
-    ifValid(data) {
-        return data.name != null;
-    }
+    useEffect(() => {
+        getBookDetails();
+    }, [])
 
-    componentDidMount = () => {
-        this.getBookDetails();
-    }
-
-    getBookDetails() {
+    const getBookDetails = () => {
         const href = window.location.search;
         const params = new URLSearchParams(href);
         const bookId = parseInt(params.get('bookId'));
 
         if (bookId === null || isNaN(bookId)) {
-            this.setState({
-                found: false,
-                loading: false,
-            })
+            setFound(false);
+            setLoading(false);
             return;
         }
 
-        fetch(get_url + bookId).then((response) => response.json())
-            .then((data) => this.ifValid(data) ? (
-                this.setState({
+        fetch(GET_BOOK_URL + bookId)
+            .then(response => throwHttpError(response))
+            .then((response) => response.json())
+            .then((data) => {
+                setUser({
                     id: data.id,
                     name: data.name,
                     info: data.info,
                     genre: data.genre,
                     image: data.image,
                     author: data.author,
-                    loading: false,
-                })) : this.setState({
-                    found: false,
-                    loading: false,
-                }));
+                });
+                setLoading(false);
+            })
+            .catch(error => {
+                setFound(false);
+                setLoading(false);
+            })
     }
 
-    render() {
-        if (this.state.loading) {
-            return (
-                <h1 className='text-center my-5'>Loading...</h1>
-            )
-        }
-        else if (!this.state.found) {
-            return (
-                <h1 className='text-center my-5'>Error 404: NOT FOUND.</h1>
-            )
-        }
-        else return (
-            <div className="mx-3 my-3">
-                <h1 className="my-3">Do you want to delete <mark>{this.state.name}</mark>?</h1>
-                <Button className="w-25 my-2" onClick={this.handleDelete}>Yes</Button>
-                <Button className="w-25 my-2" href="books?id=1">No</Button>
-            </div>
-        );
+    if (loading) {
+        return (
+            <h1 className='text-center my-5'>Loading...</h1>
+        )
     }
+    else if (!found) {
+        return (
+            <h1 className='text-center my-5'>Error 404: NOT FOUND.</h1>
+        )
+    }
+    else return (
+        <div className="mx-3 my-3">
+            <h1 className="my-3">Do you want to delete <mark>{user.name}</mark>?</h1>
+            <Button className="w-25 my-2" onClick={handleDelete}>Yes</Button>
+            <Button className="w-25 my-2" href="books?id=1">No</Button>
+        </div>
+    );
 }
+
+export default DeleteBook;

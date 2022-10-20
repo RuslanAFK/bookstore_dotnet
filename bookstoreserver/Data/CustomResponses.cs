@@ -2,29 +2,11 @@
 {
     public class CustomResponses
     {
-        public static IResult LoginError()
-        {
-            return Results.Json("Username or password not correct.");
-        }
-        public static IResult UserFound()
-        {
-            return Results.Json("User with the same username already exists.");
-        }
-        public static IResult OnCreate()
-        {
-            return Results.Json("Book with that name already exists.");
-        }
-        public static IResult OnUpdate()
-        {
-            return Results.Json("Book with that name does not exist.");
-        }
-        public static IResult OnDelete()
-        {
-            return Results.Json("Book with that name does not exist.");
-        }
-        public static IResult UserNotFound()
-        {
-            return Results.Json("User not found.");
-        }
+        public static readonly string LoginError = "Username or password not correct.";
+        public static readonly string UserFound = "User with the same username already exists.";
+        public static readonly string OnCreate = "Book with that name already exists.";
+        public static readonly string OnUpdate = "Book with that name does not exist.";
+        public static readonly string OnDelete = "Book with that name does not exist.";
+        public static readonly string UserNotFound = "User not found.";
     }
 }
