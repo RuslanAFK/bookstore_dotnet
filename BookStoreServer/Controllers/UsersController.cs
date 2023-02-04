@@ -14,32 +14,44 @@ public class UsersController : Controller
     private readonly IUsersRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly ITokenManager _tokenManager;
 
-    public UsersController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
+    public UsersController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper, ITokenManager tokenManager)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _tokenManager = tokenManager;
     }
 
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginResource loginResource)
     {
         var user = _mapper.Map<LoginResource, User>(loginResource);
-        var foundUser = await _repository.LoginAsync(user);
+        var foundUser = await _repository.CheckCredentialsAsync(user);
         if (foundUser == null)
             return NotFound();
-        var result = _mapper.Map<User, GetUserResource>(user);
-        return Ok(result);
+        if (!BCrypt.Net.BCrypt.Verify(user.Password, foundUser.Password)) 
+            return BadRequest("Provided incorrect password.");
+        var roleName = await _repository.GetUserRole(foundUser.RoleId);
+        var token = _tokenManager.GenerateToken(foundUser, roleName);
+        return Ok(new UserDetailsResource
+        {
+            Username = foundUser.Username,
+            Token = token,
+            Role = roleName
+        });
     }
 
-    [HttpPost("Signup")]
-    public async Task<IActionResult> Signup(SignupResource signupResource)
+    [HttpPost("Register")]
+    public async Task<IActionResult> Register(RegisterResource registerResource)
     {
+        registerResource.Password = BCrypt.Net.BCrypt.HashPassword(registerResource.Password);
         try
-        {
-            var userToCreate = _mapper.Map<SignupResource, User>(signupResource);
+        {  
+            var userToCreate = _mapper.Map<RegisterResource, User>(registerResource);
             _repository.Signup(userToCreate);
+            await _repository.AddToRole(userToCreate, registerResource.IsAdmin);
             var createSuccessful = await _unitOfWork.CompleteAsync();
             if (createSuccessful > 0)
                 return NoContent();

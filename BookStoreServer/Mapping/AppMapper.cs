@@ -8,9 +8,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<User, GetUserResource>();
-        
         CreateMap<LoginResource, User>();
-        CreateMap<SignupResource, User>();
+        CreateMap<RegisterResource, User>();
     }
 }

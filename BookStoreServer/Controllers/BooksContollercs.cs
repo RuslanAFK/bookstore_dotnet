@@ -1,5 +1,6 @@
 using BookStoreServer.Core;
 using BookStoreServer.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,13 +20,15 @@ public class BooksController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> All()
+    [Authorize(Roles = "User, Admin")]
+    public async Task<IActionResult> All([FromQuery] BookQuery query)
     {
-        var books = await _repository.GetBooksAsync();
+        var books = await _repository.GetBooksAsync(query);
         return Ok(books);
     }
 
     [HttpGet("{bookId}")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> Get(int bookId)
     {
         var bookToReturn = await _repository.GetBookByIdAsync(bookId);
@@ -35,6 +38,7 @@ public class BooksController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(Book bookToCreate)
     {
         try
@@ -42,7 +46,7 @@ public class BooksController : Controller
             await _repository.CreateBookAsync(bookToCreate);
             var createSuccessful = await _unitOfWork.CompleteAsync();
             if (createSuccessful > 0)
-                return CreatedAtAction("Get", new {id=bookToCreate.Id}, bookToCreate);
+                return NoContent();
             return BadRequest();
         }
         catch (DbUpdateException e)
@@ -53,6 +57,7 @@ public class BooksController : Controller
     }
 
     [HttpPut]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(Book bookToUpdate)
     {
         try
@@ -71,6 +76,7 @@ public class BooksController : Controller
     }
 
     [HttpDelete("{bookId}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int bookId)
     {
         try

@@ -1,8 +1,10 @@
+using System.Text;
 using BookStoreServer.Core;
 using BookStoreServer.Persistence;
-using BookStoreServer.Persistence.Repositories;
-using BookStoreServer.Persistence.UnitOfWorks;
+using BookStoreServer.Persistence.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(o =>
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ITokenManager, TokenManager>();
 
 builder.Services.AddCors(options =>
 {
@@ -27,6 +30,16 @@ builder.Services.AddCors(options =>
             .WithOrigins("http://localhost:3000", "https://appname.azurestaticapps.net");
     });
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey =
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Security:Token"])),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swaggerGenOptions =>
@@ -50,7 +63,9 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
-app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
 
+app.MapControllers();
 
 app.Run();

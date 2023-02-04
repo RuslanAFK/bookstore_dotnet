@@ -1,6 +1,6 @@
 using BookStoreServer.Core;
 
-namespace BookStoreServer.Persistence.UnitOfWorks;
+namespace BookStoreServer.Persistence.Services;
 
 public class UnitOfWork : IUnitOfWork
 {

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookStoreServer.Controllers.Resources;
 
-public class SignupResource
+public class RegisterResource
 {
     [MaxLength(16)]
     public string Username { get; set; }

@@ -10,9 +10,7 @@ public class UsersConfiguration : IEntityTypeConfiguration<User>
     {
         builder.Property(u => u.Username)
             .HasMaxLength(16);
-        builder.Property(u => u.Password)
-            .HasMaxLength(16);
-        
+
         builder.HasIndex(u => u.Username)
             .IsUnique();
     }

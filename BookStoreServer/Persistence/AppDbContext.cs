@@ -8,6 +8,7 @@ namespace BookStoreServer.Persistence
     {
         public DbSet<Book> Books { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         public AppDbContext(DbContextOptions options): base(options)
         {
