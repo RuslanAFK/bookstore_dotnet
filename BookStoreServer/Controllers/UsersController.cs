@@ -1,7 +1,7 @@
 using AutoMapper;
 using BookStoreServer.Controllers.Resources;
-using BookStoreServer.Core;
 using BookStoreServer.Core.Models;
+using BookStoreServer.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +16,8 @@ public class UsersController : Controller
     private readonly IMapper _mapper;
     private readonly ITokenManager _tokenManager;
 
-    public UsersController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper, ITokenManager tokenManager)
+    public UsersController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper,
+        ITokenManager tokenManager)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
@@ -35,7 +36,7 @@ public class UsersController : Controller
             return BadRequest("Provided incorrect password.");
         var roleName = await _repository.GetUserRole(foundUser.RoleId);
         var token = _tokenManager.GenerateToken(foundUser, roleName);
-        return Ok(new UserDetailsResource
+        return Ok(new AuthResponse
         {
             Username = foundUser.Username,
             Token = token,

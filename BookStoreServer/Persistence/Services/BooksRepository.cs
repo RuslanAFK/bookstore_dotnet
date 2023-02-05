@@ -1,5 +1,6 @@
 ﻿using BookStoreServer.Core;
 using BookStoreServer.Core.Models;
+using BookStoreServer.Core.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreServer.Persistence.Services

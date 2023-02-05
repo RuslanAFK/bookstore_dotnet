@@ -10,5 +10,10 @@ public class MappingProfile : Profile
     {
         CreateMap<LoginResource, User>();
         CreateMap<RegisterResource, User>();
+        CreateMap<CreateBookResource, Book>();
+        CreateMap<UpdateBookResource, Book>();
+
+        CreateMap<Book, GetBooksResource>();
+        CreateMap<Book, GetSingleBookResource>();
     }
 }

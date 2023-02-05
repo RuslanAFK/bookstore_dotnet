@@ -4,9 +4,10 @@ namespace BookStoreServer.Controllers.Resources;
 
 public class RegisterResource
 {
-    [MaxLength(16)]
+    [Required, MaxLength(16)]
     public string Username { get; set; }
-    [MaxLength(16)]
+    [Required, MaxLength(16)]
     public string Password { get; set; }
+    [Required]
     public bool IsAdmin { get; set; }
 }

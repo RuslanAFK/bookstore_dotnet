@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BookStoreServer.Core.Models
+﻿namespace BookStoreServer.Core.Models
 {
-    public sealed class Book
+    public class Book
     {
         public int Id { get; set; }
         public string Name { get; set; }

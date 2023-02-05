@@ -1,6 +1,6 @@
 using BookStoreServer.Core.Models;
 
-namespace BookStoreServer.Core;
+namespace BookStoreServer.Core.Services;
 
 public interface ITokenManager
 {

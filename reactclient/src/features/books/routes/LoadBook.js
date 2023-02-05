@@ -1,8 +1,13 @@
 import React, {useEffect, useState} from "react";
 import Input from "../../../components/Input";
 import {useDispatch, useSelector} from "react-redux";
-import {createBook, getBook, updateBook} from "../store/thunks";
-import {useParams} from "react-router-dom";
+import {createBook, getBook, updateBook} from "../store/effects";
+import {useNavigate, useParams} from "react-router-dom";
+import {isChanged} from "../store/helpers";
+import {applyChanges} from "../store/bookSlice";
+import {ToastContainer} from "react-toastify";
+import {hasError} from "../../auth/store/helpers";
+import notify from "../../../notifier";
 
 const LoadBook = ({isUpdate}) => {
     const [info, setInfo] = useState('');
@@ -15,16 +20,38 @@ const LoadBook = ({isUpdate}) => {
 
     const dispatch = useDispatch();
     const params = useParams();
+    const navigate = useNavigate();
 
-    const bookSelector = useSelector(state => state.book);
+    const bookState = useSelector(state => state.book);
+
+    const renewForm = () => {
+        setName('');
+        setImage('');
+        setGenre('');
+        setAuthor('');
+        setInfo('');
+    }
+
+    const populateForm = (book) => {
+        const {name, image, genre, author, info} = book;
+        if (name && image && genre && author && info) {
+            setName(name);
+            setImage(image);
+            setGenre(genre);
+            setAuthor(author);
+            setInfo(info);
+        }
+    }
 
     useEffect(() => {
+        renewForm();
+
         if (!isUpdate)
             return;
 
         const bookId = parseInt(params.id);
         if (bookId === null || isNaN(bookId)) {
-            // Throw error
+            navigate("/");
             return;
         }
         setId(bookId);
@@ -32,15 +59,26 @@ const LoadBook = ({isUpdate}) => {
     }, [params.id, dispatch])
 
     useEffect(() => {
-        const book = bookSelector.books[0];
-        if (book && isUpdate) {
-            setName(book.name);
-            setImage(book.image);
-            setGenre(book.genre);
-            setAuthor(book.author);
-            setInfo(book.info);
+        const book = bookState.books[0];
+        if (isUpdate && book)
+            populateForm(book);
+    }, [bookState.books])
+
+    useEffect(() => {
+        if (isChanged(bookState) && isUpdate) {
+            dispatch(applyChanges());
+            navigate(`/book/${id}`);
         }
-    }, [bookSelector.books])
+        else if (isChanged(bookState) && !isUpdate) {
+            dispatch(applyChanges());
+            navigate(`/books`);
+        }
+    }, [bookState.changed])
+
+    useEffect(() => {
+        if (hasError(bookState))
+            notify(bookState.error, "error");
+    }, [bookState.error])
 
     const onUploadClicked = (e) => {
         e.preventDefault();
@@ -55,11 +93,16 @@ const LoadBook = ({isUpdate}) => {
             bookData.id = id;
             dispatch(updateBook(bookData));
         }
-        else
+        else {
             dispatch(createBook(bookData));
+            // Change on backend
+            //navigate(`/books`);
+        }
+
     }
 
     return (
+        <>
         <form className="w-50 p-3 mx-auto" onSubmit={onUploadClicked}>
             <h1>Upload Book</h1>
             <Input name="Name" value={name} setter={setName} text="The name must have minimum maximum 36 letters."/>
@@ -68,8 +111,11 @@ const LoadBook = ({isUpdate}) => {
             <Input name="Description" value={info} textarea setter={setInfo}
                    text="Your textarea must be 10-400 characters long." rows={4}/>
             <Input name="Book image url" value={image} setter={setImage} text="Enter image url."/>
+
             <button className="my-3 w-100 btn btn-primary">Upload</button>
         </form>
+            <ToastContainer/>
+        </>
     )
 }
 

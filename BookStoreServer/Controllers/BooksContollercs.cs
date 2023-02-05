@@ -1,5 +1,7 @@
-using BookStoreServer.Core;
+using AutoMapper;
+using BookStoreServer.Controllers.Resources;
 using BookStoreServer.Core.Models;
+using BookStoreServer.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +14,13 @@ public class BooksController : Controller
 {
     private readonly IBooksRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public BooksController(IBooksRepository repository, IUnitOfWork unitOfWork)
+    public BooksController(IBooksRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -24,7 +28,8 @@ public class BooksController : Controller
     public async Task<IActionResult> All([FromQuery] BookQuery query)
     {
         var books = await _repository.GetBooksAsync(query);
-        return Ok(books);
+        var res = _mapper.Map<List<Book>, List<GetBooksResource>>(books);
+        return Ok(res);
     }
 
     [HttpGet("{bookId}")]
@@ -32,15 +37,17 @@ public class BooksController : Controller
     public async Task<IActionResult> Get(int bookId)
     {
         var bookToReturn = await _repository.GetBookByIdAsync(bookId);
-        if (bookToReturn != null)
-            return Ok(bookToReturn);
-        return NotFound();
+        if (bookToReturn == null)
+            return NotFound();
+        var res = _mapper.Map<Book, GetSingleBookResource>(bookToReturn);
+        return Ok(res);
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create(Book bookToCreate)
+    public async Task<IActionResult> Create(CreateBookResource bookResource)
     {
+        var bookToCreate = _mapper.Map<CreateBookResource, Book>(bookResource);
         try
         {
             await _repository.CreateBookAsync(bookToCreate);
@@ -58,8 +65,9 @@ public class BooksController : Controller
 
     [HttpPut]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(Book bookToUpdate)
+    public async Task<IActionResult> Update(UpdateBookResource bookResource)
     {
+        var bookToUpdate = _mapper.Map<UpdateBookResource, Book>(bookResource);
         try
         {
             _repository.UpdateBook(bookToUpdate);

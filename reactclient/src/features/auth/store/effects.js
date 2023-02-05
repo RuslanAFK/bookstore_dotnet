@@ -1,6 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
-import {LOGIN_URL, REGISTER_URL} from "../../../helpers/Urls";
+import {LOGIN_URL, REGISTER_URL} from "../../../urls";
+import handleError from "../../../errorHandler";
 
 export const login = createAsyncThunk(
     "auth/login",
@@ -9,7 +10,7 @@ export const login = createAsyncThunk(
             const {data} = await axios.post(LOGIN_URL, userData);
             return data;
         } catch (e) {
-            return rejectWithValue(e?.response?.data ?? e.message)
+            return handleError(e, rejectWithValue);
         }
     }
 )
@@ -22,7 +23,7 @@ export const register = createAsyncThunk(
             const toLogin = {username: userData.username, password: userData.password}
             return dispatch(login(toLogin))
         } catch (e) {
-            return rejectWithValue(e?.response?.data ?? e.message)
+            return handleError(e, rejectWithValue)
         }
     }
 )

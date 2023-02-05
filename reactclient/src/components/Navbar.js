@@ -1,13 +1,21 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./Navbar.css";
 import {useDispatch, useSelector} from "react-redux";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {isAdmin, isAuthed, isLoading} from "../features/auth/store/helpers";
 import {logout} from "../features/auth/store/authSlice";
 
 const Navbar = () => {
 
-    const {loading, success, user} = useSelector(state => state.auth);
+    const authState = useSelector(state => state.auth);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!isAuthed(authState))
+            navigate("/login");
+    }, [authState.user])
+
 
     const onLogout = () => {
         dispatch(logout());
@@ -19,10 +27,10 @@ const Navbar = () => {
                 <Link className="navbar-brand" to="/">Navbar</Link>
                 <div className="collapse navbar-collapse">
                     <ul className="navbar-nav">
-                        {success && <li className="nav-item active">
+                        {isAuthed(authState) && <li className="nav-item active">
                             <Link to="/books" className="nav-link">Books</Link>
                         </li>}
-                        {success && user.role === "Admin" &&
+                        {isAdmin(authState) &&
                             <li className="nav-item">
                                 <Link className="nav-link" to="/load">Add Book</Link>
                             </li>
@@ -30,17 +38,17 @@ const Navbar = () => {
                     </ul>
                     <ul className="navbar-nav right">
                         {
-                            loading ? (
+                            isLoading(authState) ? (
                                 <>
                                     <li className="nav-item">
                                         <span className="nav-link">Loading...</span>
                                     </li>
                                 </>
                                 ) :
-                            success ? (
+                            isAuthed(authState) ? (
                                 <>
                                     <li className="nav-item">
-                                        <span className="nav-link">Hello {user.username}</span>
+                                        <span className="nav-link">Hello {authState.user.username}</span>
                                     </li>
                                     <li className="nav-item">
                                         <a onClick={onLogout} className="nav-link">Logout</a>

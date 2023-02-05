@@ -1,4 +1,4 @@
-namespace BookStoreServer.Core;
+namespace BookStoreServer.Core.Services;
 
 public interface IUnitOfWork
 {

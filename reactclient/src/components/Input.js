@@ -8,9 +8,7 @@ const Input = ({name, setter, className="form-control", text, textarea=false, ..
             </label>
             {textarea ? <textarea
                 className={className}
-                onChange={(e) => {
-                    setter(e.target.value)
-                }}
+                onChange={(e) => setter(e.target.value)}
                 {...other}
             /> :
             <input

@@ -1,40 +1,52 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {createBook, deleteBook, getBook, getBooks, updateBook} from "./thunks";
+import {createBook, deleteBook, getBook, getBooks, updateBook} from "./effects";
+import {
+    changePending,
+    changeRejected,
+    changeSuccessful,
+    getBooksSuccessful,
+    getPending,
+    getRejected,
+    getSingleBookSuccessful
+} from "./reducers";
 
 const initialState = {
     books: [],
     error: null,
-    loading: false,
-    success: false
+    fetching: false,
+    fetched: false,
+    changed: false,
 }
 
 const bookSlice = createSlice({
     name: "book",
     initialState: initialState,
-    extraReducers: {
-        [getBooks.pending || getBook.pending || createBook.pending || deleteBook.pending || updateBook.pending]: (state) => {
-            state.loading = true;
-        },
-        [getBooks.rejected || getBook.rejected || createBook.rejected || deleteBook.rejected || updateBook.rejected]: (state, {payload}) => {
-            state.loading = false;
-            state.success = false;
-            state.error = payload;
-        },
-        [getBooks.fulfilled]: (state, {payload}) => {
-            state.loading = false;
-            state.success = true;
-            state.books = payload;
-        },
-        [getBook.fulfilled]: (state, {payload}) => {
-            state.loading = false;
-            state.success = true;
-            state.books = [payload];
-        },
-        [createBook.fulfilled || deleteBook.fulfilled || updateBook.fulfilled]: (state) => {
-            state.loading = false;
-            state.success = true;
+    reducers: {
+        applyChanges(state) {
+            state.changed = false;
         }
+    },
+    extraReducers: {
+        [getBooks.pending]: getPending,
+        [getBook.pending]: getPending,
+        [createBook.pending]: changePending,
+        [deleteBook.pending]: changePending,
+        [updateBook.pending]: changePending,
+
+        [getBooks.rejected]: getRejected,
+        [getBook.rejected]: getRejected,
+        [createBook.rejected]: changeRejected,
+        [deleteBook.rejected]: changeRejected,
+        [updateBook.rejected]: changeRejected,
+
+        [getBooks.fulfilled]: getBooksSuccessful,
+        [getBook.fulfilled]: getSingleBookSuccessful,
+        [createBook.fulfilled]: changeSuccessful,
+        [deleteBook.fulfilled]: changeSuccessful,
+        [updateBook.fulfilled]: changeSuccessful
     }
 })
+
+export const {applyChanges} = bookSlice.actions;
 
 export default bookSlice;

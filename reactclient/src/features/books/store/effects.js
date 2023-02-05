@@ -1,6 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
-import {BOOK_URL} from "../../../helpers/Urls";
+import {BOOK_URL} from "../../../urls";
+import handleError from "../../../errorHandler";
 
 const getToken = (thunkAPI) => {
     const token = thunkAPI.getState()?.auth?.user?.token;
@@ -17,7 +18,7 @@ export const getBooks = createAsyncThunk(
             const {data} = await axios.get(BOOK_URL, config);
             return data;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e?.response?.data ?? e.message)
+            return handleError(e, thunkAPI.rejectWithValue);
         }
     }
 )
@@ -30,7 +31,7 @@ export const getBook = createAsyncThunk(
             const {data} = await axios.get(`${BOOK_URL}/${bookId}`, config);
             return data;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e?.response?.data ?? e.message)
+            return handleError(e, thunkAPI.rejectWithValue);
         }
     }
 )
@@ -43,7 +44,7 @@ export const createBook = createAsyncThunk(
             const {data} = await axios.post(BOOK_URL, bookData, config);
             return data;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e?.response?.data ?? e.message)
+            return handleError(e, thunkAPI.rejectWithValue);
         }
     }
 )
@@ -56,7 +57,7 @@ export const updateBook = createAsyncThunk(
             const {data} = await axios.put(BOOK_URL, bookData, config);
             return data;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e?.response?.data ?? e.message)
+            return handleError(e, thunkAPI.rejectWithValue);
         }
     }
 )
@@ -69,7 +70,7 @@ export const deleteBook = createAsyncThunk(
             const {data} = await axios.delete(`${BOOK_URL}/${id}`, config);
             return data;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e?.response?.data ?? e.message)
+            return handleError(e, thunkAPI.rejectWithValue);
         }
     }
 )

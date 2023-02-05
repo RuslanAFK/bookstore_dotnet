@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import { Image } from "react-bootstrap";
-import {getBook} from "../store/thunks";
-import {useParams} from "react-router-dom";
+import {getBook} from "../store/effects";
+import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 
 const BookView = () => {
@@ -9,20 +8,22 @@ const BookView = () => {
     const dispatch = useDispatch();
 
     const [book, setBook] = useState(undefined);
-    const {books} = useSelector(state => state.book);
+    const bookState = useSelector(state => state.book);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         const bookId = parseInt(params.id);
         if (bookId === null || isNaN(bookId)) {
-            // Throw error
+            navigate("/");
             return;
         }
         dispatch(getBook(bookId));
-    }, [params.id, dispatch]);
+    }, [params.id, bookState.changed]);
 
     useEffect(() => {
-        setBook(books[0])
-    }, [books]);
+        setBook(bookState.books[0])
+    }, [bookState.fetched]);
 
     if (!book) {
         return <h1>Loading...</h1>
