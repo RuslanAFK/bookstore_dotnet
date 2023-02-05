@@ -36,7 +36,7 @@ public class UsersController : Controller
             return BadRequest("Provided incorrect password.");
         var roleName = await _repository.GetUserRole(foundUser.RoleId);
         var token = _tokenManager.GenerateToken(foundUser, roleName);
-        return Ok(new AuthResponse
+        return Ok(new AuthResult
         {
             Username = foundUser.Username,
             Token = token,

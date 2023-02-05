@@ -1,6 +1,6 @@
 namespace BookStoreServer.Controllers.Resources;
 
-public class AuthResponse
+public class AuthResult
 {
     public string Username { get; set; }
     public string Token { get; set; }

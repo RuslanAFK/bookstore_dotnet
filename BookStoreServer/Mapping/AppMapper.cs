@@ -15,5 +15,6 @@ public class MappingProfile : Profile
 
         CreateMap<Book, GetBooksResource>();
         CreateMap<Book, GetSingleBookResource>();
+        CreateMap(typeof(ListResponse<>), typeof(ListResponseResource<>));
     }
 }

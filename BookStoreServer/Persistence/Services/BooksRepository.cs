@@ -16,13 +16,19 @@ namespace BookStoreServer.Persistence.Services
         {
             _context = context;
         }
-        public async Task<List<Book>> GetBooksAsync(BookQuery query)
+        public async Task<ListResponse<Book>> GetBooksAsync(BookQuery query)
         {
             var page = query.Page ?? DefaultPage;
             var pageSize = query.PageSize ?? DefaultPageSize;
             page = page is > 0 and < MaxPage ? page : DefaultPage;
             pageSize = pageSize is > 0 and  < MaxPageSize ? pageSize : DefaultPageSize;
-            return await _context.Books.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            var books = _context.Books;
+            var response = new ListResponse<Book>()
+            {
+                Count = books.Count(),
+                Items = await _context.Books.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync()
+            };
+            return response;
         }
         public async Task<Book?> GetBookByIdAsync(int bookId)
         {

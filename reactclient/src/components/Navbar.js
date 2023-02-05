@@ -7,6 +7,8 @@ import {logout} from "../features/auth/store/authSlice";
 
 const Navbar = () => {
 
+    const logoText = "BookStore Inc.";
+
     const authState = useSelector(state => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -24,7 +26,7 @@ const Navbar = () => {
     return (
         <div>
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary rounded">
-                <Link className="navbar-brand" to="/">Navbar</Link>
+                <Link className="navbar-brand" to="/">{logoText}</Link>
                 <div className="collapse navbar-collapse">
                     <ul className="navbar-nav">
                         {isAuthed(authState) && <li className="nav-item active">

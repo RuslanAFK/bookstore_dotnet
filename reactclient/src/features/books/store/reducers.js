@@ -23,7 +23,8 @@ export const changeRejected = (state, {payload}) => {
 export const getBooksSuccessful = (state, {payload}) => {
     state.fetching = false;
     state.fetched = true;
-    state.books = payload;
+    state.books = payload.items;
+    state.count = payload.count;
 }
 
 export const getSingleBookSuccessful = (state, {payload}) => {

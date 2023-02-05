@@ -28,7 +28,8 @@ public class BooksController : Controller
     public async Task<IActionResult> All([FromQuery] BookQuery query)
     {
         var books = await _repository.GetBooksAsync(query);
-        var res = _mapper.Map<List<Book>, List<GetBooksResource>>(books);
+        var res = 
+            _mapper.Map<ListResponse<Book>, ListResponseResource<GetBooksResource>>(books);
         return Ok(res);
     }
 

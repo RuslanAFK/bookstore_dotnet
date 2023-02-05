@@ -5,7 +5,7 @@ import {login, register} from "../store/effects";
 import {useNavigate} from "react-router-dom";
 import {hasError, isAuthed, isLoading} from "../store/helpers";
 import {ToastContainer} from "react-toastify";
-import notify from "../../../notifier";
+import {notify} from "../../../notifier";
 
 const Auth = ({isRegisterPage=false}) => {
 

@@ -6,10 +6,10 @@ import {useNavigate, useParams} from "react-router-dom";
 import {isChanged} from "../store/helpers";
 import {applyChanges} from "../store/bookSlice";
 import {ToastContainer} from "react-toastify";
-import {hasError} from "../../auth/store/helpers";
-import notify from "../../../notifier";
+import {hasError, isAdmin} from "../../auth/store/helpers";
+import {notify} from "../../../notifier";
 
-const LoadBook = ({isUpdate}) => {
+const LoadBook = ({isUpdatePage=false}) => {
     const [info, setInfo] = useState('');
     const [genre, setGenre] = useState('');
     const [author, setAuthor] = useState('');
@@ -23,6 +23,7 @@ const LoadBook = ({isUpdate}) => {
     const navigate = useNavigate();
 
     const bookState = useSelector(state => state.book);
+    const authState = useSelector(state => state.auth);
 
     const renewForm = () => {
         setName('');
@@ -44,34 +45,37 @@ const LoadBook = ({isUpdate}) => {
     }
 
     useEffect(() => {
+        if (!isAdmin(authState))
+            navigate("/");
+
         renewForm();
 
-        if (!isUpdate)
+        if (!isUpdatePage)
             return;
 
         const bookId = parseInt(params.id);
-        if (bookId === null || isNaN(bookId)) {
+        if (bookId === null || isNaN(bookId))
             navigate("/");
-            return;
-        }
+
         setId(bookId);
         dispatch(getBook(bookId));
     }, [params.id, dispatch])
 
     useEffect(() => {
         const book = bookState.books[0];
-        if (isUpdate && book)
+        if (isUpdatePage && book)
             populateForm(book);
     }, [bookState.books])
 
     useEffect(() => {
-        if (isChanged(bookState) && isUpdate) {
+        if (isChanged(bookState) && isUpdatePage) {
             dispatch(applyChanges());
             navigate(`/book/${id}`);
         }
-        else if (isChanged(bookState) && !isUpdate) {
+        else if (isChanged(bookState) && !isUpdatePage) {
             dispatch(applyChanges());
-            navigate(`/books`);
+            notify("Successfully added book.", "success");
+            renewForm();
         }
     }, [bookState.changed])
 
@@ -89,14 +93,12 @@ const LoadBook = ({isUpdate}) => {
             image,
             genre,
         }
-        if (isUpdate) {
+        if (isUpdatePage) {
             bookData.id = id;
             dispatch(updateBook(bookData));
         }
         else {
             dispatch(createBook(bookData));
-            // Change on backend
-            //navigate(`/books`);
         }
 
     }

@@ -7,6 +7,7 @@ import AllBooks from "./features/books/routes/AllBooks";
 import Navbar from "./components/Navbar";
 
 import 'react-toastify/dist/ReactToastify.css'
+import Home from "./components/Home";
 
 const App = () => {
     return (
@@ -14,16 +15,15 @@ const App = () => {
             <Router>
                 <Navbar/>
                 <Routes>
-                    <Route exact path="/" element={<div>Home page</div>} />
+                    <Route exact path="/" element={<Home />} />
 
                     <Route path="/login" element={<Auth />} />
                     <Route path="/register" element={<Auth isRegisterPage />} />
 
                     <Route exact path="/books" element={<AllBooks />} />
                     <Route path="/book/:id" element={<BookView />} />
-                    <Route exact path="/load" element={<LoadBook isUpdate={false} />} />
-                    <Route path="/update/:id" element={<LoadBook isUpdate={true} />} />
-
+                    <Route exact path="/load" element={<LoadBook />} />
+                    <Route path="/update/:id" element={<LoadBook isUpdatePage />} />
                 </Routes>
             </Router>
         </div>
