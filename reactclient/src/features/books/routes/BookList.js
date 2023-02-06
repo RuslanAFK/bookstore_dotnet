@@ -1,54 +1,47 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {getBooks} from "../store/effects";
-import {isAdminOrCreator, isAuthed} from "../../auth/store/selectors";
-import {ToastContainer} from "react-toastify";
-import {notify} from "../../../helpers/notifier";
+import {isAdminOrCreator} from "../../auth/store/selectors";
 import BookItem from "../../../components/BookItem";
 import Pagination from "../../../components/Pagination";
-import {useNavigate} from "react-router-dom";
-import {isFetched, isFetching} from "../../../store/selectors";
+import Search from "../../../components/Search";
 
 const BookList = () => {
 
     const dispatch = useDispatch();
     const bookState = useSelector(state => state.book);
     const authState = useSelector(state => state.auth);
-    const navigate = useNavigate();
 
     const [currentPage, setCurrentPage] = useState(1);
+    const [search, setSearch] = useState('');
 
 
     useEffect(() => {
-        if (isAuthed(authState))
-            navigate(`/books?page=${currentPage}`);
-        dispatch(getBooks(currentPage));
-    }, [bookState.changed, currentPage]);
+        const input = {page: currentPage, search};
+        dispatch(getBooks(input));
+    }, [bookState.changed, currentPage, search]);
 
 
-    if (isFetching(bookState)) return (<h1>Loading...</h1>)
+    const isListEmpty = () => bookState.books.length === 0;
 
-    if (!isFetched(bookState)) {
-        notify("Something went wrong.", "warning");
-    }
-
-    if (bookState.books.length === 0) {
-        notify("You've seen all books.", "warning");
-    }
 
     return (
         <div>
             <h1 className="text-center">Books</h1>
-            <ul className="list-group list-group-horizontal-md">
+
+            <Search search={search} setSearch={setSearch}/>
+
+            {isListEmpty() ?
+                <h2 className="text-center">You've seen all books.</h2> :
+                <ul className="list-group list-group-horizontal-md">
                 {
                     bookState.books.map((book) => {
                             return <BookItem key={book.id} book={book} isAdmin={isAdminOrCreator(authState)}/>
                         }
                     )
                 }
-            </ul>
+            </ul>}
             <Pagination total={bookState.count} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
-            <ToastContainer/>
         </div>
     );
 }

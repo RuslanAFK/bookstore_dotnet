@@ -13,7 +13,7 @@ const Pagination = ({total, currentPage, setCurrentPage, pageSize=4}) => {
 
 
     return (
-        <div className="pagination">
+        <div className="pagination my-3">
             {
                 pages.map((page, index) =>
                     (<button

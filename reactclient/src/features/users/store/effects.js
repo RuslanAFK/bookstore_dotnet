@@ -9,7 +9,7 @@ export const getUsers = createAsyncThunk(
     async (input, thunkAPI) => {
         try {
             const config = getToken(thunkAPI);
-            const {data} = await axios.get(`${USER_URL}?page=${input}`, config);
+            const {data} = await axios.get(`${USER_URL}?page=${input.page}&search=${input.search}`, config);
             return data;
         } catch (e) {
             return handleError(e, thunkAPI.rejectWithValue);

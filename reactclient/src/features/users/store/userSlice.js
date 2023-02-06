@@ -7,7 +7,6 @@ const initialState = {
     users: [],
     count: 0,
     error: null,
-    fetching: false,
     fetched: false,
     changed: false,
 }

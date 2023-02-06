@@ -10,7 +10,6 @@ const initialState = {
     books: [],
     count: 0,
     error: null,
-    fetching: false,
     fetched: false,
     changed: false,
 }
