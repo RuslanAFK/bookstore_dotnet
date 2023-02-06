@@ -1,4 +1,4 @@
-namespace BookStoreServer.Controllers.Resources;
+namespace BookStoreServer.Controllers.Resources.Books;
 
 public class ListResponseResource<T>
 {

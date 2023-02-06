@@ -2,12 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {getBooks} from "../store/effects";
 import {isAdminOrCreator, isAuthed} from "../../auth/store/selectors";
-import {isBookListEmpty, isFetched, isFetching} from "../store/selectors";
 import {ToastContainer} from "react-toastify";
 import {notify} from "../../../helpers/notifier";
 import BookItem from "../../../components/BookItem";
 import Pagination from "../../../components/Pagination";
 import {useNavigate} from "react-router-dom";
+import {isFetched, isFetching} from "../../../store/selectors";
 
 const BookList = () => {
 
@@ -26,15 +26,13 @@ const BookList = () => {
     }, [bookState.changed, currentPage]);
 
 
-
     if (isFetching(bookState)) return (<h1>Loading...</h1>)
 
     if (!isFetched(bookState)) {
         notify("Something went wrong.", "warning");
     }
 
-
-    if (isBookListEmpty(bookState)) {
+    if (bookState.books.length === 0) {
         notify("You've seen all books.", "warning");
     }
 

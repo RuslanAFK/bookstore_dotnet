@@ -36,7 +36,7 @@ namespace BookStoreServer.Persistence.Services
         }
         public void DeleteBook(Book book)
         {
-            _context.Remove(book);
+            _context.Books.Remove(book);
         }
     }
 }

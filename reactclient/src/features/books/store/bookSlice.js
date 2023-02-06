@@ -1,14 +1,10 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {createBook, deleteBook, getBook, getBooks, updateBook} from "./effects";
 import {
-    changePending,
-    changeRejected,
-    changeSuccessful,
-    getBooksSuccessful,
-    getPending,
-    getRejected,
-    getSingleBookSuccessful
+    getItemsSuccessful,
+    getSingleItemSuccessful
 } from "./reducers";
+import {changePending, changeRejected, changeSuccessful, getPending, getRejected} from "../../../store/reducers";
 
 const initialState = {
     books: [],
@@ -30,11 +26,11 @@ const bookSlice = createSlice({
     extraReducers: {
         [getBook.pending]: getPending,
         [getBook.rejected]: getRejected,
-        [getBook.fulfilled]: getSingleBookSuccessful,
+        [getBook.fulfilled]: getSingleItemSuccessful,
 
         [getBooks.pending]: getPending,
         [getBooks.rejected]: getRejected,
-        [getBooks.fulfilled]: getBooksSuccessful,
+        [getBooks.fulfilled]: getItemsSuccessful,
 
         [createBook.pending]: changePending,
         [createBook.rejected]: changeRejected,

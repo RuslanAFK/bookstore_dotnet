@@ -3,16 +3,15 @@ import Input from "../../../components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {login, register} from "../store/effects";
 import {useNavigate} from "react-router-dom";
-import {hasError, isAuthed, isLoading} from "../store/selectors";
+import {isAuthed, isLoading} from "../store/selectors";
 import {ToastContainer} from "react-toastify";
 import {notify} from "../../../helpers/notifier";
+import {hasError} from "../../../store/selectors";
 
 const Auth = ({isRegisterPage=false}) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [isAdmin, setIsAdmin] = useState(false);
-
     const dispatch = useDispatch();
     const authState = useSelector(state => state.auth);
     const navigate = useNavigate();
@@ -32,7 +31,6 @@ const Auth = ({isRegisterPage=false}) => {
         e.preventDefault();
         const userData = { username, password };
         if (isRegisterPage) {
-            userData.isAdmin = isAdmin;
             dispatch(register(userData));
             return;
         }
@@ -40,29 +38,20 @@ const Auth = ({isRegisterPage=false}) => {
     }
 
     return (
-        <>
-        <form>
-            <h1>{isRegisterPage ? "Register": "Log In"}</h1>
+        <div>
+            <form onSubmit={handleSubmit} className="w-25 p-3 mx-auto">
+                <h1>{isRegisterPage ? "Register": "Log In"}</h1>
 
-            <Input name="Username" setter={setUsername}/>
-            <Input name="Password" setter={setPassword} type="password"/>
+                <Input name="Username" setter={setUsername}/>
+                <Input name="Password" setter={setPassword} type="password"/>
 
-            {isRegisterPage && (
-                <Input
-                    type="checkbox"
-                    setter={setIsAdmin}
-                    className="form-check"
-                    name="Is Admin?"
-                />
-            )}
-
-            { isLoading(authState) ?
-                <button type="button" className="btn btn-primary">Logging in...</button> :
-                <button className="btn btn-primary" onClick={handleSubmit}>Submit</button>
-            }
-        </form>
+                { isLoading(authState) ?
+                    <button type="button" className="btn btn-primary my-3 w-100">Logging in...</button> :
+                    <button className="btn btn-primary my-3 w-100">Submit</button>
+                }
+            </form>
             <ToastContainer/>
-        </>
+        </div>
     )
 }
 

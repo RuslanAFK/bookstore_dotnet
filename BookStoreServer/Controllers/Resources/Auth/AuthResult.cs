@@ -1,4 +1,4 @@
-namespace BookStoreServer.Controllers.Resources;
+namespace BookStoreServer.Controllers.Resources.Auth;
 
 public class AuthResult
 {

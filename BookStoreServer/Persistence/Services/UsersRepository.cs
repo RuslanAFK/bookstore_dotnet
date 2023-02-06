@@ -33,12 +33,12 @@ namespace BookStoreServer.Persistence.Services
 
         public void UpdateUser(User user)
         {
-            _context.Update(user);
+            _context.Users.Update(user);
         }
 
         public void RemoveUser(User user)
         {
-            _context.Remove(user);
+            _context.Users.Remove(user);
         }
     }
 }

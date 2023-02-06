@@ -1,5 +1,5 @@
 using AutoMapper;
-using BookStoreServer.Controllers.Resources;
+using BookStoreServer.Controllers.Resources.Books;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
 using Microsoft.AspNetCore.Authorization;

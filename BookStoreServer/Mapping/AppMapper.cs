@@ -1,5 +1,7 @@
 using AutoMapper;
 using BookStoreServer.Controllers.Resources;
+using BookStoreServer.Controllers.Resources.Auth;
+using BookStoreServer.Controllers.Resources.Books;
 using BookStoreServer.Controllers.Resources.Users;
 using BookStoreServer.Core.Models;
 
@@ -13,6 +15,11 @@ public class MappingProfile : Profile
         CreateMap<RegisterResource, User>();
         CreateMap<CreateBookResource, Book>();
         CreateMap<UpdateBookResource, Book>();
+        CreateMap<UpdateUserResource, User>()
+            .ForMember(user => user.Username, opt =>
+                opt.Ignore())
+            .ForMember(user => user.Password, opt =>
+                opt.Ignore());
 
         CreateMap<Book, GetBooksResource>();
         CreateMap<Book, GetSingleBookResource>();

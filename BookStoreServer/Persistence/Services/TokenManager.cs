@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using BookStoreServer.Core;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
 using Microsoft.IdentityModel.Tokens;

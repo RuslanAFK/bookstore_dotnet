@@ -3,11 +3,11 @@ import Input from "../../../components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {createBook, getBook, updateBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
-import {isChanged} from "../store/selectors";
 import {applyChanges} from "../store/bookSlice";
 import {ToastContainer} from "react-toastify";
-import {hasError, isAdminOrCreator} from "../../auth/store/selectors";
+import {isAdminOrCreator} from "../../auth/store/selectors";
 import {notify} from "../../../helpers/notifier";
+import {hasError, isChanged} from "../../../store/selectors";
 
 const LoadBook = ({isUpdatePage=false}) => {
     const [info, setInfo] = useState('');
@@ -104,20 +104,20 @@ const LoadBook = ({isUpdatePage=false}) => {
     }
 
     return (
-        <>
-        <form className="w-50 p-3 mx-auto" onSubmit={onUploadClicked}>
-            <h1>Upload Book</h1>
-            <Input name="Name" value={name} setter={setName} text="The name must have minimum maximum 36 letters."/>
-            <Input name="Author" value={author} setter={setAuthor} text="Here you put the author of a book."/>
-            <Input name="Genres" value={genre} setter={setGenre} text="Here you put at least one genre name."/>
-            <Input name="Description" value={info} textarea setter={setInfo}
-                   text="Your textarea must be 10-400 characters long." rows={4}/>
-            <Input name="Book image url" value={image} setter={setImage} text="Enter image url."/>
+        <div>
+            <form className="w-50 p-3 mx-auto" onSubmit={onUploadClicked}>
+                <h1>Upload Book</h1>
+                <Input name="Name" value={name} setter={setName} text="The name must have minimum maximum 36 letters."/>
+                <Input name="Author" value={author} setter={setAuthor} text="Here you put the author of a book."/>
+                <Input name="Genres" value={genre} setter={setGenre} text="Here you put at least one genre name."/>
+                <Input name="Description" value={info} textarea setter={setInfo}
+                       text="Your textarea must be 10-400 characters long." rows={4}/>
+                <Input name="Book image url" value={image} setter={setImage} text="Enter image url."/>
 
-            <button className="my-3 w-100 btn btn-primary">Upload</button>
-        </form>
+                <button className="my-3 w-100 btn btn-primary">Upload</button>
+            </form>
             <ToastContainer/>
-        </>
+        </div>
     )
 }
 

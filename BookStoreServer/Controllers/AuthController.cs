@@ -1,5 +1,5 @@
 using AutoMapper;
-using BookStoreServer.Controllers.Resources;
+using BookStoreServer.Controllers.Resources.Auth;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +52,7 @@ public class AuthController : Controller
         {  
             var userToCreate = _mapper.Map<RegisterResource, User>(registerResource);
             _repository.Signup(userToCreate);
-            await _repository.AddToRole(userToCreate, registerResource.IsAdmin);
+            await _repository.AddToRole(userToCreate, false);
             var createSuccessful = await _unitOfWork.CompleteAsync();
             if (createSuccessful > 0)
                 return NoContent();
