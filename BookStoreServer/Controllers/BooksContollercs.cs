@@ -24,17 +24,17 @@ public class BooksController : Controller
     }
 
     [HttpGet]
-    [Authorize(Roles = "User, Admin")]
-    public async Task<IActionResult> All([FromQuery] BookQuery query)
+    [Authorize]
+    public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
     {
-        var books = await _repository.GetBooksAsync(query);
+        var books = await _repository.GetBooksAsync(queryObject);
         var res = 
             _mapper.Map<ListResponse<Book>, ListResponseResource<GetBooksResource>>(books);
         return Ok(res);
     }
 
     [HttpGet("{bookId}")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> Get(int bookId)
     {
         var bookToReturn = await _repository.GetBookByIdAsync(bookId);
@@ -45,7 +45,7 @@ public class BooksController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Creator")]
     public async Task<IActionResult> Create(CreateBookResource bookResource)
     {
         var bookToCreate = _mapper.Map<CreateBookResource, Book>(bookResource);
@@ -65,7 +65,7 @@ public class BooksController : Controller
     }
 
     [HttpPut]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Creator")]
     public async Task<IActionResult> Update(UpdateBookResource bookResource)
     {
         var bookToUpdate = _mapper.Map<UpdateBookResource, Book>(bookResource);
@@ -85,7 +85,7 @@ public class BooksController : Controller
     }
 
     [HttpDelete("{bookId}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Creator")]
     public async Task<IActionResult> Delete(int bookId)
     {
         try

@@ -3,9 +3,9 @@ import Input from "../../../components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {login, register} from "../store/effects";
 import {useNavigate} from "react-router-dom";
-import {hasError, isAuthed, isLoading} from "../store/helpers";
+import {hasError, isAuthed, isLoading} from "../store/selectors";
 import {ToastContainer} from "react-toastify";
-import {notify} from "../../../notifier";
+import {notify} from "../../../helpers/notifier";
 
 const Auth = ({isRegisterPage=false}) => {
 

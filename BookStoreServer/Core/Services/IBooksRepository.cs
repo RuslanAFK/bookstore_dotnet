@@ -4,7 +4,7 @@ namespace BookStoreServer.Core.Services;
 
 public interface IBooksRepository
 {
-    Task<ListResponse<Book>> GetBooksAsync(BookQuery query);
+    Task<ListResponse<Book>> GetBooksAsync(QueryObject queryObject);
     Task<Book?> GetBookByIdAsync(int bookId);
     Task CreateBookAsync(Book bookToCreate);
     void UpdateBook(Book bookToUpdate);

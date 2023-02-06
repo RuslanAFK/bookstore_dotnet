@@ -1,14 +1,8 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
-import {BOOK_URL} from "../../../urls";
-import handleError from "../../../errorHandler";
-
-const getToken = (thunkAPI) => {
-    const token = thunkAPI.getState()?.auth?.user?.token;
-    if (!token)
-        throw new Error("Register please.");
-    return {headers: {'Authorization':`Bearer ${token}`}};
-}
+import {BOOK_URL} from "../../../store/urls";
+import {handleError} from "../../../store/errorHandler";
+import {getToken} from "../../../store/tokenManager";
 
 export const getBooks = createAsyncThunk(
     "book/getBooks",

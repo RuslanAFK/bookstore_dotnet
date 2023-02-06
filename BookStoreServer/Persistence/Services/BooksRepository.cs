@@ -1,6 +1,6 @@
-﻿using BookStoreServer.Core;
-using BookStoreServer.Core.Models;
+﻿using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreServer.Persistence.Services
@@ -8,25 +8,17 @@ namespace BookStoreServer.Persistence.Services
     public class BooksRepository : IBooksRepository
     {
         private readonly AppDbContext _context;
-        private const int DefaultPage = 1;
-        private const int DefaultPageSize = 4;
-        private const int MaxPage = 1000;
-        private const int MaxPageSize = 20;
         public BooksRepository(AppDbContext context)
         {
             _context = context;
         }
-        public async Task<ListResponse<Book>> GetBooksAsync(BookQuery query)
+        public async Task<ListResponse<Book>> GetBooksAsync(QueryObject queryObject)
         {
-            var page = query.Page ?? DefaultPage;
-            var pageSize = query.PageSize ?? DefaultPageSize;
-            page = page is > 0 and < MaxPage ? page : DefaultPage;
-            pageSize = pageSize is > 0 and  < MaxPageSize ? pageSize : DefaultPageSize;
             var books = _context.Books;
             var response = new ListResponse<Book>()
             {
                 Count = books.Count(),
-                Items = await _context.Books.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync()
+                Items = await books.ApplyPagination(queryObject, 4).ToListAsync()
             };
             return response;
         }

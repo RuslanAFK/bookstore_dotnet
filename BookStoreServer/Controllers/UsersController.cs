@@ -1,7 +1,9 @@
 using AutoMapper;
 using BookStoreServer.Controllers.Resources;
+using BookStoreServer.Controllers.Resources.Users;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,54 +16,35 @@ public class UsersController : Controller
     private readonly IUsersRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly ITokenManager _tokenManager;
 
-    public UsersController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper,
-        ITokenManager tokenManager)
+    public UsersController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _tokenManager = tokenManager;
+    }
+    
+    [HttpGet]
+    [Authorize(Roles = "Creator")]
+    public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
+    {
+        var users = await _repository.GetUsersAsync(queryObject);
+        var res = 
+            _mapper.Map<ListResponse<User>, ListResponseResource<GetUsersResource>>(users);
+        return Ok(res);
     }
 
-    [HttpPost("Login")]
-    public async Task<IActionResult> Login(LoginResource loginResource)
+    [HttpGet("{bookId}")]
+    [Authorize(Roles = "Creator")]
+    public async Task<IActionResult> Get(int bookId)
     {
-        var user = _mapper.Map<LoginResource, User>(loginResource);
-        var foundUser = await _repository.CheckCredentialsAsync(user);
-        if (foundUser == null)
+        var userToReturn = await _repository.GetUserByIdAsync(bookId);
+        if (userToReturn == null)
             return NotFound();
-        if (!BCrypt.Net.BCrypt.Verify(user.Password, foundUser.Password)) 
-            return BadRequest("Provided incorrect password.");
-        var roleName = await _repository.GetUserRole(foundUser.RoleId);
-        var token = _tokenManager.GenerateToken(foundUser, roleName);
-        return Ok(new AuthResult
-        {
-            Username = foundUser.Username,
-            Token = token,
-            Role = roleName
-        });
+        
+        var res = _mapper.Map<User, GetUsersResource>(userToReturn);
+        return Ok(res);
     }
-
-    [HttpPost("Register")]
-    public async Task<IActionResult> Register(RegisterResource registerResource)
-    {
-        registerResource.Password = BCrypt.Net.BCrypt.HashPassword(registerResource.Password);
-        try
-        {  
-            var userToCreate = _mapper.Map<RegisterResource, User>(registerResource);
-            _repository.Signup(userToCreate);
-            await _repository.AddToRole(userToCreate, registerResource.IsAdmin);
-            var createSuccessful = await _unitOfWork.CompleteAsync();
-            if (createSuccessful > 0)
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
-    }
+    
+    
 }

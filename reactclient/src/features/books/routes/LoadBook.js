@@ -3,11 +3,11 @@ import Input from "../../../components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {createBook, getBook, updateBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
-import {isChanged} from "../store/helpers";
+import {isChanged} from "../store/selectors";
 import {applyChanges} from "../store/bookSlice";
 import {ToastContainer} from "react-toastify";
-import {hasError, isAdmin} from "../../auth/store/helpers";
-import {notify} from "../../../notifier";
+import {hasError, isAdminOrCreator} from "../../auth/store/selectors";
+import {notify} from "../../../helpers/notifier";
 
 const LoadBook = ({isUpdatePage=false}) => {
     const [info, setInfo] = useState('');
@@ -45,7 +45,7 @@ const LoadBook = ({isUpdatePage=false}) => {
     }
 
     useEffect(() => {
-        if (!isAdmin(authState))
+        if (!isAdminOrCreator(authState))
             navigate("/");
 
         renewForm();

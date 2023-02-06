@@ -28,22 +28,24 @@ const bookSlice = createSlice({
         }
     },
     extraReducers: {
-        [getBooks.pending]: getPending,
         [getBook.pending]: getPending,
-        [createBook.pending]: changePending,
-        [deleteBook.pending]: changePending,
-        [updateBook.pending]: changePending,
-
-        [getBooks.rejected]: getRejected,
         [getBook.rejected]: getRejected,
-        [createBook.rejected]: changeRejected,
-        [deleteBook.rejected]: changeRejected,
-        [updateBook.rejected]: changeRejected,
-
-        [getBooks.fulfilled]: getBooksSuccessful,
         [getBook.fulfilled]: getSingleBookSuccessful,
+
+        [getBooks.pending]: getPending,
+        [getBooks.rejected]: getRejected,
+        [getBooks.fulfilled]: getBooksSuccessful,
+
+        [createBook.pending]: changePending,
+        [createBook.rejected]: changeRejected,
         [createBook.fulfilled]: changeSuccessful,
+
+        [deleteBook.pending]: changePending,
+        [deleteBook.rejected]: changeRejected,
         [deleteBook.fulfilled]: changeSuccessful,
+
+        [updateBook.pending]: changePending,
+        [updateBook.rejected]: changeRejected,
         [updateBook.fulfilled]: changeSuccessful
     }
 })

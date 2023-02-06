@@ -1,6 +1,6 @@
-﻿using BookStoreServer.Core;
-using BookStoreServer.Core.Models;
+﻿using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreServer.Persistence.Services
@@ -13,31 +13,32 @@ namespace BookStoreServer.Persistence.Services
         {
             _context = context;
         }
-        
-        public void Signup(User userToCreate)
+
+        public async Task<ListResponse<User>> GetUsersAsync(QueryObject queryObject)
         {
-            _context.Users.Add(userToCreate);
+            var users = _context.Users.Include(user => user.Role);
+            var response = new ListResponse<User>()
+            {
+                Count = users.Count(),
+                Items = await users.ApplyPagination(queryObject).ToListAsync()
+            };
+            return response;
         }
 
-        public async Task<User?> CheckCredentialsAsync(User userToLogin)
+        public async Task<User?> GetUserByIdAsync(int userId)
         {
-            var userFound = await _context.Users.SingleOrDefaultAsync(user =>
-                user.Username == userToLogin.Username);
-            return userFound;
+            return await _context.Users.Include(u => u.Role)
+                .SingleOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<string> GetUserRole(int roleId)
+        public void UpdateUser(User user)
         {
-            var role = await _context.Roles.FindAsync(roleId);
-            return role.RoleName;
+            _context.Update(user);
         }
 
-        public async Task AddToRole(User user, bool isAdmin)
+        public void RemoveUser(User user)
         {
-            var roleName = isAdmin ? "Admin" : "User";
-            
-            var role = await _context.Roles.SingleOrDefaultAsync(r => r.RoleName == roleName);
-            user.Role = role;
+            _context.Remove(user);
         }
     }
 }

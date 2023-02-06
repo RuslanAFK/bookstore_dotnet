@@ -1,9 +1,11 @@
-const handleError = (e=new Error("Unknown error occurred."), rejectWithValue) => {
+export const handleError = (e=new Error("Unknown error occurred."), rejectWithValue) => {
     let message = e.message;
     let responseData = e?.response?.data;
-    let code = responseData?.status;
+    let code = responseData?.status ?? e?.response?.status;
     if (code === 404)
         message = "Not found.";
+    else if (code === 500)
+        message = "Unknown error occurred.";
     else if (typeof responseData === "string")
         message = responseData;
     else if (responseData.errors) {
@@ -15,4 +17,3 @@ const handleError = (e=new Error("Unknown error occurred."), rejectWithValue) =>
     }
     return rejectWithValue(message);
 }
-export default handleError;

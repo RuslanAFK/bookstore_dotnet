@@ -4,8 +4,8 @@ namespace BookStoreServer.Core.Services;
 
 public interface IUsersRepository
 {
-    void Signup(User userToCreate);
-    Task<User?> CheckCredentialsAsync(User userToLogin);
-    Task<string> GetUserRole(int roleId);
-    Task AddToRole(User user, bool isAdmin);
+    Task<ListResponse<User>> GetUsersAsync(QueryObject queryObject);
+    Task<User?> GetUserByIdAsync(int userId);
+    void UpdateUser(User user);
+    void RemoveUser(User user);
 }
