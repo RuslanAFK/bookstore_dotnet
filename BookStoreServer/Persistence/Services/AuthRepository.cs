@@ -20,7 +20,7 @@ public class AuthRepository : IAuthRepository
     public async Task<User?> CheckCredentialsAsync(User userToLogin)
     {
         var userFound = await _context.Users.SingleOrDefaultAsync(user =>
-            user.Username == userToLogin.Username);
+            user.Name == userToLogin.Name);
         return userFound;
     }
 

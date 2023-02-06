@@ -38,7 +38,7 @@ public class AuthController : Controller
         var token = _tokenManager.GenerateToken(foundUser, roleName);
         return Ok(new AuthResult
         {
-            Username = foundUser.Username,
+            Username = foundUser.Name,
             Token = token,
             Role = roleName
         });

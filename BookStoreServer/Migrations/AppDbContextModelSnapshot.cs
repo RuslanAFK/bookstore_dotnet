@@ -54,7 +54,7 @@ namespace BookStoreServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("BookStoreServer.Core.Models.Role", b =>
@@ -71,7 +71,7 @@ namespace BookStoreServer.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -118,7 +118,7 @@ namespace BookStoreServer.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("BookStoreServer.Core.Models.User", b =>

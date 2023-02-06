@@ -14,7 +14,7 @@ namespace BookStoreServer.Persistence.Services
         }
         public async Task<ListResponse<Book>> GetBooksAsync(QueryObject queryObject)
         {
-            var books = _context.Books;
+            var books = _context.Books.ApplySearching(queryObject);
             var response = new ListResponse<Book>()
             {
                 Count = books.Count(),

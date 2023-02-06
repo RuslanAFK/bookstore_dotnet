@@ -16,7 +16,8 @@ namespace BookStoreServer.Persistence.Services
 
         public async Task<ListResponse<User>> GetUsersAsync(QueryObject queryObject)
         {
-            var users = _context.Users.Include(user => user.Role);
+            var users = _context.Users.Include(user => user.Role)
+                .ApplySearching(queryObject);
             var response = new ListResponse<User>()
             {
                 Count = users.Count(),

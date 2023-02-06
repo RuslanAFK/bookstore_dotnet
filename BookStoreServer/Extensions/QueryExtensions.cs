@@ -19,5 +19,14 @@ public static class QueryExtensions
         
         return self.Skip((page - 1) * pageSize).Take(pageSize);
     }
+    
+    public static IQueryable<T> ApplySearching<T>(this IQueryable<T> self, QueryObject queryObject)
+        where T: ISearchable
+    {
+        if (queryObject.Search == null)
+            return self;
+        var search = queryObject.Search;
+        return self.Where(item => item.Name.ToLower().Contains(search.ToLower()));
+    }
 
 }
