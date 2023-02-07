@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {login, register} from "./effects";
+import {login, register, updateProfile} from "./effects";
 import {authRejected, loginPending, loginSuccessful} from "./reducers";
 
 const initialState = {
@@ -18,6 +18,8 @@ const authSlice = createSlice({
     },
     extraReducers: {
         [register.rejected]: authRejected,
+        [updateProfile.rejected]: authRejected,
+
         [login.rejected]: authRejected,
         [login.pending]: loginPending,
         [login.fulfilled]: loginSuccessful

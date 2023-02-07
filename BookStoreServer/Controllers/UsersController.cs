@@ -13,25 +13,22 @@ namespace BookStoreServer.Controllers;
 [Route("api/[controller]")]
 public class UsersController : Controller
 {
-    private readonly IUsersRepository _usersRepository;
+    private readonly IUsersRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IAuthRepository _authRepository;
 
-    public UsersController(IUsersRepository usersRepository, IUnitOfWork unitOfWork, IMapper mapper,
-        IAuthRepository authRepository)
+    public UsersController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _usersRepository = usersRepository;
+        _repository = repository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _authRepository = authRepository;
     }
     
     [HttpGet]
     [Authorize(Roles = "Creator")]
     public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
     {
-        var users = await _usersRepository.GetUsersAsync(queryObject);
+        var users = await _repository.GetUsersAsync(queryObject);
         var res = 
             _mapper.Map<ListResponse<User>, ListResponseResource<GetUsersResource>>(users);
         return Ok(res);
@@ -41,7 +38,7 @@ public class UsersController : Controller
     [Authorize(Roles = "Creator")]
     public async Task<IActionResult> Get(int bookId)
     {
-        var userToReturn = await _usersRepository.GetUserByIdAsync(bookId);
+        var userToReturn = await _repository.GetUserByIdAsync(bookId);
         if (userToReturn == null)
             return NotFound();
         
@@ -51,16 +48,16 @@ public class UsersController : Controller
     
     [HttpPut]
     [Authorize(Roles = "Creator")]
-    public async Task<IActionResult> UpdateRole(UpdateUserResource userResource)
+    public async Task<IActionResult> UpdateRole(UpdateUserRoleResource userRoleResource)
     {
         try
         {
-            var foundUser = await _usersRepository.GetUserByIdAsync(userResource.Id);
+            var foundUser = await _repository.GetUserByIdAsync(userRoleResource.Id);
             if (foundUser == null)
                 return NotFound();
-            var isAdmin = userResource.RoleName == "Admin";
-            await _authRepository.AddToRole(foundUser, isAdmin);
-            _mapper.Map(userResource, foundUser);
+            var isAdmin = userRoleResource.RoleName == "Admin";
+            await _repository.AddUserToRole(foundUser, isAdmin);
+            _mapper.Map(userRoleResource, foundUser);
             var updateSuccessful = await _unitOfWork.CompleteAsync();
             if (updateSuccessful > 0)
                 return NoContent();
@@ -72,17 +69,17 @@ public class UsersController : Controller
             return BadRequest(inner==null ? e.Message : inner.Message);
         }
     }
-    
+
     [HttpDelete("{userId}")]
     [Authorize(Roles = "Creator")]
     public async Task<IActionResult> Delete(int userId)
     {
         try
         {
-            var userToDelete = await _usersRepository.GetUserByIdAsync(userId);
+            var userToDelete = await _repository.GetUserByIdAsync(userId);
             if (userToDelete == null)
                 return NotFound();
-            _usersRepository.RemoveUser(userToDelete);
+            _repository.RemoveUser(userToDelete);
             var success = await _unitOfWork.CompleteAsync();
             if (success > 0)
                 return NoContent();

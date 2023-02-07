@@ -32,14 +32,35 @@ namespace BookStoreServer.Persistence.Services
                 .SingleOrDefaultAsync(u => u.Id == userId);
         }
 
-        public void UpdateUser(User user)
-        {
-            _context.Users.Update(user);
-        }
-
         public void RemoveUser(User user)
         {
             _context.Users.Remove(user);
+        }
+        
+        public void Signup(User userToCreate)
+        {
+            _context.Users.Add(userToCreate);
+        }
+
+        public async Task<User?> CheckCredentialsAsync(User userToLogin)
+        {
+            var userFound = await _context.Users.SingleOrDefaultAsync(user =>
+                user.Name == userToLogin.Name);
+            return userFound;
+        }
+
+        public async Task<string> GetRoleById(int roleId)
+        {
+            var role = await _context.Roles.FindAsync(roleId);
+            return role.RoleName;
+        }
+
+        public async Task AddUserToRole(User user, bool isAdmin)
+        {
+            var roleName = isAdmin ? "Admin" : "User";
+            
+            var role = await _context.Roles.SingleOrDefaultAsync(r => r.RoleName == roleName);
+            user.Role = role;
         }
     }
 }

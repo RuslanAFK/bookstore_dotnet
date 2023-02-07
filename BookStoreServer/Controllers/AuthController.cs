@@ -1,7 +1,9 @@
 using AutoMapper;
 using BookStoreServer.Controllers.Resources.Auth;
+using BookStoreServer.Controllers.Resources.Users;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +13,12 @@ namespace BookStoreServer.Controllers;
 [Route("api/[controller]")]
 public class AuthController : Controller
 {
-    private readonly IAuthRepository _repository;
+    private readonly IUsersRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly ITokenManager _tokenManager;
 
-    public AuthController(IAuthRepository repository, IUnitOfWork unitOfWork, IMapper mapper,
+    public AuthController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper,
         ITokenManager tokenManager)
     {
         _repository = repository;
@@ -34,10 +36,11 @@ public class AuthController : Controller
             return NotFound();
         if (!BCrypt.Net.BCrypt.Verify(user.Password, foundUser.Password)) 
             return BadRequest("Provided incorrect password.");
-        var roleName = await _repository.GetUserRole(foundUser.RoleId);
+        var roleName = await _repository.GetRoleById(foundUser.RoleId);
         var token = _tokenManager.GenerateToken(foundUser, roleName);
         return Ok(new AuthResult
         {
+            Id = foundUser.Id,
             Username = foundUser.Name,
             Token = token,
             Role = roleName
@@ -52,9 +55,35 @@ public class AuthController : Controller
         {  
             var userToCreate = _mapper.Map<RegisterResource, User>(registerResource);
             _repository.Signup(userToCreate);
-            await _repository.AddToRole(userToCreate, false);
+            await _repository.AddUserToRole(userToCreate, false);
             var createSuccessful = await _unitOfWork.CompleteAsync();
             if (createSuccessful > 0)
+                return NoContent();
+            return BadRequest();
+        }
+        catch (DbUpdateException e)
+        {
+            var inner = e.InnerException;
+            return BadRequest(inner==null ? e.Message : inner.Message);
+        }
+    }
+    
+    [HttpPut]
+    [Authorize]
+    public async Task<IActionResult> UpdateProfile(UpdateUserInfoResource userInfoResource)
+    {
+        try
+        {
+            var foundUser = await _repository.GetUserByIdAsync(userInfoResource.Id);
+            if (foundUser == null)
+                return NotFound();
+            if (!BCrypt.Net.BCrypt.Verify(userInfoResource.Password, foundUser.Password)) 
+                return BadRequest("Provided incorrect password.");
+            _mapper.Map(userInfoResource, foundUser);
+            foundUser.Password = BCrypt.Net.BCrypt
+                .HashPassword(userInfoResource.NewPassword ?? userInfoResource.Password);
+            var updateSuccessful = await _unitOfWork.CompleteAsync();
+            if (updateSuccessful > 0)
                 return NoContent();
             return BadRequest();
         }

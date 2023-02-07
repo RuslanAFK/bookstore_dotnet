@@ -1,8 +1,9 @@
 import React from "react";
 
-const Input = ({name, setter, className="form-control", text, textarea=false, ...other}) => {
+const Input = ({name, setter, className="form-control", text, textarea=false,
+                   textStyle="warning", ...other}) => {
     return (
-        <div>
+        <div className="my-2">
             <label className="form-label">
                 {name}
             </label>
@@ -21,7 +22,7 @@ const Input = ({name, setter, className="form-control", text, textarea=false, ..
                 }}
                 {...other}
             />}
-            {text && <div className="form-text text-warning">{text}</div>}
+            {text && <div className={`form-text text-${textStyle}`}>{text}</div>}
         </div>
     )
 }

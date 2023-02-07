@@ -18,9 +18,14 @@ public class MappingProfile : Profile
                 opt.MapFrom(resource => resource.Username));
         CreateMap<CreateBookResource, Book>();
         CreateMap<UpdateBookResource, Book>();
-        CreateMap<UpdateUserResource, User>()
+        CreateMap<UpdateUserRoleResource, User>()
             .ForMember(user => user.Name, opt =>
                 opt.Ignore())
+            .ForMember(user => user.Password, opt =>
+                opt.Ignore());
+        CreateMap<UpdateUserInfoResource, User>()
+            .ForMember(user => user.Name, opt =>
+                opt.MapFrom(resource => resource.Username))
             .ForMember(user => user.Password, opt =>
                 opt.Ignore());
 

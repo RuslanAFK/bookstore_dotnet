@@ -7,4 +7,8 @@ public interface IUsersRepository
     Task<ListResponse<User>> GetUsersAsync(QueryObject queryObject);
     Task<User?> GetUserByIdAsync(int userId);
     void RemoveUser(User user);
+    void Signup(User userToCreate);
+    Task<User?> CheckCredentialsAsync(User userToLogin);
+    Task<string> GetRoleById(int roleId);
+    Task AddUserToRole(User user, bool isAdmin);
 }

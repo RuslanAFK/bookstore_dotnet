@@ -58,7 +58,9 @@ const Navbar = () => {
                             isAuthed(authState) ? (
                                 <>
                                     <li className="nav-item">
-                                        <span className="nav-link">Hello {authState.user.username}</span>
+                                        <Link to="/profile" className="nav-link">
+                                            Hello {authState.user.username}
+                                        </Link>
                                     </li>
                                     <li className="nav-item">
                                         <a onClick={onLogout} className="nav-link">Logout</a>

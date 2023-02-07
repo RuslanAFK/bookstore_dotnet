@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar";
 import 'react-toastify/dist/ReactToastify.css'
 import Home from "./components/Home";
 import UserList from "./features/users/routes/UserList";
+import Profile from "./features/auth/routes/Profile";
 
 const App = () => {
     return (
@@ -20,6 +21,7 @@ const App = () => {
 
                     <Route path="/login" element={<Auth />} />
                     <Route path="/register" element={<Auth isRegisterPage />} />
+                    <Route path="/profile" element={<Profile />} />
 
                     <Route path="/books" element={<BookList />} />
                     <Route path="/book/:id" element={<BookView />} />
