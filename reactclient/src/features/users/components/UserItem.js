@@ -1,5 +1,5 @@
 import {useDispatch} from "react-redux";
-import {deleteUser, updateUserRole} from "../features/users/store/effects";
+import {deleteUser, updateUserRole} from "../store/effects";
 import {useState} from "react";
 
 const UserItem = ({user}) => {

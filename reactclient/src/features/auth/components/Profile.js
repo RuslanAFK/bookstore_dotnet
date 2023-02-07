@@ -44,8 +44,8 @@ const Profile = () => {
         <h2 className="text-center my-2">User Profile</h2>
         <form className="mx-auto w-25" onSubmit={onSubmit}>
             <Input name="Username" setter={setUsername} value={username} text="Required." textStyle="danger" />
-            <Input name="Password" setter={setPassword} text="Required." textStyle="danger" />
-            <Input name="New Password" setter={setNewPassword} text="Optional." />
+            <Input name="Password" setter={setPassword} text="Required." textStyle="danger" type="password" />
+            <Input name="New Password" setter={setNewPassword} text="Optional." type="password" />
             <button className="btn btn-primary w-100">Save</button>
         </form>
         <ToastContainer/>

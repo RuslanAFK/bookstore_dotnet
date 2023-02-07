@@ -1,15 +1,15 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoadBook from "./features/books/routes/LoadBook";
-import Auth from "./features/auth/routes/Auth";
-import BookView from "./features/books/routes/BookView";
-import BookList from "./features/books/routes/BookList";
+import LoadBook from "./features/books/components/LoadBook";
+import Auth from "./features/auth/components/Auth";
+import BookView from "./features/books/components/BookView";
+import BookList from "./features/books/components/BookList";
 import Navbar from "./components/Navbar";
 
 import 'react-toastify/dist/ReactToastify.css'
 import Home from "./components/Home";
-import UserList from "./features/users/routes/UserList";
-import Profile from "./features/auth/routes/Profile";
+import UserList from "./features/users/components/UserList";
+import Profile from "./features/auth/components/Profile";
 
 const App = () => {
     return (

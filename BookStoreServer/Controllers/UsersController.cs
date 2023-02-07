@@ -3,6 +3,7 @@ using BookStoreServer.Controllers.Resources.Books;
 using BookStoreServer.Controllers.Resources.Users;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ public class UsersController : Controller
     }
     
     [HttpGet]
-    [Authorize(Roles = "Creator")]
+    [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
     {
         var users = await _repository.GetUsersAsync(queryObject);
@@ -35,7 +36,7 @@ public class UsersController : Controller
     }
 
     [HttpGet("{userId}")]
-    [Authorize(Roles = "Creator")]
+    [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> Get(int bookId)
     {
         var userToReturn = await _repository.GetUserByIdAsync(bookId);
@@ -47,7 +48,7 @@ public class UsersController : Controller
     }
     
     [HttpPut]
-    [Authorize(Roles = "Creator")]
+    [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> UpdateRole(UpdateUserRoleResource userRoleResource)
     {
         try
@@ -71,7 +72,7 @@ public class UsersController : Controller
     }
 
     [HttpDelete("{userId}")]
-    [Authorize(Roles = "Creator")]
+    [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> Delete(int userId)
     {
         try

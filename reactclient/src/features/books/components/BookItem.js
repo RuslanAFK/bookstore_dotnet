@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 import React from "react";
-import {deleteBook} from "../features/books/store/effects";
+import {deleteBook} from "../store/effects";
 import {useDispatch} from "react-redux";
 
 const BookItem = ({book, isAdmin}) => {

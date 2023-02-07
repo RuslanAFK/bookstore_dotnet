@@ -20,8 +20,8 @@ public class TokenManager : ITokenManager
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.Name),
-            new Claim(ClaimTypes.Role, roleName)
+            new(JwtRegisteredClaimNames.UniqueName, user.Name),
+            new(ClaimTypes.Role, roleName)
         };
         var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
         var tokenDescriptor = new SecurityTokenDescriptor

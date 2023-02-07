@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {getBooks} from "../store/effects";
 import {isAdminOrCreator} from "../../auth/store/selectors";
-import BookItem from "../../../components/BookItem";
+import BookItem from "./BookItem";
 import Pagination from "../../../components/Pagination";
 import Search from "../../../components/Search";
 
@@ -35,10 +35,8 @@ const BookList = () => {
                 <h2 className="text-center">You've seen all books.</h2> :
                 <ul className="list-group list-group-horizontal-md">
                 {
-                    bookState.books.map((book) => {
-                            return <BookItem key={book.id} book={book} isAdmin={isAdminOrCreator(authState)}/>
-                        }
-                    )
+                    bookState.books.map((book, i, arr) =>
+                        <BookItem key={book.id} book={book} isAdmin={isAdminOrCreator(authState)}/>)
                 }
             </ul>}
             <Pagination total={bookState.count} setCurrentPage={setCurrentPage} currentPage={currentPage}/>

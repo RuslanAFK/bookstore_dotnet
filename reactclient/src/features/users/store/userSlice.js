@@ -15,8 +15,8 @@ const userSlice = createSlice({
     name: "user",
     initialState: initialState,
     reducers: {
-        applyChanges(state) {
-            state.changed = false;
+        clearError(state) {
+            state.error = null;
         }
     },
     extraReducers: {
@@ -38,6 +38,6 @@ const userSlice = createSlice({
     }
 })
 
-export const {applyChanges} = userSlice.actions;
+export const {clearError} = userSlice.actions;
 
 export default userSlice;

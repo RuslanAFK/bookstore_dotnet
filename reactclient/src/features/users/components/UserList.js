@@ -1,13 +1,14 @@
 import {useDispatch, useSelector} from "react-redux";
 import {isAdminOrCreator} from "../../auth/store/selectors";
 import {notify} from "../../../helpers/notifier";
-import UserItem from "../../../components/UserItem";
+import UserItem from "./UserItem";
 import Pagination from "../../../components/Pagination";
 import {ToastContainer} from "react-toastify";
 import {useEffect, useState} from "react";
 import {getUsers} from "../store/effects";
 import {hasError} from "../../../store/selectors";
 import Search from "../../../components/Search";
+import {clearError} from "../store/userSlice";
 
 const UserList = () => {
 
@@ -24,8 +25,10 @@ const UserList = () => {
     }, [userState.changed, authState.user, currentPage, search]);
 
     useEffect(() => {
-        if (hasError(userState))
+        if (hasError(userState)) {
             notify(userState.error, "error");
+            dispatch(clearError());
+        }
     }, [userState.error])
 
     const isListEmpty = () => userState.users.filter(u =>

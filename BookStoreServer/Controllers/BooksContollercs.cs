@@ -2,6 +2,7 @@ using AutoMapper;
 using BookStoreServer.Controllers.Resources.Books;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +46,7 @@ public class BooksController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin, Creator")]
+    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}")]
     public async Task<IActionResult> Create(CreateBookResource bookResource)
     {
         var bookToCreate = _mapper.Map<CreateBookResource, Book>(bookResource);
@@ -65,7 +66,7 @@ public class BooksController : Controller
     }
 
     [HttpPut]
-    [Authorize(Roles = "Admin, Creator")]
+    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}")]
     public async Task<IActionResult> Update(UpdateBookResource bookResource)
     {
         var bookToUpdate = _mapper.Map<UpdateBookResource, Book>(bookResource);
@@ -85,7 +86,7 @@ public class BooksController : Controller
     }
 
     [HttpDelete("{bookId}")]
-    [Authorize(Roles = "Admin, Creator")]
+    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}")]
     public async Task<IActionResult> Delete(int bookId)
     {
         try

@@ -2,6 +2,7 @@ namespace BookStoreServer.Controllers.Resources.Books;
 
 public class GetSingleBookResource
 {
+    public int Id { get; set; }
     public string Name { get; set; }
     public string Info { get; set; }
     public string Genre { get; set; }

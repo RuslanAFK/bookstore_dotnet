@@ -1,5 +1,6 @@
 ﻿using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Enums;
 using BookStoreServer.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,7 +58,7 @@ namespace BookStoreServer.Persistence.Services
 
         public async Task AddUserToRole(User user, bool isAdmin)
         {
-            var roleName = isAdmin ? "Admin" : "User";
+            var roleName = isAdmin ? Roles.Admin : Roles.User;
             
             var role = await _context.Roles.SingleOrDefaultAsync(r => r.RoleName == roleName);
             user.Role = role;

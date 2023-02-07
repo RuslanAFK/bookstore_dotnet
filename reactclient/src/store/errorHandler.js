@@ -15,5 +15,8 @@ export const handleError = (e=new Error("Unknown error occurred."), rejectWithVa
             break;
         }
     }
+    if (message.includes("duplicate"))
+        message = "Already exists."
+
     return rejectWithValue(message);
 }

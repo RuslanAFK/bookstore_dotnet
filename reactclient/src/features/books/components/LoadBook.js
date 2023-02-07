@@ -5,7 +5,6 @@ import {createBook, getBook, updateBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
 import {applyChanges} from "../store/bookSlice";
 import {ToastContainer} from "react-toastify";
-import {isAdminOrCreator} from "../../auth/store/selectors";
 import {notify} from "../../../helpers/notifier";
 import {hasError, isChanged} from "../../../store/selectors";
 
@@ -45,9 +44,6 @@ const LoadBook = ({isUpdatePage=false}) => {
     }
 
     useEffect(() => {
-        if (!isAdminOrCreator(authState))
-            navigate("/");
-
         renewForm();
 
         if (!isUpdatePage)
@@ -100,7 +96,6 @@ const LoadBook = ({isUpdatePage=false}) => {
         else {
             dispatch(createBook(bookData));
         }
-
     }
 
     return (
