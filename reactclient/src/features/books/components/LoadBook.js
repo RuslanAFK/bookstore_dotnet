@@ -22,8 +22,8 @@ const LoadBook = ({isUpdatePage=false}) => {
     const navigate = useNavigate();
 
     const bookState = useSelector(state => state.book);
-    const authState = useSelector(state => state.auth);
 
+    useSelector(state => state.auth);
     const renewForm = () => {
         setName('');
         setImage('');

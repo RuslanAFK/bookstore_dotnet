@@ -26,7 +26,7 @@ public class UsersController : Controller
     }
     
     [HttpGet]
-    [Authorize(Roles = Roles.Creator)]
+    [Authorize(Roles = Roles.Creator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
     {
         var users = await _repository.GetUsersAsync(queryObject);
@@ -36,7 +36,7 @@ public class UsersController : Controller
     }
 
     [HttpGet("{userId}")]
-    [Authorize(Roles = Roles.Creator)]
+    [Authorize(Roles = Roles.Creator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Get(int bookId)
     {
         var userToReturn = await _repository.GetUserByIdAsync(bookId);
@@ -48,7 +48,7 @@ public class UsersController : Controller
     }
     
     [HttpPut]
-    [Authorize(Roles = Roles.Creator)]
+    [Authorize(Roles = Roles.Creator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> UpdateRole(UpdateUserRoleResource userRoleResource)
     {
         try
@@ -72,7 +72,7 @@ public class UsersController : Controller
     }
 
     [HttpDelete("{userId}")]
-    [Authorize(Roles = Roles.Creator)]
+    [Authorize(Roles = Roles.Creator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Delete(int userId)
     {
         try

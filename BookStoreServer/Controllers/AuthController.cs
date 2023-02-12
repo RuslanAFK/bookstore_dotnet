@@ -3,6 +3,7 @@ using BookStoreServer.Controllers.Resources.Auth;
 using BookStoreServer.Controllers.Resources.Users;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +70,7 @@ public class AuthController : Controller
     }
     
     [HttpPut]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> UpdateProfile(UpdateUserInfoResource userInfoResource)
     {
         try

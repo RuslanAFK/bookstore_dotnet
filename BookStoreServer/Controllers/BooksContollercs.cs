@@ -1,3 +1,4 @@
+using System.Net;
 using AutoMapper;
 using BookStoreServer.Controllers.Resources.Books;
 using BookStoreServer.Core.Models;
@@ -25,7 +26,7 @@ public class BooksController : Controller
     }
 
     [HttpGet]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
     {
         var books = await _repository.GetBooksAsync(queryObject);
@@ -35,7 +36,7 @@ public class BooksController : Controller
     }
 
     [HttpGet("{bookId}")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Get(int bookId)
     {
         var bookToReturn = await _repository.GetBookByIdAsync(bookId);
@@ -46,7 +47,7 @@ public class BooksController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}")]
+    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}", AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Create(CreateBookResource bookResource)
     {
         var bookToCreate = _mapper.Map<CreateBookResource, Book>(bookResource);
@@ -66,7 +67,7 @@ public class BooksController : Controller
     }
 
     [HttpPut]
-    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}")]
+    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}", AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Update(UpdateBookResource bookResource)
     {
         var bookToUpdate = _mapper.Map<UpdateBookResource, Book>(bookResource);
@@ -86,7 +87,7 @@ public class BooksController : Controller
     }
 
     [HttpDelete("{bookId}")]
-    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}")]
+    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}", AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Delete(int bookId)
     {
         try

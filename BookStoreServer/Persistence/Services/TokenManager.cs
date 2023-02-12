@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
+using System.Security.Cryptography;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
 using Microsoft.IdentityModel.Tokens;
@@ -9,29 +9,31 @@ namespace BookStoreServer.Persistence.Services;
 
 public class TokenManager : ITokenManager
 {
-    private readonly SymmetricSecurityKey _key;
+    private readonly IConfiguration _configuration;
 
-    public TokenManager(IConfiguration config)
+    public TokenManager(IConfiguration configuration)
     {
-        _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Security:Token"]));
+        _configuration = configuration;
     }
     
     public string GenerateToken(User user, string roleName)
     {
+        using var rsa = RSA.Create();
+        rsa.ImportRSAPrivateKey(Convert.FromBase64String(_configuration["Jwt:PrivateKey"]), out _);
+        var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256)
+        {
+            CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
+        };
+        var jwtDate = DateTime.Now;
+        
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.UniqueName, user.Name),
             new(ClaimTypes.Role, roleName)
         };
-        var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddMinutes(60),
-            SigningCredentials = credentials
-        };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        var jwt = new JwtSecurityToken(claims: claims, notBefore: jwtDate, expires: jwtDate.AddMinutes(60), 
+            signingCredentials: signingCredentials);
+        
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 }

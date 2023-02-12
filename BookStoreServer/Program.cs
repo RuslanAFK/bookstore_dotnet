@@ -1,8 +1,8 @@
-using System.Text;
+using System.Security.Cryptography;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Enums;
 using BookStoreServer.Persistence;
 using BookStoreServer.Persistence.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -31,14 +31,28 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddSingleton<RsaSecurityKey>(provider =>
+{
+    var rsa = RSA.Create();
+    rsa.ImportRSAPublicKey(Convert.FromBase64String(builder.Configuration["Jwt:PublicKey"]), out _);
+    return new RsaSecurityKey(rsa);
+});
+
+builder.Services.AddAuthentication()
+    .AddJwtBearer(AuthSchemes.Asymmetric, options =>
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Security:Token"])),
-        ValidateIssuer = false,
-        ValidateAudience = false
+        var rsa = builder.Services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
+        
+        options.IncludeErrorDetails = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey = rsa,
+            RequireSignedTokens = true,
+            RequireExpirationTime = true,
+            ValidateLifetime = true,
+            ValidateAudience = false,
+            ValidateIssuer = false
+        };
     });
 
 builder.Services.AddEndpointsApiExplorer();
