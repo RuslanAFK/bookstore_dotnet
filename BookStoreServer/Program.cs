@@ -1,8 +1,10 @@
 using System.Security.Cryptography;
 using BookStoreServer.Core.Services;
 using BookStoreServer.Enums;
+using BookStoreServer.Hubs;
 using BookStoreServer.Persistence;
 using BookStoreServer.Persistence.Services;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -21,12 +23,15 @@ builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITokenManager, TokenManager>();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", p =>
     {
         p.AllowAnyMethod()
             .AllowAnyHeader()
+            .AllowCredentials()
             .WithOrigins("http://localhost:3000", "https://appname.azurestaticapps.net");
     });
 });
@@ -81,5 +86,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<BooksHub>("/hubs/books");
 
 app.Run();

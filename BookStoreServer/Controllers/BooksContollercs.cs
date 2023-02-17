@@ -1,4 +1,3 @@
-using System.Net;
 using AutoMapper;
 using BookStoreServer.Controllers.Resources.Books;
 using BookStoreServer.Core.Models;
@@ -47,7 +46,7 @@ public class BooksController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}", AuthenticationSchemes = AuthSchemes.Asymmetric)]
+    [Authorize(Roles = Roles.AdminAndCreator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Create(CreateBookResource bookResource)
     {
         var bookToCreate = _mapper.Map<CreateBookResource, Book>(bookResource);
@@ -55,9 +54,9 @@ public class BooksController : Controller
         {
             await _repository.CreateBookAsync(bookToCreate);
             var createSuccessful = await _unitOfWork.CompleteAsync();
-            if (createSuccessful > 0)
-                return NoContent();
-            return BadRequest();
+            if (createSuccessful <= 0) 
+                return BadRequest();
+            return NoContent();
         }
         catch (DbUpdateException e)
         {
@@ -67,7 +66,7 @@ public class BooksController : Controller
     }
 
     [HttpPut]
-    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}", AuthenticationSchemes = AuthSchemes.Asymmetric)]
+    [Authorize(Roles = Roles.AdminAndCreator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Update(UpdateBookResource bookResource)
     {
         var bookToUpdate = _mapper.Map<UpdateBookResource, Book>(bookResource);
@@ -75,9 +74,9 @@ public class BooksController : Controller
         {
             _repository.UpdateBook(bookToUpdate);
             var updateSuccessful = await _unitOfWork.CompleteAsync();
-            if (updateSuccessful > 0)
-                return NoContent();
-            return BadRequest();
+            if (updateSuccessful <= 0) 
+                return BadRequest();
+            return NoContent();
         }
         catch (DbUpdateException e)
         {
@@ -87,7 +86,7 @@ public class BooksController : Controller
     }
 
     [HttpDelete("{bookId}")]
-    [Authorize(Roles = $"{Roles.Admin}, {Roles.Creator}", AuthenticationSchemes = AuthSchemes.Asymmetric)]
+    [Authorize(Roles = Roles.AdminAndCreator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
     public async Task<IActionResult> Delete(int bookId)
     {
         try
@@ -97,9 +96,9 @@ public class BooksController : Controller
                 return NotFound();
             _repository.DeleteBook(bookToDelete);
             var success = await _unitOfWork.CompleteAsync();
-            if (success > 0)
-                return NoContent();
-            return BadRequest();
+            if (success <= 0)
+                return BadRequest();
+            return NoContent();
         }
         catch (DbUpdateException e)
         {

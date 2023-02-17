@@ -1,8 +1,9 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
 import {BOOK_URL} from "../../../store/urls";
-import {handleError} from "../../../store/errorHandler";
-import {getToken} from "../../../store/tokenManager";
+import {handleError} from "../../../services/errorHandler";
+import {getToken} from "../../../services/tokenManager";
+import HubConnector from "../../../hub-connector";
 
 export const getBooks = createAsyncThunk(
     "book/getBooks",
@@ -36,6 +37,7 @@ export const createBook = createAsyncThunk(
         try {
             const config = getToken(thunkAPI);
             const {data} = await axios.post(BOOK_URL, bookData, config);
+            HubConnector().updateBook();
             return data;
         } catch (e) {
             return handleError(e, thunkAPI.rejectWithValue);
@@ -49,6 +51,7 @@ export const updateBook = createAsyncThunk(
         try {
             const config = getToken(thunkAPI);
             const {data} = await axios.put(BOOK_URL, bookData, config);
+            HubConnector().updateBook();
             return data;
         } catch (e) {
             return handleError(e, thunkAPI.rejectWithValue);
@@ -62,6 +65,7 @@ export const deleteBook = createAsyncThunk(
         try {
             const config = getToken(thunkAPI);
             const {data} = await axios.delete(`${BOOK_URL}/${id}`, config);
+            HubConnector().updateBook();
             return data;
         } catch (e) {
             return handleError(e, thunkAPI.rejectWithValue);

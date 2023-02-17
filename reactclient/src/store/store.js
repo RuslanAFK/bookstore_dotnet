@@ -6,7 +6,7 @@ import userSlice from "../features/users/store/userSlice";
 const rootReducer = combineReducers({
     auth: authSlice.reducer,
     book: bookSlice.reducer,
-    user: userSlice.reducer
+    user: userSlice.reducer,
 })
 
 export const store = configureStore({

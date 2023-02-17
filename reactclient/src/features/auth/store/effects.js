@@ -1,8 +1,8 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
 import {AUTH_URL} from "../../../store/urls";
-import {handleError} from "../../../store/errorHandler";
-import {getToken} from "../../../store/tokenManager";
+import {handleError} from "../../../services/errorHandler";
+import {getToken} from "../../../services/tokenManager";
 
 export const login = createAsyncThunk(
     "auth/login",

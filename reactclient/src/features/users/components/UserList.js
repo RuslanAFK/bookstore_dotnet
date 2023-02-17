@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import {isAdminOrCreator} from "../../auth/store/selectors";
-import {notify} from "../../../helpers/notifier";
+import {notify} from "../../../services/toast-notifier";
 import UserItem from "./UserItem";
 import Pagination from "../../../components/Pagination";
 import {ToastContainer} from "react-toastify";

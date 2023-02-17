@@ -5,7 +5,7 @@ import {createBook, getBook, updateBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
 import {applyChanges} from "../store/bookSlice";
 import {ToastContainer} from "react-toastify";
-import {notify} from "../../../helpers/notifier";
+import {notify} from "../../../services/toast-notifier";
 import {hasError, isChanged} from "../../../store/selectors";
 
 const LoadBook = ({isUpdatePage=false}) => {
@@ -46,15 +46,13 @@ const LoadBook = ({isUpdatePage=false}) => {
     useEffect(() => {
         renewForm();
 
-        if (!isUpdatePage)
-            return;
-
-        const bookId = parseInt(params.id);
-        if (bookId === null || isNaN(bookId))
-            navigate("/");
-
-        setId(bookId);
-        dispatch(getBook(bookId));
+        if (isUpdatePage) {
+            const bookId = parseInt(params.id);
+            if (bookId === null || isNaN(bookId))
+                navigate("/");
+            setId(bookId);
+            dispatch(getBook(bookId));
+        }
     }, [params.id, dispatch])
 
     useEffect(() => {

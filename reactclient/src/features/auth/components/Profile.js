@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import Input from "../../../components/Input";
 import {updateProfile} from "../store/effects";
 import {hasError} from "../../../store/selectors";
-import {notify} from "../../../helpers/notifier";
+import {notify} from "../../../services/toast-notifier";
 import {ToastContainer} from "react-toastify";
 
 const Profile = () => {

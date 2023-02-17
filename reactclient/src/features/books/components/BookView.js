@@ -2,6 +2,9 @@ import React, {useEffect, useState} from 'react';
 import {getBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
+import {BookViewService} from "../services/book-view.service";
+import {hasError} from "../../../store/selectors";
+import HubConnector from "../../../hub-connector";
 
 const BookView = () => {
     const params = useParams();
@@ -9,21 +12,34 @@ const BookView = () => {
 
     const [book, setBook] = useState(undefined);
     const bookState = useSelector(state => state.book);
+
+    const {subscribe, unsubscribe} = HubConnector();
+
     const navigate = useNavigate();
 
 
     useEffect(() => {
-        const bookId = parseInt(params.id);
-        if (bookId === null || isNaN(bookId)) {
-            navigate("/");
-            return;
-        }
+        const bookId = BookViewService.getBookIdFromParams(params, navigate);
         dispatch(getBook(bookId));
-    }, [params.id, bookState.changed]);
+    }, [params.id]);
+
+
+    useEffect(() => {
+        subscribe(() => {
+            const bookId = BookViewService.getBookIdFromParams(params, navigate);
+            dispatch(getBook(bookId));
+        })
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         setBook(bookState.books[0])
     }, [bookState.fetched]);
+
+    useEffect(() => {
+        if (hasError(bookState))
+            navigate("/");
+        }, [bookState.error]);
 
     if (!book) {
         return <h1>Loading...</h1>
