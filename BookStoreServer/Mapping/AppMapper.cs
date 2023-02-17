@@ -28,9 +28,11 @@ public class MappingProfile : Profile
                 opt.MapFrom(resource => resource.Username))
             .ForMember(user => user.Password, opt =>
                 opt.Ignore());
-
+        
         CreateMap<Book, GetBooksResource>();
-        CreateMap<Book, GetSingleBookResource>();
+        CreateMap<Book, GetSingleBookResource>()
+            .ForMember(r => r.BookFile, opt =>
+                opt.MapFrom(book => book.BookFile != null ? book.BookFile.Url : null));
         CreateMap<User, GetUsersResource>()
             .ForMember(resource => resource.Username, opt => 
                 opt.MapFrom(user => user.Name))

@@ -4,7 +4,6 @@ using BookStoreServer.Enums;
 using BookStoreServer.Hubs;
 using BookStoreServer.Persistence;
 using BookStoreServer.Persistence.Services;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -22,6 +21,8 @@ builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITokenManager, TokenManager>();
+builder.Services.AddScoped<IFileStorage, FileStorage>();
+builder.Services.AddScoped<IBookFileService, BookFileService>();
 
 builder.Services.AddSignalR();
 
@@ -82,10 +83,13 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles();
 
 app.MapHub<BooksHub>("/hubs/books");
 

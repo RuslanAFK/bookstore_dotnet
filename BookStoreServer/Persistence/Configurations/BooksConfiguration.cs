@@ -14,5 +14,9 @@ public class BooksConfiguration : IEntityTypeConfiguration<Book>
             .HasMaxLength(36);
         builder.Property(u => u.Author)
             .HasMaxLength(36);
+
+        builder.HasOne(b => b.BookFile)
+            .WithOne(f => f.Book)
+            .HasForeignKey<BookFile>(f => f.BookId);
     }
 }

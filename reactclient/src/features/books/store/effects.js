@@ -1,9 +1,9 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
-import {BOOK_URL} from "../../../store/urls";
+import {BOOK_FILE_URL, BOOK_URL} from "../../../store/urls";
 import {handleError} from "../../../services/errorHandler";
 import {getToken} from "../../../services/tokenManager";
-import HubConnector from "../../../hub-connector";
+import HubConnector from "../../../services/hub-connector";
 
 export const getBooks = createAsyncThunk(
     "book/getBooks",
@@ -65,6 +65,35 @@ export const deleteBook = createAsyncThunk(
         try {
             const config = getToken(thunkAPI);
             const {data} = await axios.delete(`${BOOK_URL}/${id}`, config);
+            HubConnector().updateBook();
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
+
+export const addFile = createAsyncThunk(
+    "book/addFile",
+    async ({bookId, fd}, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            config.headers["Content-Type"] = "multipart/form-data";
+            const {data} = await axios.post(`${BOOK_FILE_URL}?bookId=${bookId}`, fd, config);
+            HubConnector().updateBook();
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
+
+export const deleteFile = createAsyncThunk(
+    "book/addFile",
+    async (bookId, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            const {data} = await axios.delete(`${BOOK_FILE_URL}?bookId=${bookId}`, config);
             HubConnector().updateBook();
             return data;
         } catch (e) {

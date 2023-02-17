@@ -7,6 +7,7 @@ namespace BookStoreServer.Persistence
     public sealed class AppDbContext : DbContext
     {
         public DbSet<Book> Books { get; set; }
+        public DbSet<BookFile> BookFiles { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
 

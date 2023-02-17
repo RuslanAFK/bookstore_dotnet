@@ -10,5 +10,7 @@
         
         public string Image { get; set; }
         public string Author { get; set; }
+        public int? BookFileId { get; set; }
+        public BookFile? BookFile { get; set; }
     }
 }

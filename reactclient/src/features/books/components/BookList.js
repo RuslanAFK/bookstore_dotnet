@@ -5,7 +5,7 @@ import {isAdminOrCreator} from "../../auth/store/selectors";
 import BookItem from "./BookItem";
 import Pagination from "../../../components/Pagination";
 import Search from "../../../components/Search";
-import HubConnector from "../../../hub-connector";
+import HubConnector from "../../../services/hub-connector";
 
 const BookList = () => {
 

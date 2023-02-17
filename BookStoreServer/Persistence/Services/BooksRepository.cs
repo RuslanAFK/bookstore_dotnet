@@ -24,12 +24,24 @@ namespace BookStoreServer.Persistence.Services
         }
         public async Task<Book?> GetBookByIdAsync(int bookId)
         {
-            return await _context.Books.FindAsync(bookId);
+            return await _context.Books.Include(b => b.BookFile)
+                .SingleOrDefaultAsync(b => b.Id == bookId);
         }
         public async Task CreateBookAsync(Book bookToCreate)
         {
             await _context.Books.AddAsync(bookToCreate);
         }
+
+        public async Task AddFileToBook(BookFile bookFile)
+        {
+            await _context.BookFiles.AddAsync(bookFile);
+        }
+
+        public void DeleteFileFromBook(BookFile bookFile)
+        {
+            _context.BookFiles.Remove(bookFile);
+        }
+
         public void UpdateBook(Book bookToUpdate)
         {
             _context.Books.Update(bookToUpdate);

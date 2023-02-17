@@ -16,12 +16,15 @@ public class BooksController : Controller
     private readonly IBooksRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IBookFileService _bookFileService;
 
-    public BooksController(IBooksRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
+    public BooksController(IBooksRepository repository, IUnitOfWork unitOfWork, IMapper mapper, 
+        IBookFileService bookFileService)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _bookFileService = bookFileService;
     }
 
     [HttpGet]
@@ -94,6 +97,7 @@ public class BooksController : Controller
             var bookToDelete = await _repository.GetBookByIdAsync(bookId);
             if (bookToDelete == null)
                 return NotFound();
+            await _bookFileService.RemoveBookFile(bookToDelete);
             _repository.DeleteBook(bookToDelete);
             var success = await _unitOfWork.CompleteAsync();
             if (success <= 0)

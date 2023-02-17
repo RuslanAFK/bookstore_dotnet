@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import Home from "./components/Home";
 import UserList from "./features/users/components/UserList";
 import Profile from "./features/auth/components/Profile";
+import FileUpload from "./features/books/components/FileUpload";
 
 const App = () => {
     return (
@@ -27,6 +28,8 @@ const App = () => {
                     <Route path="/book/:id" element={<BookView />} />
                     <Route path="/load" element={<LoadBook />} />
                     <Route path="/update/:id" element={<LoadBook isUpdatePage />} />
+
+                    <Route path="/upload-file/:id" element={<FileUpload />} />
 
                     <Route exact path="/users" element={<UserList />} />
 
