@@ -1,0 +1,110 @@
+import {createAsyncThunk} from "@reduxjs/toolkit";
+import axios from "axios";
+import {BOOK_FILE_URL, BOOK_URL} from "../../../store/urls";
+import {handleError} from "../../../services/errorHandler";
+import {getToken} from "../../../services/tokenManager";
+import HubConnector from "../../../services/hub-connector";
+import GetBookDetails from "../interfaces/GetBookDetails";
+import PaginatedList from "../../../interfaces/PaginatedList";
+import CreateBook from "../interfaces/CreateBook";
+import UpdateBook from "../interfaces/UpdateBook";
+import QueryObject from "../../../interfaces/QueryObject";
+import FileObject from "../../../interfaces/FileObject";
+import GetBook from "../interfaces/GetBook";
+
+export const getBooks = createAsyncThunk(
+    "book/getBooks",
+    async (input: QueryObject, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            const {data} =
+                await axios.get<PaginatedList<GetBook>>(`${BOOK_URL}?page=${input.page}&search=${input.search}`, config);
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
+
+export const getBook = createAsyncThunk(
+    "book/getBook",
+    async (bookId: number, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            const {data} = await axios.get<GetBookDetails>(`${BOOK_URL}/${bookId}`, config);
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
+
+export const createBook = createAsyncThunk(
+    "book/createBook",
+    async (bookData: CreateBook, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            const {data} = await axios.post<void>(BOOK_URL, bookData, config);
+            HubConnector().updateBook();
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
+
+export const updateBook = createAsyncThunk(
+    "book/updateBook",
+    async (bookData: UpdateBook, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            const {data} = await axios.put<void>(BOOK_URL, bookData, config);
+            HubConnector().updateBook();
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
+
+export const deleteBook = createAsyncThunk(
+    "book/deleteBook",
+    async (id: number, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            const {data} = await axios.delete<void>(`${BOOK_URL}/${id}`, config);
+            HubConnector().updateBook();
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
+
+export const addFile = createAsyncThunk(
+    "book/addFile",
+    async ({bookId, fileData}: FileObject, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            const {data} = await axios.post<void>(`${BOOK_FILE_URL}?bookId=${bookId}`, fileData, config);
+            HubConnector().updateBook();
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
+
+export const deleteFile = createAsyncThunk(
+    "book/deleteFile",
+    async (bookId: number, thunkAPI) => {
+        try {
+            const config = getToken(thunkAPI);
+            const {data} = await axios.delete(`${BOOK_FILE_URL}?bookId=${bookId}`, config);
+            HubConnector().updateBook();
+            return data;
+        } catch (e) {
+            return handleError(e, thunkAPI.rejectWithValue);
+        }
+    }
+)
