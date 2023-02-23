@@ -6,6 +6,7 @@ import {BookViewService} from "../services/book-view.service";
 import HubConnector from "../../shared/services/hub-connector";
 import {API_URL} from "../../shared/store/urls";
 import {AppDispatch, RootState} from "../../shared/store/store";
+import Spinner from "../../shared/components/spinners/Spinner";
 
 const BookView = () => {
     const params = useParams();
@@ -49,13 +50,17 @@ const BookView = () => {
 
     return (
         <div>
-            <h1 className='mx-3 my-3'>Book {name}</h1>
-            <img className='mx-3 my-3' src={image} alt="Image" width={350} height={500} />
-            {bookFile &&
-                <a href={API_URL+'uploads/'+bookFile} target="_blank">Go to Book PDF</a>}
-            <p className='mx-3 my-2'>Author: {author}</p>
-            <p className='mx-3 my-2'>Tags: {genre}</p>
-            <p className='mx-3 my-2'>Description: {info}</p>
+            {bookState.fetching ? <Spinner/>:
+                <div>
+                    <h1 className='mx-3 my-3'>Book {name}</h1>
+                    <img className='mx-3 my-3' src={image} alt="Image" width={350} height={500} />
+                    {bookFile &&
+                        <a href={API_URL+'uploads/'+bookFile} target="_blank">Go to Book PDF</a>}
+                    <p className='mx-3 my-2'>Author: {author}</p>
+                    <p className='mx-3 my-2'>Tags: {genre}</p>
+                    <p className='mx-3 my-2'>Description: {info}</p>
+                </div>
+            }
         </div>
     );
 }

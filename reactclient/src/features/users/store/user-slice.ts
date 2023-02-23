@@ -22,6 +22,8 @@ const initialState: UserState = {
     error: null,
     fetched: false,
     changed: false,
+    fetching: false,
+    changing: false
 }
 
 const userSlice = createSlice({

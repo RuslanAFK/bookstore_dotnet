@@ -6,10 +6,11 @@ import UpdateUserRole from "../interfaces/UpdateUserRole";
 import GetUser from "../interfaces/GetUser";
 
 type Params = {
-    user: GetUser
+    user: GetUser,
+    changing: boolean
 }
 
-const UserItem = ({user}: Params) => {
+const UserItem = ({user, changing}: Params) => {
 
     const dispatch = useDispatch<AppDispatch>();
 
@@ -49,11 +50,13 @@ const UserItem = ({user}: Params) => {
             </td>
             <td>
                 <button className='w-50 my-2 btn btn-secondary'
+                        disabled={changing}
                         onClick={onUserSave}>
                     Update</button>
             </td>
             <td>
                 <button className='w-50 my-2 btn btn-secondary'
+                        disabled={changing}
                         onClick={onUserDelete}>
                     Delete</button>
             </td>

@@ -2,9 +2,10 @@ import React, {useEffect} from "react";
 import "./Navbar.css";
 import {useDispatch, useSelector} from "react-redux";
 import {Link, useNavigate} from "react-router-dom";
-import {isAdminOrCreator, isAuthed, isCreator, isLoading} from "../../auth/store/selectors";
-import {logout} from "../../auth/store/auth-slice";
-import {AppDispatch, RootState} from "../store/store";
+import {isAdminOrCreator, isAuthed, isCreator} from "../../../auth/store/selectors";
+import {logout} from "../../../auth/store/auth-slice";
+import {AppDispatch, RootState} from "../../store/store";
+import SpinnerButton from "../spinners/SpinnerButton";
 
 const Navbar = () => {
 
@@ -49,10 +50,12 @@ const Navbar = () => {
                     </ul>
                     <ul className="navbar-nav right">
                         {
-                            isLoading(authState) ? (
+                            authState.fetching ? (
                                 <>
                                     <li className="nav-item">
-                                        <span className="nav-link">Loading...</span>
+                                        <span className="nav-link">
+                                            <SpinnerButton/>
+                                        </span>
                                     </li>
                                 </>
                                 ) :

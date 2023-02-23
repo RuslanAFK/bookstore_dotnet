@@ -11,8 +11,5 @@ export const isCreator = ({user}: AuthState) => {
         return false;
     return user.role === "Creator";
 }
-
-export const isLoading = ({loading}: AuthState) => loading;
-
 export const  isAuthed = ({user}: AuthState) => user !== null;
 

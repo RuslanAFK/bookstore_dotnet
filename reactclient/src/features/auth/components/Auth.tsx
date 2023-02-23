@@ -1,14 +1,15 @@
 import React, {FormEvent, useEffect, useState} from "react";
-import Input from "../../shared/components/Input";
+import Input from "../../shared/components/input/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {login, register} from "../store/effects";
 import {useNavigate} from "react-router-dom";
-import {isAuthed, isLoading} from "../store/selectors";
+import {isAuthed} from "../store/selectors";
 import {ToastContainer} from "react-toastify";
 import {notify} from "../../shared/services/toast-notifier";
 import {AppDispatch, RootState} from "../../shared/store/store";
 import AuthUser from "../interfaces/AuthUser";
 import {clearError} from "../store/auth-slice";
+import SpinnerButton from "../../shared/components/spinners/SpinnerButton";
 
 type Params = {
     page: "register" | "login"
@@ -53,8 +54,10 @@ const Auth = ({page}: Params) => {
                 <Input name="Username" setter={setUsername}/>
                 <Input name="Password" setter={setPassword} type="password"/>
 
-                { isLoading(authState) ?
-                    <button type="button" className="btn btn-primary my-3 w-100">Logging in...</button> :
+                { authState.fetching || authState.changing ?
+                    <div className="my-3 w-100">
+                        <SpinnerButton/>
+                    </div> :
                     <button className="btn btn-primary my-3 w-100">Submit</button>
                 }
             </form>

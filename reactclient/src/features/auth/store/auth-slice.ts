@@ -1,20 +1,29 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {login, register, updateProfile} from "./effects";
-import {authRejected, loginPending, loginSuccessful, updateSuccessful} from "./reducers";
+import {
+    authRejected,
+    changePending,
+    loginPending,
+    loginSuccessful,
+    registerSuccessful,
+    updateSuccessful
+} from "./reducers";
 import AuthResult from "../interfaces/AuthResult";
 
 export type AuthState = {
     user: AuthResult | null,
     error: string | null,
-    loading: boolean,
+    fetching: boolean,
+    changing: boolean,
     updated: boolean
 }
 
 const initialState: AuthState = {
     user: null,
     error: null,
-    loading: false,
-    updated: false
+    fetching: false,
+    updated: false,
+    changing: false
 }
 
 const authSlice = createSlice({
@@ -32,13 +41,18 @@ const authSlice = createSlice({
         }
     },
     extraReducers: {
-        [register.rejected.toString()]: authRejected,
+        [updateProfile.pending.toString()]: changePending,
         [updateProfile.rejected.toString()]: authRejected,
         [updateProfile.fulfilled.toString()]: updateSuccessful,
 
-        [login.rejected.toString()]: authRejected,
         [login.pending.toString()]: loginPending,
-        [login.fulfilled.toString()]: loginSuccessful
+        [login.rejected.toString()]: authRejected,
+        [login.fulfilled.toString()]: loginSuccessful,
+
+        [register.pending.toString()]: changePending,
+        [register.fulfilled.toString()]: registerSuccessful,
+        [register.rejected.toString()]: authRejected,
+
     }
 })
 

@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {addFile, createBook, deleteBook, getBook, getBooks, updateBook} from "./effects";
+import {addFile, createBook, deleteBook, deleteFile, getBook, getBooks, updateBook} from "./effects";
 import {
     getItemsSuccessful,
     getSingleItemSuccessful
@@ -26,6 +26,8 @@ const initialState: BookState = {
     error: null,
     fetched: false,
     changed: false,
+    changing: false,
+    fetching: false
 }
 
 const bookSlice = createSlice({
@@ -64,9 +66,9 @@ const bookSlice = createSlice({
         [addFile.rejected.toString()]: changeRejected,
         [addFile.fulfilled.toString()]: changeSuccessful,
 
-        [deleteBook.pending.toString()]: changePending,
-        [deleteBook.rejected.toString()]: changeRejected,
-        [deleteBook.fulfilled.toString()]: changeSuccessful
+        [deleteFile.pending.toString()]: changePending,
+        [deleteFile.rejected.toString()]: changeRejected,
+        [deleteFile.fulfilled.toString()]: changeSuccessful
     }
 })
 

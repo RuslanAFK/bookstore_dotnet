@@ -6,11 +6,13 @@ import GetBook from "../interfaces/GetBook";
 
 export const getItemsSuccessful = (state: BookState, {payload}: PayloadAction<PaginatedList<GetBook>>) => {
     state.fetched = true;
+    state.fetching = false;
     state.books = payload.items;
     state.count = payload.count;
 }
 export const getSingleItemSuccessful = (state: BookState, {payload}: PayloadAction<GetBookDetails>) => {
     state.fetched = true;
+    state.fetching = false;
     state.books = [payload];
 }
 
