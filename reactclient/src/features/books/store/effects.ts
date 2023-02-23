@@ -1,15 +1,15 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
-import {BOOK_FILE_URL, BOOK_URL} from "../../../store/urls";
-import {handleError} from "../../../services/errorHandler";
-import {getToken} from "../../../services/tokenManager";
-import HubConnector from "../../../services/hub-connector";
+import {BOOK_FILE_URL, BOOK_URL} from "../../shared/store/urls";
+import {handleError} from "../../shared/services/errorHandler";
+import {getToken} from "../../shared/services/tokenManager";
+import HubConnector from "../../shared/services/hub-connector";
 import GetBookDetails from "../interfaces/GetBookDetails";
-import PaginatedList from "../../../interfaces/PaginatedList";
+import PaginatedList from "../../shared/interfaces/PaginatedList";
 import CreateBook from "../interfaces/CreateBook";
 import UpdateBook from "../interfaces/UpdateBook";
-import QueryObject from "../../../interfaces/QueryObject";
-import FileObject from "../../../interfaces/FileObject";
+import QueryObject from "../../shared/interfaces/QueryObject";
+import FileObject from "../../shared/interfaces/FileObject";
 import GetBook from "../interfaces/GetBook";
 
 export const getBooks = createAsyncThunk(

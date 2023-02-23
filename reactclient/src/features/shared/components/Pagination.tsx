@@ -1,11 +1,20 @@
 import "./Pagination.css";
 import React from "react";
-const Pagination = ({total, currentPage, setCurrentPage, pageSize=4}: any) => {
+
+type Params = {
+    total: number,
+    currentPage: number,
+    setCurrentPage: Function,
+    pageSize?: number
+}
+
+const Pagination = ({total, currentPage, setCurrentPage, pageSize=4}: Params) => {
 
     let pages = [];
     const pageCount = Math.ceil(total/pageSize);
 
     // Logic for shortening of page count
+    // ...
 
     for (let i = 1; i <= pageCount; i++)
         pages.push(i);

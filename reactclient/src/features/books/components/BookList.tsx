@@ -3,11 +3,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {getBooks} from "../store/effects";
 import {isAdminOrCreator} from "../../auth/store/selectors";
 import BookItem from "./BookItem";
-import Pagination from "../../../components/Pagination";
-import Search from "../../../components/Search";
-import HubConnector from "../../../services/hub-connector";
-import {AppDispatch, RootState} from "../../../store/store";
-import QueryObject from "../../../interfaces/QueryObject";
+import Pagination from "../../shared/components/Pagination";
+import Search from "../../shared/components/Search";
+import HubConnector from "../../shared/services/hub-connector";
+import {AppDispatch, RootState} from "../../shared/store/store";
+import QueryObject from "../../shared/interfaces/QueryObject";
 
 const BookList = () => {
 

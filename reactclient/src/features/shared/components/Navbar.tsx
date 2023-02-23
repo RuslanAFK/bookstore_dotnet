@@ -2,8 +2,8 @@ import React, {useEffect} from "react";
 import "./Navbar.css";
 import {useDispatch, useSelector} from "react-redux";
 import {Link, useNavigate} from "react-router-dom";
-import {isAdminOrCreator, isAuthed, isCreator, isLoading} from "../features/auth/store/selectors";
-import {logout} from "../features/auth/store/authSlice";
+import {isAdminOrCreator, isAuthed, isCreator, isLoading} from "../../auth/store/selectors";
+import {logout} from "../../auth/store/auth-slice";
 import {AppDispatch, RootState} from "../store/store";
 
 const Navbar = () => {

@@ -11,7 +11,7 @@ import {
     CommonState,
     getPending,
     getRejected
-} from "../../../store/reducers";
+} from "../../shared/store/reducers";
 import GetBook from "../interfaces/GetBook";
 import GetBookDetails from "../interfaces/GetBookDetails";
 
@@ -34,6 +34,9 @@ const bookSlice = createSlice({
     reducers: {
         applyChanges(state) {
             state.changed = false;
+        },
+        clearError(state) {
+            state.error = null;
         }
     },
     extraReducers: {
@@ -67,6 +70,6 @@ const bookSlice = createSlice({
     }
 })
 
-export const {applyChanges} = bookSlice.actions;
+export const {applyChanges, clearError} = bookSlice.actions;
 
 export default bookSlice;

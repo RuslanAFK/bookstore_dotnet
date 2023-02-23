@@ -1,15 +1,20 @@
 import React, {FormEvent, useEffect, useState} from "react";
-import Input from "../../../components/Input";
+import Input from "../../shared/components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {login, register} from "../store/effects";
 import {useNavigate} from "react-router-dom";
 import {isAuthed, isLoading} from "../store/selectors";
 import {ToastContainer} from "react-toastify";
-import {notify} from "../../../services/toast-notifier";
-import {AppDispatch, RootState} from "../../../store/store";
+import {notify} from "../../shared/services/toast-notifier";
+import {AppDispatch, RootState} from "../../shared/store/store";
 import AuthUser from "../interfaces/AuthUser";
+import {clearError} from "../store/auth-slice";
 
-const Auth = ({isRegisterPage=false}) => {
+type Params = {
+    page: "register" | "login"
+}
+
+const Auth = ({page}: Params) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -24,14 +29,16 @@ const Auth = ({isRegisterPage=false}) => {
     }, [authState.user])
 
     useEffect(() => {
-        if (!isAuthed(authState) && authState.error)
+        if (!isAuthed(authState) && authState.error) {
             notify(authState.error, "error");
+            dispatch(clearError());
+        }
     }, [authState.error])
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const userData: AuthUser = { username, password };
-        if (isRegisterPage) {
+        if (page === "register") {
             dispatch(register(userData));
             return;
         }
@@ -41,7 +48,7 @@ const Auth = ({isRegisterPage=false}) => {
     return (
         <div>
             <form onSubmit={handleSubmit} className="w-25 p-3 mx-auto">
-                <h1>{isRegisterPage ? "Register": "Log In"}</h1>
+                <h1>{page === "register" ? "Register": "Log In"}</h1>
 
                 <Input name="Username" setter={setUsername}/>
                 <Input name="Password" setter={setPassword} type="password"/>

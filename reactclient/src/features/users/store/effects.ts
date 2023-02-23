@@ -1,10 +1,10 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
-import {USER_URL} from "../../../store/urls";
-import {handleError} from "../../../services/errorHandler";
-import {getToken} from "../../../services/tokenManager";
-import QueryObject from "../../../interfaces/QueryObject";
-import PaginatedList from "../../../interfaces/PaginatedList";
+import {USER_URL} from "../../shared/store/urls";
+import {handleError} from "../../shared/services/errorHandler";
+import {getToken} from "../../shared/services/tokenManager";
+import QueryObject from "../../shared/interfaces/QueryObject";
+import PaginatedList from "../../shared/interfaces/PaginatedList";
 import GetUser from "../interfaces/GetUser";
 import UpdateUserRole from "../interfaces/UpdateUserRole";
 

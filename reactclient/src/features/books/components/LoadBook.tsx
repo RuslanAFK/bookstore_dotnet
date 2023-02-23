@@ -1,17 +1,20 @@
 import React, {FormEvent, useEffect, useState} from "react";
-import Input from "../../../components/Input";
+import Input from "../../shared/components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {createBook, getBook, updateBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
-import {applyChanges} from "../store/bookSlice";
+import {applyChanges, clearError} from "../store/book-slice";
 import {ToastContainer} from "react-toastify";
-import {notify} from "../../../services/toast-notifier";
-import {isChanged} from "../../../store/selectors";
-import {AppDispatch, RootState} from "../../../store/store";
+import {notify} from "../../shared/services/toast-notifier";
+import {AppDispatch, RootState} from "../../shared/store/store";
 import UpdateBook from "../interfaces/UpdateBook";
 import CreateBook from "../interfaces/CreateBook";
 
-const LoadBook = ({isUpdatePage=false}) => {
+type Params = {
+    page: "update" | "create"
+}
+
+const LoadBook = ({page}: Params) => {
     const [info, setInfo] = useState('');
     const [genre, setGenre] = useState('');
     const [author, setAuthor] = useState('');
@@ -48,7 +51,7 @@ const LoadBook = ({isUpdatePage=false}) => {
     useEffect(() => {
         renewForm();
 
-        if (isUpdatePage && params.id) {
+        if (page === "update" && params.id) {
             const bookId = parseInt(params.id);
             if (bookId === null || isNaN(bookId))
                 navigate("/");
@@ -59,25 +62,28 @@ const LoadBook = ({isUpdatePage=false}) => {
 
     useEffect(() => {
         const book = bookState.books[0];
-        if (isUpdatePage && book)
+        if (page === "update" && book)
             populateForm(book);
     }, [bookState.books])
 
     useEffect(() => {
-        if (isChanged(bookState) && isUpdatePage) {
+        if (bookState.changed) {
             dispatch(applyChanges());
-            navigate(`/book/${id}`);
-        }
-        else if (isChanged(bookState) && !isUpdatePage) {
-            dispatch(applyChanges());
-            notify("Successfully added book.", "success");
-            renewForm();
+            if (bookState.changed && page === "update") {
+                navigate(`/book/${id}`);
+            }
+            else {
+                notify("Successfully added book.", "success");
+                renewForm();
+            }
         }
     }, [bookState.changed])
 
     useEffect(() => {
-        if (bookState.error)
+        if (bookState.error) {
             notify(bookState.error, "error");
+            dispatch(clearError());
+        }
     }, [bookState.error])
 
     const onUploadClicked = (e: FormEvent<HTMLFormElement>) => {
@@ -89,7 +95,7 @@ const LoadBook = ({isUpdatePage=false}) => {
             image,
             genre,
         }
-        if (isUpdatePage && id) {
+        if (page === "update" && id) {
             bookData = {...bookData, id}
             dispatch(updateBook(bookData));
         }

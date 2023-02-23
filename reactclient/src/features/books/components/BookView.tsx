@@ -3,10 +3,9 @@ import {getBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {BookViewService} from "../services/book-view.service";
-import {hasError} from "../../../store/selectors";
-import HubConnector from "../../../services/hub-connector";
-import {API_URL} from "../../../store/urls";
-import {AppDispatch, RootState} from "../../../store/store";
+import HubConnector from "../../shared/services/hub-connector";
+import {API_URL} from "../../shared/store/urls";
+import {AppDispatch, RootState} from "../../shared/store/store";
 
 const BookView = () => {
     const params = useParams();
@@ -39,7 +38,7 @@ const BookView = () => {
     }, [bookState.fetched]);
 
     useEffect(() => {
-        if (hasError(bookState))
+        if (bookState.error)
             navigate("/");
         }, [bookState.error]);
 

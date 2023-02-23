@@ -1,6 +1,6 @@
-import {BookState} from "./bookSlice";
+import {BookState} from "./book-slice";
 import {PayloadAction} from "@reduxjs/toolkit";
-import PaginatedList from "../../../interfaces/PaginatedList";
+import PaginatedList from "../../shared/interfaces/PaginatedList";
 import GetBookDetails from "../interfaces/GetBookDetails";
 import GetBook from "../interfaces/GetBook";
 

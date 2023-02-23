@@ -3,10 +3,10 @@ import LoadBook from "./features/books/components/LoadBook";
 import Auth from "./features/auth/components/Auth";
 import BookView from "./features/books/components/BookView";
 import BookList from "./features/books/components/BookList";
-import Navbar from "./components/Navbar";
+import Navbar from "./features/shared/components/Navbar";
 
 import 'react-toastify/dist/ReactToastify.css'
-import Home from "./components/Home";
+import Home from "./features/shared/components/Home";
 import UserList from "./features/users/components/UserList";
 import Profile from "./features/auth/components/Profile";
 import FileUpload from "./features/books/components/FileUpload";
@@ -20,14 +20,14 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={<Home />} />
 
-                    <Route path="/login" element={<Auth />} />
-                    <Route path="/register" element={<Auth isRegisterPage />} />
+                    <Route path="/login" element={<Auth page="login" />} />
+                    <Route path="/register" element={<Auth page="register" />} />
                     <Route path="/profile" element={<Profile />} />
 
                     <Route path="/books" element={<BookList />} />
                     <Route path="/book/:id" element={<BookView />} />
-                    <Route path="/load" element={<LoadBook />} />
-                    <Route path="/update/:id" element={<LoadBook isUpdatePage />} />
+                    <Route path="/load" element={<LoadBook page="create" />} />
+                    <Route path="/update/:id" element={<LoadBook page="update" />} />
 
                     <Route path="/upload-file/:id" element={<FileUpload />} />
 

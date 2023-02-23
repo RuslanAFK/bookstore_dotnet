@@ -1,6 +1,11 @@
 import React from "react";
 
-const Search = ({search, setSearch}: any) => {
+type Params = {
+    search: string,
+    setSearch: Function
+}
+
+const Search = ({search, setSearch}: Params) => {
     return (
         <div className="my-3 text-center list-inline">
             <div className="list-inline-item w-25">

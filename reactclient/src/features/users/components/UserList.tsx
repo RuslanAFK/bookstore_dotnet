@@ -1,14 +1,13 @@
 import {useDispatch, useSelector} from "react-redux";
-import {isAdminOrCreator} from "../../auth/store/selectors";
-import {notify} from "../../../services/toast-notifier";
+import {notify} from "../../shared/services/toast-notifier";
 import UserItem from "./UserItem";
-import Pagination from "../../../components/Pagination";
+import Pagination from "../../shared/components/Pagination";
 import {ToastContainer} from "react-toastify";
 import React, {useEffect, useState} from "react";
 import {getUsers} from "../store/effects";
-import Search from "../../../components/Search";
-import {clearError} from "../store/userSlice";
-import {AppDispatch, RootState} from "../../../store/store";
+import Search from "../../shared/components/Search";
+import {clearError} from "../store/user-slice";
+import {AppDispatch, RootState} from "../../shared/store/store";
 
 const UserList = () => {
 
@@ -56,7 +55,7 @@ const UserList = () => {
                             userState.users
                                 .filter(user => authState.user && user.username !== authState.user.username)
                                 .map((user) =>
-                                    <UserItem key={user.id} user={user} isAdmin={isAdminOrCreator(authState)}/>
+                                    <UserItem key={user.id} user={user} />
                                 )
                         }
                         </tbody>

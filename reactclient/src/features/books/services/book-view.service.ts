@@ -1,6 +1,8 @@
+import {NavigateFunction, Params} from "react-router-dom";
+
 export const BookViewService = {
-    getBookIdFromParams: (params: any, navigate: any) => {
-        const bookId: number = parseInt(params.id);
+    getBookIdFromParams: (params: Readonly<Params>, navigate: NavigateFunction) => {
+        const bookId: number = parseInt(params.id ?? "");
         if (bookId === undefined || isNaN(bookId)) {
             navigate("/");
         }

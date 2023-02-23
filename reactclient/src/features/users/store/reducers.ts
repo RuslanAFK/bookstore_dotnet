@@ -1,6 +1,6 @@
-import {UserState} from "./userSlice";
+import {UserState} from "./user-slice";
 import {AnyAction, PayloadAction} from "@reduxjs/toolkit";
-import PaginatedList from "../../../interfaces/PaginatedList";
+import PaginatedList from "../../shared/interfaces/PaginatedList";
 import GetUser from "../interfaces/GetUser";
 
 export const getItemsSuccessful = (state: UserState, {payload}: PayloadAction<PaginatedList<GetUser>>) => {

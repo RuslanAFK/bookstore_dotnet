@@ -1,4 +1,4 @@
-import {AuthState} from "./authSlice";
+import {AuthState} from "./auth-slice";
 
 export const isAdminOrCreator = ({user}: AuthState) => {
     if (!user)

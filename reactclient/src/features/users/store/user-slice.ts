@@ -8,7 +8,7 @@ import {
     CommonState,
     getPending,
     getRejected
-} from "../../../store/reducers";
+} from "../../shared/store/reducers";
 import GetUser from "../interfaces/GetUser";
 
 export interface UserState extends CommonState {

@@ -2,12 +2,11 @@ import React, {FormEvent, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {addFile, deleteFile} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
-import {isChanged} from "../../../store/selectors";
-import {applyChanges} from "../store/bookSlice";
-import {notify} from "../../../services/toast-notifier";
+import {applyChanges} from "../store/book-slice";
+import {notify} from "../../shared/services/toast-notifier";
 import {ToastContainer} from "react-toastify";
-import {AppDispatch, RootState} from "../../../store/store";
-import FileObject from "../../../interfaces/FileObject";
+import {AppDispatch, RootState} from "../../shared/store/store";
+import FileObject from "../../shared/interfaces/FileObject";
 
 const FileUpload = () => {
 
@@ -30,7 +29,7 @@ const FileUpload = () => {
     }, [bookId])
 
     useEffect(() => {
-        if (isChanged(bookState)) {
+        if (bookState.changed) {
             dispatch(applyChanges());
             navigate(`/book/${bookId}`);
         }

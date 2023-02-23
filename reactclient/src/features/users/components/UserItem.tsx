@@ -1,10 +1,15 @@
 import {useDispatch} from "react-redux";
 import {deleteUser, updateUserRole} from "../store/effects";
 import React, {FormEvent, useState} from "react";
-import {AppDispatch} from "../../../store/store";
+import {AppDispatch} from "../../shared/store/store";
 import UpdateUserRole from "../interfaces/UpdateUserRole";
+import GetUser from "../interfaces/GetUser";
 
-const UserItem = ({user}: any) => {
+type Params = {
+    user: GetUser
+}
+
+const UserItem = ({user}: Params) => {
 
     const dispatch = useDispatch<AppDispatch>();
 

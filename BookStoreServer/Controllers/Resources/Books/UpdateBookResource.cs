@@ -12,7 +12,7 @@ public class UpdateBookResource
     public string Info { get; set; }
     [Required, MaxLength(36)]
     public string Genre { get; set; }
-    [Required]
+    [Required, FileExtensions, Url]
     public string Image { get; set; }
     [Required, MaxLength(36)]
     public string Author { get; set; }

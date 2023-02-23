@@ -2,9 +2,15 @@ import {Link} from "react-router-dom";
 import React from "react";
 import {deleteBook} from "../store/effects";
 import {useDispatch} from "react-redux";
-import {AppDispatch} from "../../../store/store";
+import {AppDispatch} from "../../shared/store/store";
+import GetBook from "../interfaces/GetBook";
 
-const BookItem = ({book, isAdmin}: any) => {
+type Params = {
+    book: GetBook,
+    isAdmin: boolean
+}
+
+const BookItem = ({book, isAdmin}: Params) => {
 
     const dispatch = useDispatch<AppDispatch>();
 

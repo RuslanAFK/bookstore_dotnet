@@ -1,4 +1,4 @@
-import {AnyAction} from "@reduxjs/toolkit";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 export interface CommonState {
     fetched: boolean,
@@ -8,17 +8,15 @@ export interface CommonState {
 
 export const getPending = (state: CommonState) => {
     state.fetched = false;
-    state.error = null;
 }
-export const getRejected = (state: CommonState, {payload}: AnyAction) => {
+export const getRejected = (state: CommonState, {payload}: PayloadAction<string>) => {
     state.fetched = false;
     state.error = payload;
 }
 export const changePending = (state: CommonState) => {
     state.changed = false;
-    state.error = null;
 }
-export const changeRejected = (state: CommonState, {payload}: AnyAction) => {
+export const changeRejected = (state: CommonState, {payload}: PayloadAction<string>) => {
     state.changed = false;
     state.error = payload;
 }
