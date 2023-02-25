@@ -14,51 +14,41 @@ namespace BookStoreServer.Controllers;
 [Route("api/[controller]")]
 public class AuthController : Controller
 {
-    private readonly IUsersRepository _repository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly ITokenManager _tokenManager;
+    private readonly IUsersService _usersService;
 
-    public AuthController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper,
-        ITokenManager tokenManager)
+    public AuthController(IMapper mapper, IUsersService usersService)
     {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _tokenManager = tokenManager;
+        _usersService = usersService;
     }
 
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginResource loginResource)
     {
         var user = _mapper.Map<LoginResource, User>(loginResource);
-        var foundUser = await _repository.CheckCredentialsAsync(user);
-        if (foundUser == null)
-            return NotFound();
-        if (!BCrypt.Net.BCrypt.Verify(user.Password, foundUser.Password)) 
-            return BadRequest("Provided incorrect password.");
-        var roleName = await _repository.GetRoleById(foundUser.RoleId);
-        var token = _tokenManager.GenerateToken(foundUser, roleName);
-        return Ok(new AuthResult
+        try
         {
-            Id = foundUser.Id,
-            Username = foundUser.Name,
-            Token = token,
-            Role = roleName
-        });
+            var found = await _usersService.GetAuthResultAsync(user);
+            if (found == null)
+                return NotFound();
+            var res = _mapper.Map<AuthResult, AuthResultResource>(found);
+            return Ok(res);
+        }
+        catch (InvalidDataException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     [HttpPost("Register")]
     public async Task<IActionResult> Register(RegisterResource registerResource)
     {
-        registerResource.Password = BCrypt.Net.BCrypt.HashPassword(registerResource.Password);
         try
         {  
             var userToCreate = _mapper.Map<RegisterResource, User>(registerResource);
-            _repository.Signup(userToCreate);
-            await _repository.AddUserToRole(userToCreate, false);
-            var createSuccessful = await _unitOfWork.CompleteAsync();
-            if (createSuccessful > 0)
+            var createSuccessful = await _usersService.RegisterAsync(userToCreate);
+            if (createSuccessful)
                 return NoContent();
             return BadRequest();
         }
@@ -78,16 +68,12 @@ public class AuthController : Controller
             return BadRequest();
         try
         {
-            var foundUser = await _repository.GetUserByNameAsync(username);
+            var foundUser = await _usersService.GetUserByNameAsync(username);
             if (foundUser == null)
                 return NotFound();
-            if (!BCrypt.Net.BCrypt.Verify(userInfoResource.Password, foundUser.Password)) 
-                return BadRequest("Provided incorrect password.");
-            _mapper.Map(userInfoResource, foundUser);
-            foundUser.Password = BCrypt.Net.BCrypt
-                .HashPassword(userInfoResource.NewPassword ?? userInfoResource.Password);
-            var updateSuccessful = await _unitOfWork.CompleteAsync();
-            if (updateSuccessful > 0)
+            var user = _mapper.Map<UpdateUserInfoResource, User>(userInfoResource);;
+            var updateSuccessful = await _usersService.UpdateProfileAsync(foundUser, user, userInfoResource.NewPassword);
+            if (updateSuccessful)
                 return NoContent();
             return BadRequest();
         }
@@ -96,25 +82,26 @@ public class AuthController : Controller
             var inner = e.InnerException;
             return BadRequest(inner==null ? e.Message : inner.Message);
         }
+        catch (InvalidDataException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
     
     [HttpDelete]
     [Authorize]
-    public async Task<IActionResult> DeleteMyself(DeleteUserResource resource)
+    public async Task<IActionResult> DeleteAccount(DeleteUserResource resource)
     {
         var username = (HttpContext.User.Identity as ClaimsIdentity)?.Name;
         if (username == null)
             return BadRequest();
         try
         {
-            var userToDelete = await _repository.GetUserByNameAsync(username);
+            var userToDelete = await _usersService.GetUserByNameAsync(username);
             if (userToDelete == null)
                 return NotFound();
-            if (!BCrypt.Net.BCrypt.Verify(resource.Password, userToDelete.Password)) 
-                return BadRequest("Provided incorrect password.");
-            _repository.RemoveUser(userToDelete);
-            var success = await _unitOfWork.CompleteAsync();
-            if (success > 0)
+            var success = await _usersService.DeleteAccountAsync(userToDelete, resource.Password);
+            if (success)
                 return NoContent();
             return BadRequest();
         }
@@ -122,6 +109,10 @@ public class AuthController : Controller
         {
             var inner = e.InnerException;
             return BadRequest(inner==null ? e.Message : inner.Message);
+        }
+        catch (InvalidDataException e)
+        {
+            return BadRequest(e.Message);
         }
     }
 }

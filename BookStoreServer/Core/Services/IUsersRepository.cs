@@ -8,8 +8,8 @@ public interface IUsersRepository
     Task<User?> GetUserByIdAsync(int userId);
     Task<User?> GetUserByNameAsync(string username);
     void RemoveUser(User user);
-    void Signup(User userToCreate);
-    Task<User?> CheckCredentialsAsync(User userToLogin);
+    void CreateUser(User userToCreate);
+    Task<User?> GetFullUser(User userToLogin);
     Task<string> GetRoleById(int roleId);
     Task AddUserToRole(User user, bool isAdmin);
 }

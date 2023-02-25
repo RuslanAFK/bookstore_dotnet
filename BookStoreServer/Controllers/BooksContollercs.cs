@@ -13,25 +13,20 @@ namespace BookStoreServer.Controllers;
 [Route("api/[controller]")]
 public class BooksController : Controller
 {
-    private readonly IBooksRepository _repository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IBookFileService _bookFileService;
+    private readonly IBooksService _booksService;
 
-    public BooksController(IBooksRepository repository, IUnitOfWork unitOfWork, IMapper mapper, 
-        IBookFileService bookFileService)
+    public BooksController(IMapper mapper, IBooksService booksService)
     {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _bookFileService = bookFileService;
+        _booksService = booksService;
     }
 
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
     {
-        var books = await _repository.GetBooksAsync(queryObject);
+        var books = await _booksService.GetBooksAsync(queryObject);
         var res = 
             _mapper.Map<ListResponse<Book>, ListResponseResource<GetBooksResource>>(books);
         return Ok(res);
@@ -41,7 +36,7 @@ public class BooksController : Controller
     [Authorize]
     public async Task<IActionResult> Get(int bookId)
     {
-        var bookToReturn = await _repository.GetBookByIdAsync(bookId);
+        var bookToReturn = await _booksService.GetBookByIdAsync(bookId);
         if (bookToReturn == null)
             return NotFound();
         var res = _mapper.Map<Book, GetSingleBookResource>(bookToReturn);
@@ -55,11 +50,10 @@ public class BooksController : Controller
         var bookToCreate = _mapper.Map<CreateBookResource, Book>(bookResource);
         try
         {
-            await _repository.CreateBookAsync(bookToCreate);
-            var createSuccessful = await _unitOfWork.CompleteAsync();
-            if (createSuccessful <= 0) 
-                return BadRequest();
-            return NoContent();
+            var createSuccessful = await _booksService.CreateBookAsync(bookToCreate);
+            if (createSuccessful) 
+                return NoContent();
+            return BadRequest();
         }
         catch (DbUpdateException e)
         {
@@ -75,11 +69,10 @@ public class BooksController : Controller
         var bookToUpdate = _mapper.Map<UpdateBookResource, Book>(bookResource);
         try
         {
-            _repository.UpdateBook(bookToUpdate);
-            var updateSuccessful = await _unitOfWork.CompleteAsync();
-            if (updateSuccessful <= 0) 
-                return BadRequest();
-            return NoContent();
+            var updateSuccessful = await _booksService.UpdateBookAsync(bookToUpdate);
+            if (updateSuccessful) 
+                return NoContent();
+            return BadRequest();
         }
         catch (DbUpdateException e)
         {
@@ -94,15 +87,13 @@ public class BooksController : Controller
     {
         try
         {
-            var bookToDelete = await _repository.GetBookByIdAsync(bookId);
+            var bookToDelete = await _booksService.GetBookByIdAsync(bookId);
             if (bookToDelete == null)
                 return NotFound();
-            await _bookFileService.RemoveBookFile(bookToDelete);
-            _repository.DeleteBook(bookToDelete);
-            var success = await _unitOfWork.CompleteAsync();
-            if (success <= 0)
-                return BadRequest();
-            return NoContent();
+            var success = await _booksService.DeleteBookAsync(bookToDelete);
+            if (success)
+                return NoContent();
+            return BadRequest();
         }
         catch (DbUpdateException e)
         {

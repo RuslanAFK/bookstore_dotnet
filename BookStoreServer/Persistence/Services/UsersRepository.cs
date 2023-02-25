@@ -44,12 +44,12 @@ namespace BookStoreServer.Persistence.Services
             _context.Users.Remove(user);
         }
         
-        public void Signup(User userToCreate)
+        public void CreateUser(User userToCreate)
         {
             _context.Users.Add(userToCreate);
         }
 
-        public async Task<User?> CheckCredentialsAsync(User userToLogin)
+        public async Task<User?> GetFullUser(User userToLogin)
         {
             var userFound = await _context.Users.SingleOrDefaultAsync(user =>
                 user.Name == userToLogin.Name);

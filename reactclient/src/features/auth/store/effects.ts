@@ -1,8 +1,8 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
 import {AUTH_URL} from "../../shared/store/urls";
-import {handleError} from "../../shared/services/errorHandler";
-import {addBearerToken, getToken} from "../../shared/services/tokenManager";
+import {handleError} from "../../shared/services/error-handler";
+import {addBearerToken, getToken} from "../../shared/services/token-manager";
 import AuthUser from "../interfaces/AuthUser";
 import UpdateUser from "../interfaces/UpdateUser";
 import AuthResult from "../interfaces/AuthResult";

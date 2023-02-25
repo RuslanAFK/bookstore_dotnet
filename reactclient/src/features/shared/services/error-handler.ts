@@ -1,4 +1,10 @@
+import {AxiosError} from "axios";
+
 export const handleError = (e: any, rejectWithValue: any) => {
+
+    if (e instanceof AxiosError && e.code === AxiosError.ERR_NETWORK)
+        return rejectWithValue(e.message);
+
     let message = e.message ?? "Unknown error occurred.";
     let responseData = e?.response?.data;
     let code = responseData?.status ?? e?.response?.status;
@@ -10,11 +16,12 @@ export const handleError = (e: any, rejectWithValue: any) => {
         message = responseData;
     else if (responseData.errors) {
         let errors = responseData.errors;
-        for (let i in errors) {
-            message = errors[i][0] ?? message;
-            break;
-        }
+        let errorArr = [];
+        for (let i in errors)
+            errorArr.push(errors[i][0]);
+        message = errorArr.join("\n");
     }
+
     if (message.includes("duplicate"))
         message = "Already exists."
 

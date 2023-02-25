@@ -14,22 +14,20 @@ namespace BookStoreServer.Controllers;
 [Route("api/[controller]")]
 public class UsersController : Controller
 {
-    private readonly IUsersRepository _repository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IUsersService _usersService;
 
-    public UsersController(IUsersRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
+    public UsersController(IMapper mapper, IUsersService usersService)
     {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _usersService = usersService;
     }
     
     [HttpGet]
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
     {
-        var users = await _repository.GetUsersAsync(queryObject);
+        var users = await _usersService.GetUsersAsync(queryObject);
         var res = 
             _mapper.Map<ListResponse<User>, ListResponseResource<GetUsersResource>>(users);
         return Ok(res);
@@ -39,7 +37,7 @@ public class UsersController : Controller
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> Get(int bookId)
     {
-        var userToReturn = await _repository.GetUserByIdAsync(bookId);
+        var userToReturn = await _usersService.GetUserByIdAsync(bookId);
         if (userToReturn == null)
             return NotFound();
         
@@ -53,14 +51,12 @@ public class UsersController : Controller
     {
         try
         {
-            var foundUser = await _repository.GetUserByIdAsync(userRoleResource.Id);
+            var foundUser = await _usersService.GetUserByIdAsync(userRoleResource.Id);
             if (foundUser == null)
                 return NotFound();
             var isAdmin = userRoleResource.RoleName == Roles.Admin;
-            await _repository.AddUserToRole(foundUser, isAdmin);
-            _mapper.Map(userRoleResource, foundUser);
-            var updateSuccessful = await _unitOfWork.CompleteAsync();
-            if (updateSuccessful > 0)
+            var updated = await _usersService.AddUserToRoleAsync(foundUser, isAdmin);
+            if (updated)
                 return NoContent();
             return BadRequest();
         }
@@ -77,12 +73,11 @@ public class UsersController : Controller
     {
         try
         {
-            var userToDelete = await _repository.GetUserByIdAsync(userId);
+            var userToDelete = await _usersService.GetUserByIdAsync(userId);
             if (userToDelete == null)
                 return NotFound();
-            _repository.RemoveUser(userToDelete);
-            var success = await _unitOfWork.CompleteAsync();
-            if (success > 0)
+            var success = await _usersService.RemoveUserAsync(userToDelete);
+            if (success)
                 return NoContent();
             return BadRequest();
         }
