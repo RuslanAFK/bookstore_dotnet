@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import {FormEvent, useEffect, useState} from "react";
 import Input from "../../shared/components/input/Input";
-import {updateProfile} from "../store/effects";
+import {deleteAccount, updateProfile} from "../store/effects";
 import {notify} from "../../shared/services/toast-notifier";
 import {ToastContainer} from "react-toastify";
 import {AppDispatch, RootState} from "../../shared/store/store";
@@ -10,6 +10,7 @@ import UpdateUser from "../interfaces/UpdateUser";
 import {applyUpdate, clearError} from "../store/auth-slice";
 import SpinnerButton from "../../shared/components/spinners/SpinnerButton";
 import Spinner from "../../shared/components/spinners/Spinner";
+import {isCreator} from "../store/selectors";
 
 const Profile = () => {
 
@@ -54,6 +55,12 @@ const Profile = () => {
         }
     }
 
+    const onDeleteAccount = () => {
+        if (authState.user && window.confirm("Do you really want to delete your account?")) {
+            dispatch(deleteAccount({password}));
+        }
+    }
+
 
     return (
         <div>
@@ -65,10 +72,19 @@ const Profile = () => {
                         <Input name="Password" setter={setPassword} text="Required." textStyle="danger" type="password" />
                         <Input name="New Password" setter={setNewPassword} text="Optional." type="password" />
                         {authState.changing ?
-                            <div className="my-3 w-100">
+                            <div className="my-2 w-100">
                                 <SpinnerButton/>
                             </div> :
-                            <button className="btn btn-primary w-100">Save</button>
+                            <button className="btn btn-primary w-100 my-2">Save</button>
+                        }
+                        {authState.changing ?
+                            <div className="my-2 w-100">
+                                <SpinnerButton/>
+                            </div> :
+                            <button disabled={isCreator(authState)} type="button"
+                                    className="btn btn-danger w-100 my-2"
+                                    onClick={onDeleteAccount}
+                            >Delete Account</button>
                         }
                     </form>
                 </div>}

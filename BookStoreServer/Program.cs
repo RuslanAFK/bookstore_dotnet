@@ -1,9 +1,9 @@
 using System.Security.Cryptography;
 using BookStoreServer.Core.Services;
-using BookStoreServer.Enums;
 using BookStoreServer.Hubs;
 using BookStoreServer.Persistence;
 using BookStoreServer.Persistence.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -44,8 +44,11 @@ builder.Services.AddSingleton<RsaSecurityKey>(provider =>
     return new RsaSecurityKey(rsa);
 });
 
-builder.Services.AddAuthentication()
-    .AddJwtBearer(AuthSchemes.Asymmetric, options =>
+builder.Services.AddAuthentication(x =>
+    {
+        x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
     {
         var rsa = builder.Services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
         
@@ -58,6 +61,22 @@ builder.Services.AddAuthentication()
             ValidateLifetime = true,
             ValidateAudience = false,
             ValidateIssuer = false
+        };
+        
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken;
+                }
+                
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -91,6 +110,6 @@ app.MapControllers();
 
 app.UseStaticFiles();
 
-app.MapHub<BooksHub>("/hubs/books");
+app.MapHub<UsersHub>("/hubs/users");
 
 app.Run();

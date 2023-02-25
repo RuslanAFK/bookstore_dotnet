@@ -1,8 +1,8 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {login, register, updateProfile} from "./effects";
+import {deleteAccount, login, register, updateProfile} from "./effects";
 import {
     authRejected,
-    changePending,
+    changePending, deleteSuccessful,
     loginPending,
     loginSuccessful,
     registerSuccessful,
@@ -52,6 +52,10 @@ const authSlice = createSlice({
         [register.pending.toString()]: changePending,
         [register.fulfilled.toString()]: registerSuccessful,
         [register.rejected.toString()]: authRejected,
+
+        [deleteAccount.pending.toString()]: changePending,
+        [deleteAccount.rejected.toString()]: authRejected,
+        [deleteAccount.fulfilled.toString()]: deleteSuccessful
 
     }
 })

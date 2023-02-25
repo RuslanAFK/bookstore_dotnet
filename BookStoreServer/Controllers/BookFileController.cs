@@ -22,7 +22,7 @@ public class BookFileController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = Roles.AdminAndCreator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
+    [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Create(int bookId, IFormFile file)
     {
         var book  = await _booksRepository.GetBookByIdAsync(bookId);
@@ -49,7 +49,7 @@ public class BookFileController : Controller
     }
     
     [HttpDelete]
-    [Authorize(Roles = Roles.AdminAndCreator, AuthenticationSchemes = AuthSchemes.Asymmetric)]
+    [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Delete(int bookId)
     {
         var book  = await _booksRepository.GetBookByIdAsync(bookId);

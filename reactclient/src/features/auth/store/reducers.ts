@@ -22,6 +22,12 @@ export const updateSuccessful = (state: AuthState) => {
     state.changing = false;
 }
 
+export const deleteSuccessful = (state: AuthState) => {
+    state.updated = true;
+    state.changing = false;
+    state.user = null;
+}
+
 export const registerSuccessful = (state: AuthState) => {
     state.changing = false;
 }

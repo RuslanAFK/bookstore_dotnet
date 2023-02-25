@@ -33,6 +33,12 @@ namespace BookStoreServer.Persistence.Services
                 .SingleOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<User?> GetUserByNameAsync(string username)
+        {
+            return await _context.Users.Include(u => u.Role)
+                .SingleOrDefaultAsync(u => u.Name == username);
+        }
+
         public void RemoveUser(User user)
         {
             _context.Users.Remove(user);

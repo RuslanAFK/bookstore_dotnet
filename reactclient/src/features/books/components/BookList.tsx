@@ -5,7 +5,6 @@ import {isAdminOrCreator} from "../../auth/store/selectors";
 import BookItem from "./BookItem";
 import Pagination from "../../shared/components/pagination/Pagination";
 import Search from "../../shared/components/search/Search";
-import HubConnector from "../../shared/services/hub-connector";
 import {AppDispatch, RootState} from "../../shared/store/store";
 import QueryObject from "../../shared/interfaces/QueryObject";
 import Spinner from "../../shared/components/spinners/Spinner";
@@ -16,8 +15,6 @@ const BookList = () => {
     const bookState = useSelector((state: RootState) => state.book);
     const authState = useSelector((state: RootState) => state.auth);
 
-    const {subscribe, unsubscribe} = HubConnector();
-
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState('');
 
@@ -25,14 +22,6 @@ const BookList = () => {
         const input: QueryObject = {page: currentPage, search};
         dispatch(getBooks(input));
     }, [currentPage, search]);
-
-    useEffect(() => {
-            subscribe(() => {
-                const input = {page: currentPage, search};
-                dispatch(getBooks(input));
-            })
-            return () => unsubscribe();
-    }, []);
 
 
     const isListEmpty = () => bookState.books.length === 0;

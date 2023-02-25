@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using AutoMapper;
 using BookStoreServer.Controllers.Resources.Auth;
 using BookStoreServer.Controllers.Resources.Users;
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
-using BookStoreServer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -70,12 +70,15 @@ public class AuthController : Controller
     }
     
     [HttpPut]
-    [Authorize(AuthenticationSchemes = AuthSchemes.Asymmetric)]
+    [Authorize]
     public async Task<IActionResult> UpdateProfile(UpdateUserInfoResource userInfoResource)
     {
+        var username = (HttpContext.User.Identity as ClaimsIdentity)?.Name;
+        if (username == null)
+            return BadRequest();
         try
         {
-            var foundUser = await _repository.GetUserByIdAsync(userInfoResource.Id);
+            var foundUser = await _repository.GetUserByNameAsync(username);
             if (foundUser == null)
                 return NotFound();
             if (!BCrypt.Net.BCrypt.Verify(userInfoResource.Password, foundUser.Password)) 
@@ -85,6 +88,33 @@ public class AuthController : Controller
                 .HashPassword(userInfoResource.NewPassword ?? userInfoResource.Password);
             var updateSuccessful = await _unitOfWork.CompleteAsync();
             if (updateSuccessful > 0)
+                return NoContent();
+            return BadRequest();
+        }
+        catch (DbUpdateException e)
+        {
+            var inner = e.InnerException;
+            return BadRequest(inner==null ? e.Message : inner.Message);
+        }
+    }
+    
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> DeleteMyself(DeleteUserResource resource)
+    {
+        var username = (HttpContext.User.Identity as ClaimsIdentity)?.Name;
+        if (username == null)
+            return BadRequest();
+        try
+        {
+            var userToDelete = await _repository.GetUserByNameAsync(username);
+            if (userToDelete == null)
+                return NotFound();
+            if (!BCrypt.Net.BCrypt.Verify(resource.Password, userToDelete.Password)) 
+                return BadRequest("Provided incorrect password.");
+            _repository.RemoveUser(userToDelete);
+            var success = await _unitOfWork.CompleteAsync();
+            if (success > 0)
                 return NoContent();
             return BadRequest();
         }

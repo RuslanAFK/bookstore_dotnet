@@ -3,7 +3,6 @@ import {getBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {BookViewService} from "../services/book-view.service";
-import HubConnector from "../../shared/services/hub-connector";
 import {API_URL} from "../../shared/store/urls";
 import {AppDispatch, RootState} from "../../shared/store/store";
 import Spinner from "../../shared/components/spinners/Spinner";
@@ -15,8 +14,6 @@ const BookView = () => {
     const [book, setBook] = useState<any>();
     const bookState = useSelector((state: RootState) => state.book);
 
-    const {subscribe, unsubscribe} = HubConnector();
-
     const navigate = useNavigate();
 
 
@@ -25,14 +22,6 @@ const BookView = () => {
         dispatch(getBook(bookId));
     }, [params.id]);
 
-
-    useEffect(() => {
-        subscribe(() => {
-            const bookId = BookViewService.getBookIdFromParams(params, navigate);
-            dispatch(getBook(bookId));
-        })
-        return () => unsubscribe();
-    }, []);
 
     useEffect(() => {
         setBook(bookState.books[0])

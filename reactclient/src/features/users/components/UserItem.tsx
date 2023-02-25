@@ -2,7 +2,6 @@ import {useDispatch} from "react-redux";
 import {deleteUser, updateUserRole} from "../store/effects";
 import React, {FormEvent, useState} from "react";
 import {AppDispatch} from "../../shared/store/store";
-import UpdateUserRole from "../interfaces/UpdateUserRole";
 import GetUser from "../interfaces/GetUser";
 
 type Params = {
@@ -15,9 +14,8 @@ const UserItem = ({user, changing}: Params) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const onUserDelete = () => {
-        const {id, username} = user;
-        if (window.confirm(`Do you really want to delete ${username}?`)) {
-            dispatch(deleteUser(id));
+        if (window.confirm(`Do you really want to delete ${user.username}?`)) {
+            dispatch(deleteUser(user));
         }
     }
 
@@ -25,7 +23,7 @@ const UserItem = ({user, changing}: Params) => {
         const {id, username} = user;
         if (window.confirm(`Do you really want to update ${username}?`)) {
             let roleName = isAdmin ? "Admin": "User";
-            const data: UpdateUserRole = {id, roleName}
+            const data: GetUser = {id, roleName, username}
             dispatch(updateUserRole(data));
         }
     }
