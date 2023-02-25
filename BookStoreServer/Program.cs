@@ -1,12 +1,13 @@
 using System.Security.Cryptography;
 using BookStoreServer.Core.Services;
 using BookStoreServer.Hubs;
-using BookStoreServer.Persistence;
-using BookStoreServer.Persistence.Services;
+using Data;
+using Data.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
