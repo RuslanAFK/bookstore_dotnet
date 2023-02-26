@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Filters;
 using BookStoreServer.Hubs;
 using Data;
 using Data.Repositories;
@@ -11,7 +12,7 @@ using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

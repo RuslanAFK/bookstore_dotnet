@@ -6,7 +6,6 @@ using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreServer.Controllers;
 
@@ -27,36 +26,21 @@ public class AuthController : Controller
     public async Task<IActionResult> Login(LoginResource loginResource)
     {
         var user = _mapper.Map<LoginResource, User>(loginResource);
-        try
-        {
-            var found = await _usersService.GetAuthResultAsync(user);
-            if (found == null)
-                return NotFound();
-            var res = _mapper.Map<AuthResult, AuthResultResource>(found);
-            return Ok(res);
-        }
-        catch (InvalidDataException e)
-        {
-            return BadRequest(e.Message);
-        }
+        var found = await _usersService.GetAuthResultAsync(user);
+        if (found == null)
+            return NotFound();
+        var res = _mapper.Map<AuthResult, AuthResultResource>(found);
+        return Ok(res);
     }
 
     [HttpPost("Register")]
     public async Task<IActionResult> Register(RegisterResource registerResource)
     {
-        try
-        {  
-            var userToCreate = _mapper.Map<RegisterResource, User>(registerResource);
-            var createSuccessful = await _usersService.RegisterAsync(userToCreate);
-            if (createSuccessful)
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
+        var userToCreate = _mapper.Map<RegisterResource, User>(registerResource);
+        var createSuccessful = await _usersService.RegisterAsync(userToCreate);
+        if (createSuccessful)
+            return NoContent();
+        return BadRequest();
     }
     
     [HttpPut]
@@ -66,26 +50,14 @@ public class AuthController : Controller
         var username = (HttpContext.User.Identity as ClaimsIdentity)?.Name;
         if (username == null)
             return BadRequest();
-        try
-        {
-            var foundUser = await _usersService.GetUserByNameAsync(username);
-            if (foundUser == null)
-                return NotFound();
-            var user = _mapper.Map<UpdateUserInfoResource, User>(userInfoResource);;
-            var updateSuccessful = await _usersService.UpdateProfileAsync(foundUser, user, userInfoResource.NewPassword);
-            if (updateSuccessful)
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
-        catch (InvalidDataException e)
-        {
-            return BadRequest(e.Message);
-        }
+        var foundUser = await _usersService.GetUserByNameAsync(username);
+        if (foundUser == null)
+            return NotFound();
+        var user = _mapper.Map<UpdateUserInfoResource, User>(userInfoResource);;
+        var updateSuccessful = await _usersService.UpdateProfileAsync(foundUser, user, userInfoResource.NewPassword);
+        if (updateSuccessful)
+            return NoContent();
+        return BadRequest();
     }
     
     [HttpDelete]
@@ -95,24 +67,12 @@ public class AuthController : Controller
         var username = (HttpContext.User.Identity as ClaimsIdentity)?.Name;
         if (username == null)
             return BadRequest();
-        try
-        {
-            var userToDelete = await _usersService.GetUserByNameAsync(username);
-            if (userToDelete == null)
-                return NotFound();
-            var success = await _usersService.DeleteAccountAsync(userToDelete, resource.Password);
-            if (success)
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
-        catch (InvalidDataException e)
-        {
-            return BadRequest(e.Message);
-        }
+        var userToDelete = await _usersService.GetUserByNameAsync(username);
+        if (userToDelete == null)
+            return NotFound();
+        var success = await _usersService.DeleteAccountAsync(userToDelete, resource.Password);
+        if (success)
+            return NoContent();
+        return BadRequest();
     }
 }

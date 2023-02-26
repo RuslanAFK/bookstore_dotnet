@@ -5,7 +5,6 @@ using BookStoreServer.Core.Services;
 using BookStoreServer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreServer.Controllers;
 
@@ -48,18 +47,10 @@ public class BooksController : Controller
     public async Task<IActionResult> Create(CreateBookResource bookResource)
     {
         var bookToCreate = _mapper.Map<CreateBookResource, Book>(bookResource);
-        try
-        {
-            var createSuccessful = await _booksService.CreateBookAsync(bookToCreate);
-            if (createSuccessful) 
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
+        var createSuccessful = await _booksService.CreateBookAsync(bookToCreate);
+        if (createSuccessful) 
+            return NoContent();
+        return BadRequest();
     }
 
     [HttpPut]
@@ -67,38 +58,22 @@ public class BooksController : Controller
     public async Task<IActionResult> Update(UpdateBookResource bookResource)
     {
         var bookToUpdate = _mapper.Map<UpdateBookResource, Book>(bookResource);
-        try
-        {
-            var updateSuccessful = await _booksService.UpdateBookAsync(bookToUpdate);
-            if (updateSuccessful) 
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
+        var updateSuccessful = await _booksService.UpdateBookAsync(bookToUpdate);
+        if (updateSuccessful) 
+            return NoContent();
+        return BadRequest();
     }
 
     [HttpDelete("{bookId}")]
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Delete(int bookId)
     {
-        try
-        {
-            var bookToDelete = await _booksService.GetBookByIdAsync(bookId);
-            if (bookToDelete == null)
-                return NotFound();
-            var success = await _booksService.DeleteBookAsync(bookToDelete);
-            if (success)
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
+        var bookToDelete = await _booksService.GetBookByIdAsync(bookId);
+        if (bookToDelete == null)
+            return NotFound();
+        var success = await _booksService.DeleteBookAsync(bookToDelete);
+        if (success)
+            return NoContent();
+        return BadRequest();
     }
 }

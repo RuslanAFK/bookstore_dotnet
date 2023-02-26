@@ -6,7 +6,6 @@ using BookStoreServer.Core.Services;
 using BookStoreServer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreServer.Controllers;
 
@@ -49,42 +48,26 @@ public class UsersController : Controller
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> UpdateRole(UpdateUserRoleResource userRoleResource)
     {
-        try
-        {
-            var foundUser = await _usersService.GetUserByIdAsync(userRoleResource.Id);
-            if (foundUser == null)
-                return NotFound();
-            var isAdmin = userRoleResource.RoleName == Roles.Admin;
-            var updated = await _usersService.AddUserToRoleAsync(foundUser, isAdmin);
-            if (updated)
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
+        var foundUser = await _usersService.GetUserByIdAsync(userRoleResource.Id);
+        if (foundUser == null)
+            return NotFound();
+        var isAdmin = userRoleResource.RoleName == Roles.Admin;
+        var updated = await _usersService.AddUserToRoleAsync(foundUser, isAdmin);
+        if (updated)
+            return NoContent();
+        return BadRequest();
     }
 
     [HttpDelete("{userId}")]
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> Delete(int userId)
     {
-        try
-        {
-            var userToDelete = await _usersService.GetUserByIdAsync(userId);
-            if (userToDelete == null)
-                return NotFound();
-            var success = await _usersService.RemoveUserAsync(userToDelete);
-            if (success)
-                return NoContent();
-            return BadRequest();
-        }
-        catch (DbUpdateException e)
-        {
-            var inner = e.InnerException;
-            return BadRequest(inner==null ? e.Message : inner.Message);
-        }
+        var userToDelete = await _usersService.GetUserByIdAsync(userId);
+        if (userToDelete == null)
+            return NotFound();
+        var success = await _usersService.RemoveUserAsync(userToDelete);
+        if (success)
+            return NoContent();
+        return BadRequest();
     }    
 }
