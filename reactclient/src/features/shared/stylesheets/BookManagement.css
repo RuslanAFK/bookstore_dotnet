@@ -1,0 +1,9 @@
+.clickableIconBox {
+    display: flex;
+    justify-content: center;
+}
+
+.clickableIcon {
+    width: 3em;
+    cursor: pointer;
+}

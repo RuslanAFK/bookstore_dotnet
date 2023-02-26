@@ -1,5 +1,5 @@
 import React, {FormEvent, useEffect, useState} from "react";
-import Input from "../../shared/components/input/Input";
+import Input from "../../shared/components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {login, register} from "../store/effects";
 import {useNavigate} from "react-router-dom";
@@ -9,13 +9,12 @@ import {notify} from "../../shared/services/toast-notifier";
 import {AppDispatch, RootState} from "../../shared/store/store";
 import AuthUser from "../interfaces/AuthUser";
 import {clearError} from "../store/auth-slice";
-import SpinnerButton from "../../shared/components/spinners/SpinnerButton";
+import SpinnerButton from "../../shared/components/SpinnerButton";
+import MainLabel from "../../shared/components/MainLabel";
+import AuthProps from "../component-props/AuthProps";
 
-type Params = {
-    page: "register" | "login"
-}
 
-const Auth = ({page}: Params) => {
+const Auth = ({page}: AuthProps) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -49,10 +48,9 @@ const Auth = ({page}: Params) => {
     return (
         <div>
             <form onSubmit={handleSubmit} className="w-25 p-3 mx-auto">
-                <h1>{page === "register" ? "Register": "Log In"}</h1>
-
-                <Input name="Username" setter={setUsername}/>
-                <Input name="Password" setter={setPassword} type="password"/>
+                <MainLabel text={page === "register" ? "Register": "Log In"} />
+                <Input name="Username" setter={setUsername} minLength={3} maxLength={16} />
+                <Input name="Password" setter={setPassword} type="password" minLength={3} maxLength={16} />
 
                 { authState.fetching || authState.changing ?
                     <div className="my-3 w-100">

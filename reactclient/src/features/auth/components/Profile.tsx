@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import {FormEvent, useEffect, useState} from "react";
-import Input from "../../shared/components/input/Input";
+import Input from "../../shared/components/Input";
 import {deleteAccount, updateProfile} from "../store/effects";
 import {notify} from "../../shared/services/toast-notifier";
 import {ToastContainer} from "react-toastify";
@@ -8,9 +8,10 @@ import {AppDispatch, RootState} from "../../shared/store/store";
 import React from "react";
 import UpdateUser from "../interfaces/UpdateUser";
 import {applyUpdate, clearError} from "../store/auth-slice";
-import SpinnerButton from "../../shared/components/spinners/SpinnerButton";
-import Spinner from "../../shared/components/spinners/Spinner";
+import SpinnerButton from "../../shared/components/SpinnerButton";
+import Spinner from "../../shared/components/Spinner";
 import {isCreator} from "../store/selectors";
+import MainLabel from "../../shared/components/MainLabel";
 
 const Profile = () => {
 
@@ -66,11 +67,14 @@ const Profile = () => {
         <div>
             {authState.fetching ? <Spinner/> :
                 <div>
-                    <h2 className="text-center my-2">User Profile</h2>
+                    <MainLabel text="User Profile"/>
                     <form className="mx-auto w-25" onSubmit={onSubmit}>
-                        <Input name="Username" setter={setUsername} value={username} text="Required." textStyle="danger" />
-                        <Input name="Password" setter={setPassword} text="Required." textStyle="danger" type="password" />
-                        <Input name="New Password" setter={setNewPassword} text="Optional." type="password" />
+                        <Input name="Username" setter={setUsername} value={username} text="Required."
+                               textStyle="danger" maxLength={16} minLength={3} />
+                        <Input name="Password" setter={setPassword} text="Required." textStyle="danger"
+                               type="password" maxLength={16} minLength={3} />
+                        <Input name="New Password" setter={setNewPassword} text="Optional."
+                               type="password" maxLength={16} minLength={3} required={false} />
                         {authState.changing ?
                             <div className="my-2 w-100">
                                 <SpinnerButton/>

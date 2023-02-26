@@ -3,13 +3,9 @@ import {deleteUser, updateUserRole} from "../store/effects";
 import React, {FormEvent, useState} from "react";
 import {AppDispatch} from "../../shared/store/store";
 import GetUser from "../interfaces/GetUser";
+import UserItemProps from "../component-props/UserItemProps";
 
-type Params = {
-    user: GetUser,
-    changing: boolean
-}
-
-const UserItem = ({user, changing}: Params) => {
+const UserItem = ({user, changing}: UserItemProps) => {
 
     const dispatch = useDispatch<AppDispatch>();
 

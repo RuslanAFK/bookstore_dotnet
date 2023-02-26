@@ -3,10 +3,10 @@ import LoadBook from "./features/books/components/LoadBook";
 import Auth from "./features/auth/components/Auth";
 import BookView from "./features/books/components/BookView";
 import BookList from "./features/books/components/BookList";
-import Navbar from "./features/shared/components/navbar/Navbar";
+import Navbar from "./features/shared/components/Navbar";
 
 import 'react-toastify/dist/ReactToastify.css'
-import Home from "./features/shared/components/home/Home";
+import Home from "./features/shared/components/Home";
 import UserList from "./features/users/components/UserList";
 import Profile from "./features/auth/components/Profile";
 import FileUpload from "./features/books/components/FileUpload";

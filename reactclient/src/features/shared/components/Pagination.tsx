@@ -1,14 +1,8 @@
-import "./Pagination.css";
+import "../stylesheets/Pagination.css";
 import React from "react";
+import PaginationProps from "../component-props/PaginationProps";
 
-type Params = {
-    total: number,
-    currentPage: number,
-    setCurrentPage: Function,
-    pageSize?: number
-}
-
-const Pagination = ({total, currentPage, setCurrentPage, pageSize=4}: Params) => {
+const Pagination = ({total, currentPage, setCurrentPage, pageSize=4}: PaginationProps) => {
 
     let pages = [];
     const pageCount = Math.ceil(total/pageSize);

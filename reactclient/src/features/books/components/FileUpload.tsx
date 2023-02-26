@@ -7,7 +7,8 @@ import {notify} from "../../shared/services/toast-notifier";
 import {ToastContainer} from "react-toastify";
 import {AppDispatch, RootState} from "../../shared/store/store";
 import FileObject from "../../shared/interfaces/FileObject";
-import SpinnerButton from "../../shared/components/spinners/SpinnerButton";
+import SpinnerButton from "../../shared/components/SpinnerButton";
+import MainLabel from "../../shared/components/MainLabel";
 
 const FileUpload = () => {
 
@@ -70,7 +71,7 @@ const FileUpload = () => {
     return (
         <div>
             <form onSubmit={uploadFile} className="mx-auto my-auto w-25">
-                <h2 className="text-center my-3">Manage Book File</h2>
+                <MainLabel text="Manage Book File"/>
                 <label htmlFor="file-upload" className="form-label">Upload .pdf file</label>
                 <input type="file" className="form-control" onChange={onChange} id="file-upload" />
                 {bookState.changing ?

@@ -1,5 +1,5 @@
 import React, {FormEvent, useEffect, useState} from "react";
-import Input from "../../shared/components/input/Input";
+import Input from "../../shared/components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {createBook, getBook, updateBook} from "../store/effects";
 import {useNavigate, useParams} from "react-router-dom";
@@ -9,14 +9,12 @@ import {notify} from "../../shared/services/toast-notifier";
 import {AppDispatch, RootState} from "../../shared/store/store";
 import UpdateBook from "../interfaces/UpdateBook";
 import CreateBook from "../interfaces/CreateBook";
-import Spinner from "../../shared/components/spinners/Spinner";
-import SpinnerButton from "../../shared/components/spinners/SpinnerButton";
+import Spinner from "../../shared/components/Spinner";
+import SpinnerButton from "../../shared/components/SpinnerButton";
+import MainLabel from "../../shared/components/MainLabel";
+import LoadBookProps from "../component-props/LoadBookProps";
 
-type Params = {
-    page: "update" | "create"
-}
-
-const LoadBook = ({page}: Params) => {
+const LoadBook = ({page}: LoadBookProps) => {
     const [info, setInfo] = useState('');
     const [genre, setGenre] = useState('');
     const [author, setAuthor] = useState('');
@@ -83,8 +81,8 @@ const LoadBook = ({page}: Params) => {
 
     useEffect(() => {
         if (bookState.error) {
-            notify(bookState.error, "error");
             dispatch(clearError());
+            notify(bookState.error, "error");
         }
     }, [bookState.error])
 
@@ -111,13 +109,18 @@ const LoadBook = ({page}: Params) => {
             {bookState.fetching ? <Spinner/>:
                 <div>
                     <form className="w-50 p-3 mx-auto" onSubmit={onUploadClicked}>
-                        <h1>Upload Book</h1>
-                        <Input name="Name" value={name} setter={setName} text="The name must have minimum maximum 36 letters."/>
-                        <Input name="Author" value={author} setter={setAuthor} text="Here you put the author of a book."/>
-                        <Input name="Genres" value={genre} setter={setGenre} text="Here you put at least one genre name."/>
-                        <Input name="Description" value={info} textarea setter={setInfo}
-                               text="Your textarea must be 10-400 characters long." rows={4}/>
-                        <Input name="Book image url" value={image} setter={setImage} text="Enter image url."/>
+                        <MainLabel text="Upload Book"/>
+                        <Input name="Name" value={name} setter={setName} minLength={3} maxLength={36}
+                               text="The name must have minimum 3 and maximum 36 letters."/>
+                        <Input name="Author" value={author} setter={setAuthor} minLength={3} maxLength={36}
+                               text="The author name must have 3 to 36 letters."/>
+                        <Input name="Genres" value={genre} setter={setGenre} minLength={3} maxLength={36}
+                               text="Enter genre names divided by commas."/>
+                        <Input name="Description" value={info} textarea rows={4}
+                               setter={setInfo} minLength={10} maxLength={400}
+                               text="Your textarea must be 10-400 characters long."/>
+                        <Input name="Book image url" textarea rows={2} value={image} setter={setImage}
+                               text="Enter valid image url." type="url"/>
                         {bookState.changing ? <div className="my-3 w-100"><SpinnerButton/></div> :
                             <button className="my-3 w-100 btn btn-primary">Upload</button>
                         }

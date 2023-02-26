@@ -1,14 +1,15 @@
 import {useDispatch, useSelector} from "react-redux";
 import {notify} from "../../shared/services/toast-notifier";
 import UserItem from "./UserItem";
-import Pagination from "../../shared/components/pagination/Pagination";
+import Pagination from "../../shared/components/Pagination";
 import {ToastContainer} from "react-toastify";
 import React, {useEffect, useState} from "react";
 import {getUsers} from "../store/effects";
-import Search from "../../shared/components/search/Search";
+import Search from "../../shared/components/Search";
 import {clearError} from "../store/user-slice";
 import {AppDispatch, RootState} from "../../shared/store/store";
-import Spinner from "../../shared/components/spinners/Spinner";
+import Spinner from "../../shared/components/Spinner";
+import MainLabel from "../../shared/components/MainLabel";
 
 const UserList = () => {
 
@@ -37,7 +38,7 @@ const UserList = () => {
 
     return (
         <div>
-            <h1 className="text-center">Users</h1>
+            <MainLabel text="Users"/>
             <Search search={search} setSearch={setSearch}/>
             {userState.fetching ? <Spinner/> :
             <div>

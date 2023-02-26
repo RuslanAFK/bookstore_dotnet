@@ -1,13 +1,12 @@
 import React, {useEffect} from "react";
-import "./Navbar.css";
+import "../stylesheets/Navbar.css";
 import {useDispatch, useSelector} from "react-redux";
 import {Link, useNavigate} from "react-router-dom";
-import {isAdminOrCreator, isAuthed, isCreator} from "../../../auth/store/selectors";
-import {logout} from "../../../auth/store/auth-slice";
-import {AppDispatch, RootState} from "../../store/store";
-import SpinnerButton from "../spinners/SpinnerButton";
-import UserHubConnector, {old} from "../../services/user-hub-connector";
-import {notify} from "../../services/toast-notifier";
+import {isAdminOrCreator, isAuthed, isCreator} from "../../auth/store/selectors";
+import {logout} from "../../auth/store/auth-slice";
+import {AppDispatch, RootState} from "../store/store";
+import UserHubConnector, {old} from "../services/user-hub-connector";
+import {notify} from "../services/toast-notifier";
 
 const Navbar = () => {
 
@@ -47,7 +46,7 @@ const Navbar = () => {
     return (
         <div>
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary rounded">
-                <Link className="navbar-brand" to="/">{logoText}</Link>
+                <Link className="navbar-brand mx-2" to="/">{logoText}</Link>
                 <div className="collapse navbar-collapse">
                     <ul className="navbar-nav">
                         <li className="nav-item active">
@@ -72,9 +71,7 @@ const Navbar = () => {
                             authState.fetching ? (
                                 <>
                                     <li className="nav-item">
-                                        <span className="nav-link">
-                                            <SpinnerButton/>
-                                        </span>
+                                        <span className="nav-link">Loading...</span>
                                     </li>
                                 </>
                                 ) :

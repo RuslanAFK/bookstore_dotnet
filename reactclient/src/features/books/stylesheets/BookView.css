@@ -1,0 +1,9 @@
+.bookViewImage {
+    width: 18em;
+    height: 28em;
+}
+
+.clickableIconInView {
+    width: 3em;
+    cursor: pointer;
+}
