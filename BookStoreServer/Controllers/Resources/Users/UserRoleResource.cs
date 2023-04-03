@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookStoreServer.Controllers.Resources.Users;
 
-public class UpdateUserRoleResource
+public class UserRoleResource
 {
-    [Required]
-    public int Id { get; set; }
     [Required]
     public string RoleName { get; set; }
 }

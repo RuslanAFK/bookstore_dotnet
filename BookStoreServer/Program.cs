@@ -13,6 +13,7 @@ using Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
+builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

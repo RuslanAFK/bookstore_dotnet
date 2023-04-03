@@ -44,15 +44,14 @@ public class UsersController : Controller
         return Ok(res);
     }
     
-    [HttpPut]
+    [HttpPatch("{id:int}")]
     [Authorize(Roles = Roles.Creator)]
-    public async Task<IActionResult> UpdateRole(UpdateUserRoleResource userRoleResource)
+    public async Task<IActionResult> UpdateRole(int id, UserRoleResource userRoleResource)
     {
-        var foundUser = await _usersService.GetUserByIdAsync(userRoleResource.Id);
+        var foundUser = await _usersService.GetUserByIdAsync(id);
         if (foundUser == null)
             return NotFound();
-        var isAdmin = userRoleResource.RoleName == Roles.Admin;
-        var updated = await _usersService.AddUserToRoleAsync(foundUser, isAdmin);
+        var updated = await _usersService.AddUserToRoleAsync(foundUser, userRoleResource.RoleName);
         if (updated)
             return NoContent();
         return BadRequest();

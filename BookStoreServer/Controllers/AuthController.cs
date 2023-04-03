@@ -43,7 +43,7 @@ public class AuthController : Controller
         return BadRequest();
     }
     
-    [HttpPut]
+    [HttpPatch]
     [Authorize]
     public async Task<IActionResult> UpdateProfile(UpdateUserInfoResource userInfoResource)
     {

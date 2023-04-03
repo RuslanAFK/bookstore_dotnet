@@ -62,7 +62,7 @@ public class UsersRepository : IUsersRepository
         return role.RoleName;
     }
 
-    public async Task AddUserToRole(User user, bool isAdmin)
+    public async Task GiveUserStatus(User user, bool isAdmin)
     {
         var roleName = isAdmin ? Roles.Admin : Roles.User;
             

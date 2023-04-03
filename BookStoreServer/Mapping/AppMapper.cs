@@ -17,7 +17,6 @@ public class MappingProfile : Profile
             .ForMember(user => user.Name, opt => 
                 opt.MapFrom(resource => resource.Username));
         CreateMap<CreateBookResource, Book>();
-        CreateMap<UpdateBookResource, Book>();
         
         CreateMap<UpdateUserInfoResource, User>()
             .ForMember(user => user.Name, opt =>

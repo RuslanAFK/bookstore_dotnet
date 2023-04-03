@@ -40,7 +40,7 @@ export const updateProfile = createAsyncThunk(
         try {
             const token = getToken(thunkAPI);
             const headers = addBearerToken(token);
-            await axios.put<void>(AUTH_URL, userData, {headers: headers});
+            await axios.patch<void>(AUTH_URL, userData, {headers: headers});
             const toLogin = {username: userData.username, password: userData.newPassword ?? userData.password};
             return thunkAPI.dispatch(login(toLogin));
         } catch (e) {

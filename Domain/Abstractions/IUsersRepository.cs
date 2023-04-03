@@ -11,5 +11,5 @@ public interface IUsersRepository
     void CreateUser(User userToCreate);
     Task<User?> GetFullUser(User userToLogin);
     Task<string> GetRoleById(int roleId);
-    Task AddUserToRole(User user, bool isAdmin);
+    Task GiveUserStatus(User user, bool isAdmin);
 }

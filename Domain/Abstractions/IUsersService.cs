@@ -12,5 +12,5 @@ public interface IUsersService
     Task<AuthResult?> GetAuthResultAsync(User user);
     Task<bool> UpdateProfileAsync(User foundUser, User user, string? newPassword);
     Task<bool> DeleteAccountAsync(User user, string inputtedPassword);
-    Task<bool> AddUserToRoleAsync(User user, bool isAdmin);
+    Task<bool> AddUserToRoleAsync(User user, string roleName);
 }

@@ -33,8 +33,9 @@ namespace Services
             return await IsCompleted();
         }
 
-        public async Task<bool> UpdateBookAsync(Book bookToUpdate)
+        public async Task<bool> UpdateBookAsync(int bookId, Book bookToUpdate)
         {
+            bookToUpdate.Id = bookId;
             _booksRepository.UpdateBook(bookToUpdate);
             return await IsCompleted();
         }

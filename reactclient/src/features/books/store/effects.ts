@@ -59,9 +59,11 @@ export const updateBook = createAsyncThunk(
     "book/updateBook",
     async (bookData: UpdateBook, thunkAPI) => {
         try {
+            const book: CreateBook = {...bookData};
+            const bookId = bookData.id;
             const token = getToken(thunkAPI);
             const headers = addBearerToken(token);
-            const {data} = await axios.put<void>(BOOK_URL, bookData, {headers: headers});
+            const {data} = await axios.patch<void>(`${BOOK_URL}/${bookId}`, book, {headers: headers});
             return data;
         } catch (e) {
             return handleError(e, thunkAPI.rejectWithValue);

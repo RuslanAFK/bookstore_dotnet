@@ -53,12 +53,12 @@ public class BooksController : Controller
         return BadRequest();
     }
 
-    [HttpPut]
+    [HttpPatch("{id:int}")]
     [Authorize(Roles = Roles.AdminAndCreator)]
-    public async Task<IActionResult> Update(UpdateBookResource bookResource)
+    public async Task<IActionResult> Update(int id, CreateBookResource bookResource)
     {
-        var bookToUpdate = _mapper.Map<UpdateBookResource, Book>(bookResource);
-        var updateSuccessful = await _booksService.UpdateBookAsync(bookToUpdate);
+        var bookToUpdate = _mapper.Map<CreateBookResource, Book>(bookResource);
+        var updateSuccessful = await _booksService.UpdateBookAsync(id, bookToUpdate);
         if (updateSuccessful) 
             return NoContent();
         return BadRequest();

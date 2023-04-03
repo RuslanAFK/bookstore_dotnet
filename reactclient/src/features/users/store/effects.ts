@@ -45,9 +45,10 @@ export const updateUserRole = createAsyncThunk(
     async (userData: GetUser, thunkAPI) => {
         try {
             const updateUserData: UpdateUserRole = {...userData};
+            const id = userData.id;
             const token = getToken(thunkAPI);
             const headers = addBearerToken(token);
-            const {data} = await axios.put<void>(USER_URL, updateUserData, {headers: headers});
+            const {data} = await axios.patch<void>(`${USER_URL}/${id}`, updateUserData, {headers: headers});
             const {roleName, username} = userData;
             UserHubConnector(token).changeRole(username, roleName);
             return data;

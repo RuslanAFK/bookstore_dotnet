@@ -1,5 +1,6 @@
 using BookStoreServer.Core.Models;
 using BookStoreServer.Core.Services;
+using BookStoreServer.Enums;
 
 namespace Services;
 
@@ -43,7 +44,7 @@ public class UsersService : IUsersService
         // Create User
         _usersRepository.CreateUser(userToCreate);
         // Add user to role
-        await _usersRepository.AddUserToRole(userToCreate, false);
+        await _usersRepository.GiveUserStatus(userToCreate, false);
         return await IsCompleted();
     }
 
@@ -84,9 +85,11 @@ public class UsersService : IUsersService
         return await IsCompleted();
     }
 
-    public async Task<bool> AddUserToRoleAsync(User user, bool isAdmin)
+    public async Task<bool> AddUserToRoleAsync(User user, string roleName)
     {
-        await _usersRepository.AddUserToRole(user, isAdmin);
+        if (user.Role.RoleName == roleName)
+            throw new InvalidDataException("Role is the same. Change it first.");
+        await _usersRepository.GiveUserStatus(user, roleName == Roles.Admin);
         return await IsCompleted();
     }
     private async Task<bool> IsCompleted()

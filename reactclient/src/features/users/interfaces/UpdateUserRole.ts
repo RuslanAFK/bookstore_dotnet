@@ -1,5 +1,4 @@
 interface UpdateUserRole {
-    id: number,
     roleName: string
 }
 

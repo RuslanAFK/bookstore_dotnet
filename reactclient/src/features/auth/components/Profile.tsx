@@ -48,9 +48,9 @@ const Profile = () => {
         e.preventDefault();
         const id = authState.user?.id;
         if (id !== undefined) {
-            let userData: UpdateUser = {id, username, password};
+            let userData: UpdateUser = {username, password};
             if (newPassword!=='') {
-                userData = {id, username, password, newPassword};
+                userData = {username, password, newPassword};
             }
             dispatch(updateProfile(userData));
         }
