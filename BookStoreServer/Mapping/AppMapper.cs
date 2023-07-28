@@ -2,7 +2,7 @@ using AutoMapper;
 using BookStoreServer.Controllers.Resources.Auth;
 using BookStoreServer.Controllers.Resources.Books;
 using BookStoreServer.Controllers.Resources.Users;
-using BookStoreServer.Core.Models;
+using Domain.Models;
 
 namespace BookStoreServer.Mapping;
 

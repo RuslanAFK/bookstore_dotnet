@@ -1,15 +1,12 @@
-using BookStoreServer.Core.Models;
+using Domain.Models;
 
-namespace BookStoreServer.Core.Services;
+namespace Domain.Abstractions;
 
-public interface IUsersRepository
+public interface IUsersRepository : IBaseRepository<User>
 {
-    Task<ListResponse<User>> GetUsersAsync(QueryObject queryObject);
-    Task<User?> GetUserByIdAsync(int userId);
-    Task<User?> GetUserByNameAsync(string username);
-    void RemoveUser(User user);
-    void CreateUser(User userToCreate);
-    Task<User?> GetFullUser(User userToLogin);
-    Task<string> GetRoleById(int roleId);
-    Task GiveUserStatus(User user, bool isAdmin);
+    Task<ListResponse<User>> GetQueriedItemsAsync(Query query);
+    Task<User> GetByIdIncludingRolesAsync(int id);
+    Task<User> GetByNameAsync(string name);
+    Task<User> GetByNameIncludingRolesAsync(string name);
 }
+

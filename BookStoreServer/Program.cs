@@ -1,9 +1,10 @@
 using System.Security.Cryptography;
-using BookStoreServer.Core.Services;
-using BookStoreServer.Filters;
+using BookStoreServer.ExceptionHandlers;
 using BookStoreServer.Hubs;
 using Data;
 using Data.Repositories;
+using Domain.Abstractions;
+using Domain.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,7 +13,7 @@ using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
+//builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -21,14 +22,18 @@ builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreConnection")));
 
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
+builder.Services.AddScoped<IBaseRepository<BookFile>, BookFileRepository>();
 builder.Services.AddScoped<IBooksService, BooksService>();
+builder.Services.AddScoped<IBookFilesService, BookFilesService>();
 
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IRolesRepository, RolesRepository>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<ITokenManager, TokenManager>();
-builder.Services.AddScoped<IFileStorage, FileStorage>();
+builder.Services.AddScoped<ITokenManager, TokenService>();
+builder.Services.AddScoped<IFileStorageService, FileService>();
 
 builder.Services.AddSignalR();
 
@@ -103,7 +108,7 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty;
 });
 
-
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");

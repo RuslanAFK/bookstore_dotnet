@@ -1,4 +1,4 @@
-using BookStoreServer.Core.Services;
+using Domain.Abstractions;
 
 namespace Data.Repositories;
 
@@ -10,8 +10,9 @@ public class UnitOfWork : IUnitOfWork
     {
         _context = context;
     }
-    public async Task<int> CompleteAsync()
+    public async Task<bool> CompleteAsync()
     {
-        return await _context.SaveChangesAsync();
+        var stateEntries = await _context.SaveChangesAsync();
+        return stateEntries > 0;
     }
 }

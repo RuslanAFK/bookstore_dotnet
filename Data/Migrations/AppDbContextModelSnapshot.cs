@@ -17,12 +17,12 @@ namespace BookStoreServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasAnnotation("ProductVersion", "6.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("BookStoreServer.Core.Models.Book", b =>
+            modelBuilder.Entity("Domain.Models.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,10 +58,10 @@ namespace BookStoreServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
-            modelBuilder.Entity("BookStoreServer.Core.Models.BookFile", b =>
+            modelBuilder.Entity("Domain.Models.BookFile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -81,10 +81,10 @@ namespace BookStoreServer.Migrations
                     b.HasIndex("BookId")
                         .IsUnique();
 
-                    b.ToTable("BookFiles");
+                    b.ToTable("BookFiles", (string)null);
                 });
 
-            modelBuilder.Entity("BookStoreServer.Core.Models.Role", b =>
+            modelBuilder.Entity("Domain.Models.Role", b =>
                 {
                     b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
@@ -98,7 +98,7 @@ namespace BookStoreServer.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -118,7 +118,7 @@ namespace BookStoreServer.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BookStoreServer.Core.Models.User", b =>
+            modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,23 +146,32 @@ namespace BookStoreServer.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "superuser",
+                            Password = "$2a$10$vqFdinva5Hbed0FO7mcXUuhjbiUTjr0ofh3r/xkefFPHFmUFfvAiW",
+                            RoleId = 3
+                        });
                 });
 
-            modelBuilder.Entity("BookStoreServer.Core.Models.BookFile", b =>
+            modelBuilder.Entity("Domain.Models.BookFile", b =>
                 {
-                    b.HasOne("BookStoreServer.Core.Models.Book", "Book")
+                    b.HasOne("Domain.Models.Book", "Book")
                         .WithOne("BookFile")
-                        .HasForeignKey("BookStoreServer.Core.Models.BookFile", "BookId")
+                        .HasForeignKey("Domain.Models.BookFile", "BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Book");
                 });
 
-            modelBuilder.Entity("BookStoreServer.Core.Models.User", b =>
+            modelBuilder.Entity("Domain.Models.User", b =>
                 {
-                    b.HasOne("BookStoreServer.Core.Models.Role", "Role")
+                    b.HasOne("Domain.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -171,12 +180,12 @@ namespace BookStoreServer.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("BookStoreServer.Core.Models.Book", b =>
+            modelBuilder.Entity("Domain.Models.Book", b =>
                 {
                     b.Navigation("BookFile");
                 });
 
-            modelBuilder.Entity("BookStoreServer.Core.Models.Role", b =>
+            modelBuilder.Entity("Domain.Models.Role", b =>
                 {
                     b.Navigation("Users");
                 });

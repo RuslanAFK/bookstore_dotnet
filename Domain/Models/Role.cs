@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace BookStoreServer.Core.Models;
+namespace Domain.Models;
 
 public class Role
 {

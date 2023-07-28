@@ -1,5 +1,5 @@
-using BookStoreServer.Core.Services;
-using BookStoreServer.Enums;
+using Domain.Abstractions;
+using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,39 +10,30 @@ namespace BookStoreServer.Controllers;
 public class BookFileController : Controller
 {
     private readonly IBooksService _booksService;
+    private readonly IBookFilesService _bookFilesService;
 
-    public BookFileController(IBooksService booksService)
+    public BookFileController(IBooksService booksService, IBookFilesService bookFilesService)
     {
         _booksService = booksService;
+        _bookFilesService = bookFilesService;
     }
 
     [HttpPost]
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Create(int bookId, IFormFile file)
     {
-        if (file.Length == 0)
-            return BadRequest("Empty file is not permitted.");
-        if (!file.FileName.EndsWith("pdf"))
-            return BadRequest($"Unsupported file type. Supported is only pdf.");
-        var book  = await _booksService.GetBookByIdAsync(bookId);
-        if (book == null)
-            return NotFound();
-        var added = await _booksService.AddFileToBookAsync(book, file);
-        if (added)
-            return NoContent();
-        return BadRequest();
+        _bookFilesService.CheckIfFilePermitted(file);
+        var book = await _booksService.GetByIdAsync(bookId);
+        await _bookFilesService.AddAsync(book, file);
+        return NoContent();
     }
     
     [HttpDelete]
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Delete(int bookId)
     {
-        var book  = await _booksService.GetBookByIdAsync(bookId);
-        if (book?.BookFile == null)
-            return NotFound();
-        var removed = await _booksService.RemoveFileFromBookAsync(book);
-        if (removed)
-            return NoContent();
-        return BadRequest();
+        var book = await _booksService.GetByIdAsync(bookId);
+        await _bookFilesService.RemoveAsync(book);
+        return NoContent();
     }
 }

@@ -1,14 +1,9 @@
-using BookStoreServer.Core.Models;
+using Domain.Models;
 
-namespace BookStoreServer.Core.Services;
+namespace Domain.Abstractions;
 
-public interface IBooksRepository
+public interface IBooksRepository : IBaseRepository<Book>
 {
-    Task<ListResponse<Book>> GetBooksAsync(QueryObject queryObject);
-    Task<Book?> GetBookByIdAsync(int bookId);
-    Task CreateBookAsync(Book bookToCreate);
-    Task AddFileToBook(BookFile bookFile);
-    void DeleteFileFromBook(BookFile bookFile);
-    void UpdateBook(Book bookToUpdate);
-    void DeleteBook(Book book);
+    Task<ListResponse<Book>> GetQueriedItemsAsync(Query query);
+    Task<Book> GetIncludingBookFilesAsync(int id);
 }

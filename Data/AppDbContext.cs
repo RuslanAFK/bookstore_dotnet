@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using BookStoreServer.Core.Models;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data;

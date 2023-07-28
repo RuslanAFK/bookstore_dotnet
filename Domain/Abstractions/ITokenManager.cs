@@ -1,6 +1,6 @@
-using BookStoreServer.Core.Models;
+using Domain.Models;
 
-namespace BookStoreServer.Core.Services;
+namespace Domain.Abstractions;
 
 public interface ITokenManager
 {

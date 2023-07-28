@@ -1,9 +1,9 @@
 using AutoMapper;
 using BookStoreServer.Controllers.Resources.Books;
 using BookStoreServer.Controllers.Resources.Users;
-using BookStoreServer.Core.Models;
-using BookStoreServer.Core.Services;
-using BookStoreServer.Enums;
+using Domain.Abstractions;
+using Domain.Constants;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +24,9 @@ public class UsersController : Controller
     
     [HttpGet]
     [Authorize(Roles = Roles.Creator)]
-    public async Task<IActionResult> All([FromQuery] QueryObject queryObject)
+    public async Task<IActionResult> All([FromQuery] Query query)
     {
-        var users = await _usersService.GetUsersAsync(queryObject);
+        var users = await _usersService.GetQueriedAsync(query);
         var res = 
             _mapper.Map<ListResponse<User>, ListResponseResource<GetUsersResource>>(users);
         return Ok(res);
@@ -36,10 +36,8 @@ public class UsersController : Controller
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> Get(int bookId)
     {
-        var userToReturn = await _usersService.GetUserByIdAsync(bookId);
-        if (userToReturn == null)
-            return NotFound();
-        
+        var userToReturn = await _usersService.GetByIdAsync(bookId);
+
         var res = _mapper.Map<User, GetUsersResource>(userToReturn);
         return Ok(res);
     }
@@ -48,25 +46,17 @@ public class UsersController : Controller
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> UpdateRole(int id, UserRoleResource userRoleResource)
     {
-        var foundUser = await _usersService.GetUserByIdAsync(id);
-        if (foundUser == null)
-            return NotFound();
-        var updated = await _usersService.AddUserToRoleAsync(foundUser, userRoleResource.RoleName);
-        if (updated)
-            return NoContent();
-        return BadRequest();
+        var foundUser = await _usersService.GetByIdAsync(id);
+        await _usersService.AddUserToRoleAsync(foundUser, userRoleResource.RoleName);
+        return NoContent();
     }
 
     [HttpDelete("{userId}")]
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> Delete(int userId)
     {
-        var userToDelete = await _usersService.GetUserByIdAsync(userId);
-        if (userToDelete == null)
-            return NotFound();
-        var success = await _usersService.RemoveUserAsync(userToDelete);
-        if (success)
-            return NoContent();
-        return BadRequest();
-    }    
+        var userToDelete = await _usersService.GetByIdAsync(userId);
+        await _usersService.RemoveAsync(userToDelete);
+        return NoContent();
+    }
 }

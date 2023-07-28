@@ -1,4 +1,4 @@
-using BookStoreServer.Enums;
+using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 

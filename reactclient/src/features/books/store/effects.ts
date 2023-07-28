@@ -88,7 +88,7 @@ export const deleteBook = createAsyncThunk(
 export const addFile = createAsyncThunk(
     "book/addFile",
     async ({bookId, fileData}: FileObject, thunkAPI) => {
-        try {
+       try {
             const token = getToken(thunkAPI);
             const headers = addBearerToken(token);
             const {data} = await axios.post<void>(`${BOOK_FILE_URL}?bookId=${bookId}`, fileData, {headers: headers});

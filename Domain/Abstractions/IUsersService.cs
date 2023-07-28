@@ -1,16 +1,12 @@
-using BookStoreServer.Core.Models;
+using Domain.Models;
 
-namespace BookStoreServer.Core.Services;
+namespace Domain.Abstractions;
 
-public interface IUsersService
+public interface  IUsersService
 {
-    Task<ListResponse<User>> GetUsersAsync(QueryObject queryObject);
-    Task<User?> GetUserByIdAsync(int userId);
-    Task<User?> GetUserByNameAsync(string username);
-    Task<bool> RemoveUserAsync(User user);
-    Task<bool> RegisterAsync(User userToCreate);
-    Task<AuthResult?> GetAuthResultAsync(User user);
-    Task<bool> UpdateProfileAsync(User foundUser, User user, string? newPassword);
-    Task<bool> DeleteAccountAsync(User user, string inputtedPassword);
-    Task<bool> AddUserToRoleAsync(User user, string roleName);
+    Task<ListResponse<User>> GetQueriedAsync(Query query);
+    Task<User> GetByIdAsync(int userId);
+    Task<User> GetByNameAsync(string username);
+    Task RemoveAsync(User user);
+    Task AddUserToRoleAsync(User user, string roleName);
 }

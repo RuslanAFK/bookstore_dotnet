@@ -1,4 +1,4 @@
-using BookStoreServer.Core.Models;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,6 +17,7 @@ public class BooksConfiguration : IEntityTypeConfiguration<Book>
 
         builder.HasOne(b => b.BookFile)
             .WithOne(f => f.Book)
-            .HasForeignKey<BookFile>(f => f.BookId);
+            .HasForeignKey<BookFile>(f => f.BookId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

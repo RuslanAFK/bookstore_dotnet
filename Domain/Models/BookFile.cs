@@ -1,4 +1,4 @@
-namespace BookStoreServer.Core.Models;
+namespace Domain.Models;
 
 public class BookFile
 {

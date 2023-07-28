@@ -1,4 +1,5 @@
-using BookStoreServer.Core.Models;
+using Domain.Models;
+using Domain.StaticManagers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,5 +15,13 @@ public class UsersConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(u => u.Name)
             .IsUnique();
+
+        var user = new User
+        {
+            Name = "superuser", Password = "superuser", RoleId = 3, Id = 1
+        };
+        var securedUser = PasswordManager.GetSecuredUser(user);
+
+        builder.HasData(securedUser);
     }
 }

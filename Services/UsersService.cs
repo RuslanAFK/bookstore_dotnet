@@ -1,105 +1,51 @@
-using BookStoreServer.Core.Models;
-using BookStoreServer.Core.Services;
-using BookStoreServer.Enums;
+using Domain.Abstractions;
+using Domain.Exceptions;
+using Domain.Models;
 
 namespace Services;
 
-public class UsersService : IUsersService
+public class UsersService : BaseService, IUsersService
 {
     private readonly IUsersRepository _usersRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ITokenManager _tokenManager;
-    
-    public UsersService(IUsersRepository usersRepository, IUnitOfWork unitOfWork, ITokenManager tokenManager)
+    private readonly IRolesRepository _rolesRepository;
+
+    public UsersService(IUsersRepository usersRepository, IUnitOfWork unitOfWork, IRolesRepository rolesRepository) : base(unitOfWork)
     {
         _usersRepository = usersRepository;
-        _unitOfWork = unitOfWork;
-        _tokenManager = tokenManager;
+        _rolesRepository = rolesRepository;
     }
-    public async Task<ListResponse<User>> GetUsersAsync(QueryObject queryObject)
+    public async Task<ListResponse<User>> GetQueriedAsync(Query query)
     {
-        return await _usersRepository.GetUsersAsync(queryObject);
-    }
-    
-    public async Task<User?> GetUserByIdAsync(int userId)
-    {
-        return await _usersRepository.GetUserByIdAsync(userId);
+        return await _usersRepository.GetQueriedItemsAsync(query);
     }
     
-    public async Task<User?> GetUserByNameAsync(string username)
+    public async Task<User> GetByIdAsync(int userId)
     {
-        return await _usersRepository.GetUserByNameAsync(username);
+        return await _usersRepository.GetByIdIncludingRolesAsync(userId);
     }
     
-    public async Task<bool> RemoveUserAsync(User user)
+    public async Task<User> GetByNameAsync(string username)
     {
-        _usersRepository.RemoveUser(user);
-        return await IsCompleted();
+        return await _usersRepository.GetByNameIncludingRolesAsync(username);
     }
     
-    public async Task<bool> RegisterAsync(User userToCreate)
+    public async Task RemoveAsync(User user)
     {
-        // Hash password
-        userToCreate.Password = BCrypt.Net.BCrypt.HashPassword(userToCreate.Password);
-        // Create User
-        _usersRepository.CreateUser(userToCreate);
-        // Add user to role
-        await _usersRepository.GiveUserStatus(userToCreate, false);
-        return await IsCompleted();
+        _usersRepository.Remove(user);
+        await CompleteAndCheckIfCompleted();
     }
-
-    public async Task<AuthResult?> GetAuthResultAsync(User user)
+    public async Task AddUserToRoleAsync(User user, string roleName)
     {
-        // Find user in db
-        var foundUser = await _usersRepository.GetFullUser(user);
-        if (foundUser == null)
-            return null;
-        // Check password
-        CheckPassword(user.Password, foundUser.Password);
-        // Get Role
-        var roleName = await _usersRepository.GetRoleById(foundUser.RoleId);
-        // Get token
-        var token = _tokenManager.GenerateToken(foundUser, roleName);
-        return new AuthResult
+        CheckIfRoleIsNotIdentical(user.Role.RoleName, roleName);
+        await _rolesRepository.AssignToRole(user, roleName);
+        await CompleteAndCheckIfCompleted();
+    }
+    private void CheckIfRoleIsNotIdentical(string userRoleName, string roleName)
+    {
+        if (userRoleName == roleName)
         {
-            Id = foundUser.Id,
-            Username = foundUser.Name,
-            Token = token,
-            Role = roleName
-        };
-    }
-
-    public async Task<bool> UpdateProfileAsync(User foundUser, User user, string? newPassword)
-    {
-        CheckPassword(user.Password, foundUser.Password);
-        foundUser.Name = user.Name;
-        if (newPassword != null)
-            foundUser.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
-        return await IsCompleted();
-    }
-    
-    public async Task<bool> DeleteAccountAsync(User user, string inputtedPassword)
-    {
-        CheckPassword(inputtedPassword, user.Password);
-        _usersRepository.RemoveUser(user);
-        return await IsCompleted();
-    }
-
-    public async Task<bool> AddUserToRoleAsync(User user, string roleName)
-    {
-        if (user.Role.RoleName == roleName)
-            throw new InvalidDataException("Role is the same. Change it first.");
-        await _usersRepository.GiveUserStatus(user, roleName == Roles.Admin);
-        return await IsCompleted();
-    }
-    private async Task<bool> IsCompleted()
-    {
-        return await _unitOfWork.CompleteAsync() > 0;
-    }
-
-    private void CheckPassword(string realPassword, string hashedPassword)
-    {
-        if (!BCrypt.Net.BCrypt.Verify(realPassword, hashedPassword)) 
-            throw new InvalidDataException("Provided incorrect password.");
+            var propName = nameof(Role.RoleName);
+            throw new SameValueAssignException(propName);
+        }
     }
 }

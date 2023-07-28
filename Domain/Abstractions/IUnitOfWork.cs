@@ -1,6 +1,6 @@
-namespace BookStoreServer.Core.Services;
+namespace Domain.Abstractions;
 
 public interface IUnitOfWork
 {
-    Task<int> CompleteAsync();
+    Task<bool> CompleteAsync();
 }

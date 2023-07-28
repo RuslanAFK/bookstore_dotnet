@@ -23,7 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="BCrypt.Net" Version="0.1.0" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0-preview.1.23110.8" />
       <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.24.0" />
       <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.24.0" />
