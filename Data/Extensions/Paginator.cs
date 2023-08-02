@@ -21,7 +21,7 @@ public static class Paginator
 
     private static int GetPositiveThresholdValue(int defaultValue, int maxThreshold, int? desiredValue)
     {
-        var integer = new PositiveInteger(defaultValue);
+        var integer = new PositiveThresholdedInteger(defaultValue);
         integer.SetMaxThreshold(maxThreshold);
         return integer.GetValue(desiredValue);
     }

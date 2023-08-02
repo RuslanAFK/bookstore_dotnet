@@ -1,10 +1,9 @@
 ﻿using System.Net;
 
-namespace Domain.Exceptions
+namespace Domain.Exceptions;
+
+public class UserNotAuthorizedException : BaseException
 {
-    public class UserNotAuthorizedException : BaseException
-    {
-        public override string Message { get; } = "User is not authorized.";
-        public override HttpStatusCode StatusCode { get; } = HttpStatusCode.Unauthorized;
-    }
+    public override string Message { get; } = "User is not authorized.";
+    public override HttpStatusCode StatusCode { get; } = HttpStatusCode.Unauthorized;
 }

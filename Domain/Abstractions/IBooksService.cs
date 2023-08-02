@@ -1,5 +1,4 @@
 using Domain.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace Domain.Abstractions;
 

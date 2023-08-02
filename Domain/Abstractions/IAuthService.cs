@@ -1,19 +1,13 @@
-﻿using Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using Domain.Models;
 
-namespace Domain.Abstractions
+namespace Domain.Abstractions;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task RegisterAsync(User userToCreate);
-        Task<AuthResult> GetAuthCredentials(User user);
-        Task UpdateProfileAsync(User foundUser, User user, string? newPassword);
-        Task DeleteAccountAsync(User user, string inputtedPassword);
-        string GetUsernameOrThrow(IIdentity? identity);
-    }
+    Task RegisterAsync(User userToCreate);
+    Task<AuthResult> GetAuthCredentialsAsync(User user);
+    Task UpdateUsernameAsync(User userInDb, User givenUser, string? newPassword);
+    Task DeleteAccountAsync(User user, string inputtedPassword);
+    string GetUsernameOrThrow(ClaimsPrincipal? claimsPrincipal);
 }

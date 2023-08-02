@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using BookStoreServer.ExceptionHandlers;
-using BookStoreServer.Hubs;
 using Data;
 using Data.Repositories;
 using Domain.Abstractions;
@@ -8,12 +7,10 @@ using Domain.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -21,21 +18,25 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreConnection")));
 
-builder.Services.AddScoped<IBooksRepository, BooksRepository>();
-builder.Services.AddScoped<IBaseRepository<BookFile>, BookFileRepository>();
+
 builder.Services.AddScoped<IBooksService, BooksService>();
 builder.Services.AddScoped<IBookFilesService, BookFilesService>();
-
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
-builder.Services.AddScoped<IRolesRepository, RolesRepository>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<ITokenManager, TokenService>();
-builder.Services.AddScoped<IFileStorageService, FileService>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IRolesRepository, RolesRepository>();
+builder.Services.AddScoped<IBooksRepository, BooksRepository>();
+builder.Services.AddScoped<IBaseRepository<BookFile>, BookFileRepository>();
 
-builder.Services.AddSignalR();
+
+builder.Services.AddScoped<ITokenManager, TokenManager>();
+builder.Services.AddScoped<IFileManager, FileManager>();
+builder.Services.AddScoped<IPasswordManager, PasswordManager>();
+
+builder.Services.AddScoped<IFileSystem, FileSystem>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -48,7 +49,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSingleton<RsaSecurityKey>(provider =>
+builder.Services.AddSingleton(provider =>
 {
     var rsa = RSA.Create();
     rsa.ImportRSAPublicKey(Convert.FromBase64String(builder.Configuration["Jwt:PublicKey"]), out _);
@@ -92,27 +93,13 @@ builder.Services.AddAuthentication(x =>
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(swaggerGenOptions =>
-{
-    swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "Get Books", Version = "v1" });
-});
 
 var app = builder.Build();
-
-
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.DocumentTitle = "Get Books";
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Simple Book Model.");
-    options.RoutePrefix = string.Empty;
-});
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
-
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -120,7 +107,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseStaticFiles();
-
-app.MapHub<UsersHub>("/hubs/users");
 
 app.Run();

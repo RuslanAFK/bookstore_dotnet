@@ -1,9 +1,8 @@
 ﻿using System.Net;
 
-namespace Domain.Exceptions
+namespace Domain.Exceptions;
+
+public class AlreadyExistsException : BaseException
 {
-    public class AlreadyExistsException : BaseException
-    {
-        public override HttpStatusCode StatusCode { get; }
-    }
+    public override HttpStatusCode StatusCode { get; }
 }

@@ -1,11 +1,10 @@
-﻿namespace Domain.Models
+﻿namespace Domain.Models;
+
+public class User : ISearchable
 {
-    public class User : ISearchable
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Password { get; set; }
-        public int RoleId { get; set; }
-        public Role Role { get; set; }
-    }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Password { get; set; }
+    public int RoleId { get; set; }
+    public virtual Role Role { get; set; }
 }

@@ -1,10 +1,9 @@
 ﻿using System.Net;
 
-namespace Domain.Exceptions
+namespace Domain.Exceptions;
+
+public class WrongPasswordException : BaseException
 {
-    public class WrongPasswordException : BaseException
-    {
-        public override string Message { get; } = "Provided incorrect password.";
-        public override HttpStatusCode StatusCode { get; } = HttpStatusCode.Unauthorized;
-    }
+    public override string Message { get; } = "Provided incorrect password.";
+    public override HttpStatusCode StatusCode { get; } = HttpStatusCode.Unauthorized;
 }

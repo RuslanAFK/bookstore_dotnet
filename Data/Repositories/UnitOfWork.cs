@@ -1,4 +1,6 @@
 using Domain.Abstractions;
+using Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories;
 
@@ -10,9 +12,19 @@ public class UnitOfWork : IUnitOfWork
     {
         _context = context;
     }
-    public async Task<bool> CompleteAsync()
+    public async Task CompleteOrThrowAsync()
     {
-        var stateEntries = await _context.SaveChangesAsync();
-        return stateEntries > 0;
+        try
+        {
+            var stateEntries = await _context.SaveChangesAsync();
+            if (stateEntries <= 0)
+            {
+                throw new OperationNotSuccessfulException();
+            }
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new OperationNotSuccessfulException(ex.Message);
+        }
     }
 }

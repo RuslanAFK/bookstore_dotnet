@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Domain.Exceptions;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace BookStoreServer.ExceptionHandlers;
@@ -23,9 +23,9 @@ public class ExceptionHandlerMiddleware
         {
             await HandleBaseExceptionAsync(context, e);
         }
-        catch (DbUpdateException)
+        catch (ValidationException e)
         {
-            await HandleDbUpdateExceptionAsync(context);
+            await HandleValidationExceptionAsync(context, e);
         }
         catch
         {
@@ -41,16 +41,16 @@ public class ExceptionHandlerMiddleware
         });
         return WriteErrorToJson(context, result, code);
     }
-    private static Task HandleDbUpdateExceptionAsync(HttpContext context)
+    private static Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)
     {
         var code = HttpStatusCode.BadRequest;
-        var message = "Data cannot be updated.";
         var result = JsonConvert.SerializeObject(new
         {
-            error = message
+            error = exception.Message
         });
         return WriteErrorToJson(context, result, code);
     }
+
     private static Task HandleUnexpectedExceptionAsync(HttpContext context)
     {
         var code = HttpStatusCode.InternalServerError;

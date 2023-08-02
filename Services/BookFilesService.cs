@@ -7,21 +7,20 @@ namespace Services;
 
 public class BookFilesService : BaseService, IBookFilesService
 {
-    private readonly IFileStorageService _fileStorageService;
+    private readonly IFileManager _fileManager;
     private readonly IBaseRepository<BookFile> _bookFilesRepository;
-    public BookFilesService(IUnitOfWork unitOfWork, IFileStorageService fileStorageService,
+    public BookFilesService(IUnitOfWork unitOfWork, IFileManager fileManager,
         IBaseRepository<BookFile> bookFilesRepository) : base(unitOfWork)
     {
-        _fileStorageService = fileStorageService;
+        _fileManager = fileManager;
         _bookFilesRepository = bookFilesRepository;
     }
-
 
     public async Task AddAsync(Book book, IFormFile file)
     {
         DeleteFileIfExists(book.BookFile);
 
-        var relativePath = await _fileStorageService.StoreFileAndGetPath(file);
+        var relativePath = await _fileManager.StoreFileAndGetPath(file);
         var bookFile = GenerateNewBookFile(book, relativePath);
         await _bookFilesRepository.AddAsync(bookFile);
         await CompleteAndCheckIfCompleted();
@@ -30,7 +29,7 @@ public class BookFilesService : BaseService, IBookFilesService
     private void DeleteFileIfExists(BookFile? bookFile)
     {
         if (bookFile != null)
-            _fileStorageService.DeleteFile(bookFile.Url);
+            _fileManager.DeleteFile(bookFile.Url);
     }
 
     private BookFile GenerateNewBookFile(Book book, string relativePath)
@@ -44,14 +43,12 @@ public class BookFilesService : BaseService, IBookFilesService
     public async Task RemoveAsync(Book book)
     {
         var bookFile = GetBookFileOrThrow(book);
-
-        _fileStorageService.DeleteFile(bookFile.Url);
-
+        _fileManager.DeleteFile(bookFile.Url);
         _bookFilesRepository.Remove(bookFile);
         await CompleteAndCheckIfCompleted();
     }
 
-    public void CheckIfFilePermitted(IFormFile file)
+    public void ThrowIfFileNotPermitted(IFormFile file)
     {
         var permittedType = ".pdf";
         if (file.Length == 0)

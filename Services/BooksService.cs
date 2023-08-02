@@ -1,5 +1,4 @@
 using Domain.Abstractions;
-using Domain.Exceptions;
 using Domain.Models;
 
 namespace Services;
@@ -7,12 +6,12 @@ namespace Services;
 public class BooksService : BaseService, IBooksService
 {
     private readonly IBooksRepository _booksRepository;
-    private readonly IFileStorageService _fileStorageService;
+    private readonly IFileManager _fileManager;
 
-    public BooksService(IBooksRepository booksRepository, IUnitOfWork unitOfWork, IFileStorageService fileStorageService) : base(unitOfWork)
+    public BooksService(IBooksRepository booksRepository, IUnitOfWork unitOfWork, IFileManager fileManager) : base(unitOfWork)
     {
         _booksRepository = booksRepository;
-        _fileStorageService = fileStorageService;
+        _fileManager = fileManager;
     }
     public async Task<ListResponse<Book>> GetBooksAsync(Query query)
     {
@@ -43,6 +42,6 @@ public class BooksService : BaseService, IBooksService
     private void DeleteFileIfExists(BookFile? bookFile)
     {
         if (bookFile != null)
-            _fileStorageService.DeleteFile(bookFile.Url);
+            _fileManager.DeleteFile(bookFile.Url);
     }
 }

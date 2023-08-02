@@ -5,12 +5,10 @@ namespace Domain.Exceptions;
 public class OperationNotSuccessfulException : BaseException
 {
     public override string Message { get; }
-    public string Function { get; }
     public override HttpStatusCode  StatusCode { get; } = HttpStatusCode.BadRequest;
 
-    public OperationNotSuccessfulException(string function)
+    public OperationNotSuccessfulException(string message = "Updating database was not successful.")
     {
-        Function = function;
-        Message = $"{Function} was not successful.";
+        Message = message;
     }
 }

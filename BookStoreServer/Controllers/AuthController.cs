@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using AutoMapper;
 using BookStoreServer.Controllers.Resources.Auth;
 using BookStoreServer.Controllers.Resources.Users;
@@ -28,7 +27,7 @@ public class AuthController : Controller
     public async Task<IActionResult> Login(LoginResource loginResource)
     {
         var user = _mapper.Map<LoginResource, User>(loginResource);
-        var found = await _authService.GetAuthCredentials(user);
+        var found = await _authService.GetAuthCredentialsAsync(user);
         var res = _mapper.Map<AuthResult, AuthResultResource>(found);
         return Ok(res);
     }
@@ -46,10 +45,11 @@ public class AuthController : Controller
     [Authorize]
     public async Task<IActionResult> UpdateProfile(UpdateUserInfoResource userInfoResource)
     {
-        var username = _authService.GetUsernameOrThrow(HttpContext.User.Identity);
+        var claimsPrincipal = HttpContext?.User;
+        var username = _authService.GetUsernameOrThrow(claimsPrincipal);
         var foundUser = await _usersService.GetByNameAsync(username);
         var user = _mapper.Map<UpdateUserInfoResource, User>(userInfoResource);;
-        await _authService.UpdateProfileAsync(foundUser, user, userInfoResource.NewPassword);
+        await _authService.UpdateUsernameAsync(foundUser, user, userInfoResource.NewPassword);
         return NoContent();
     }
     
@@ -57,7 +57,8 @@ public class AuthController : Controller
     [Authorize]
     public async Task<IActionResult> DeleteAccount(DeleteUserResource resource)
     {
-        var username = _authService.GetUsernameOrThrow(HttpContext.User.Identity);
+        var claimsPrincipal = HttpContext?.User;
+        var username = _authService.GetUsernameOrThrow(claimsPrincipal);
         var userToDelete = await _usersService.GetByNameAsync(username);
         await _authService.DeleteAccountAsync(userToDelete, resource.Password);
         return NoContent();

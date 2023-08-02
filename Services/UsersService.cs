@@ -37,7 +37,7 @@ public class UsersService : BaseService, IUsersService
     public async Task AddUserToRoleAsync(User user, string roleName)
     {
         CheckIfRoleIsNotIdentical(user.Role.RoleName, roleName);
-        await _rolesRepository.AssignToRole(user, roleName);
+        await _rolesRepository.AssignToRoleAsync(user, roleName);
         await CompleteAndCheckIfCompleted();
     }
     private void CheckIfRoleIsNotIdentical(string userRoleName, string roleName)

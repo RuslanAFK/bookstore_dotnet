@@ -22,7 +22,7 @@ public class BookFileController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Create(int bookId, IFormFile file)
     {
-        _bookFilesService.CheckIfFilePermitted(file);
+        _bookFilesService.ThrowIfFileNotPermitted(file);
         var book = await _booksService.GetByIdAsync(bookId);
         await _bookFilesService.AddAsync(book, file);
         return NoContent();
