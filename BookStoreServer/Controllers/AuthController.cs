@@ -38,7 +38,6 @@ public class AuthController : Controller
         var userToCreate = _mapper.Map<RegisterResource, User>(registerResource);
         await _authService.RegisterAsync(userToCreate);
         return NoContent();
-
     }
 
     [HttpPatch]
@@ -49,7 +48,7 @@ public class AuthController : Controller
         var username = _authService.GetUsernameOrThrow(claimsPrincipal);
         var foundUser = await _usersService.GetByNameAsync(username);
         var user = _mapper.Map<UpdateUserInfoResource, User>(userInfoResource);;
-        await _authService.UpdateUsernameAsync(foundUser, user, userInfoResource.NewPassword);
+        await _authService.UpdateProfileAsync(foundUser, user, userInfoResource.NewPassword);
         return NoContent();
     }
     

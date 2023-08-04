@@ -21,6 +21,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
     public async Task AddAsync(TEntity item)
     {
+
         await _dbContext.Set<TEntity>().AddAsync(item);
     }
 

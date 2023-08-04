@@ -1,5 +1,7 @@
 ﻿using Domain.Abstractions;
+using Domain.Exceptions;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories;
 
@@ -33,6 +35,18 @@ public class UsersRepository : SearchableRepository<User>, IUsersRepository
     {
         var items = GetAll();
         return GetItemsIncluding(items, user => user.Role);
+    }
+    public new async Task AddAsync(User item)
+    {
+        await ThrowIfUserAlreadyFound(item.Name);
+        await base.AddAsync(item);
+    }
+    private async Task ThrowIfUserAlreadyFound(string username)
+    {
+        var foundUser = await GetAll()
+            .SingleOrDefaultAsync(user => user.Name == username);
+        if (foundUser is not null)
+            throw new EntityAlreadyExistsException(typeof(User), nameof(User.Name), username);
     }
 
 }

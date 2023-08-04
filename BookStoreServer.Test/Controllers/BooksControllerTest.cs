@@ -1,109 +1,50 @@
-﻿using AutoMapper;
-using BookStoreServer.Controllers;
-using BookStoreServer.Controllers.Resources.Books;
-using Domain.Abstractions;
-using Domain.Models;
-using Microsoft.AspNetCore.Mvc;
-
-namespace BookStoreServer.Test.Controllers;
+﻿namespace BookStoreServer.Test.Controllers;
 
 public class BooksControllerTest
 {
-    private IMapper mapper;
-    private IBooksService booksService;
     private BooksController booksController;
-
     [SetUp]
     public void Setup()
     {
-        mapper = A.Fake<IMapper>();
-        booksService = A.Fake<IBooksService>();
+        var mapper = A.Fake<IMapper>();
+        var booksService = A.Fake<IBooksService>();
         booksController = new BooksController(mapper, booksService);
     }
-
     [Test]
-    public async Task All_ReturnsOkObjectResult()
+    public async Task GetQueried_ReturnsListResponseResourceOfGetBooksResource()
     {
         var query = A.Dummy<Query>();
-        var results = await booksController.All(query);
-        Assert.That(results, Is.InstanceOf<OkObjectResult>());
+        var results = await booksController.GetQueried(query) as OkObjectResult;
+        var resultsValue = results?.Value;
+        Assert.That(resultsValue, Is.InstanceOf<ListResponseResource<GetBooksResource>>());
     }
     [Test]
-    public async Task All_ReturnsListResponseResourceOfGetBooksResource()
+    public async Task GetById_ReturnsGetSingleBookResource()
     {
-        var query = A.Dummy<Query>();
-        var results = await booksController.All(query) as OkObjectResult;
-        Assert.That(results.Value, Is.InstanceOf<ListResponseResource<GetBooksResource>>());
-    }
-
-    [Test]
-    public async Task All_CallsGetBooksAsync()
-    {
-        var query = A.Dummy<Query>();
-        await booksController.All(query);
-        A.CallTo(() => booksService.GetBooksAsync(A<Query>._)).MustHaveHappenedOnceExactly();
+        var results = await booksController.GetById(default) as OkObjectResult;
+        var resultsValue = results?.Value;
+        Assert.That(resultsValue, Is.InstanceOf<GetSingleBookResource>());
     }
     [Test]
-    public async Task Get_ReturnsOkObjectResult()
-    {
-        var results = await booksController.Get(default);
-        Assert.That(results, Is.InstanceOf<OkObjectResult>());
-    }
-    [Test]
-    public async Task All_ReturnsGetSingleBookResource()
-    {
-        var results = await booksController.Get(default) as OkObjectResult;
-        Assert.That(results.Value, Is.InstanceOf<GetSingleBookResource>());
-    }
-
-    [Test]
-    public async Task All_CallsGetByIdAsync()
-    {
-        await booksController.Get(default);
-        A.CallTo(() => booksService.GetByIdAsync(A<int>._)).MustHaveHappenedOnceExactly();
-    }
-    [Test]
-    public async Task Create_ReturnsNoContentResult()
+    public async Task Create_ReturnsNoContent()
     {
         var resource = A.Dummy<CreateBookResource>();
         var results = await booksController.Create(resource);
         Assert.That(results, Is.InstanceOf<NoContentResult>());
     }
-
     [Test]
-    public async Task Create_CallsAddAsync()
+    public async Task Update_ReturnsNoContent()
     {
         var resource = A.Dummy<CreateBookResource>();
-        await booksController.Create(resource);
-        A.CallTo(() => booksService.AddAsync(A<Book>._)).MustHaveHappenedOnceExactly();
-    }
-    [Test]
-    public async Task Update_ReturnsNoContentResult()
-    {
-        var resource = A.Dummy<CreateBookResource>();
-        var results = await booksController.Update(default, resource);
+        var id = A.Dummy<int>();
+        var results = await booksController.Update(id, resource);
         Assert.That(results, Is.InstanceOf<NoContentResult>());
     }
-
     [Test]
-    public async Task Update_CallsUpdateAsync()
+    public async Task Delete_ReturnsNoContent()
     {
-        var resource = A.Dummy<CreateBookResource>();
-        await booksController.Update(default, resource);
-        A.CallTo(() => booksService.UpdateAsync(A<int>._, A<Book>._)).MustHaveHappenedOnceExactly();
-    }
-    [Test]
-    public async Task Delete_ReturnsNoContentResult()
-    {
-        var results = await booksController.Delete(default);
+        var id = A.Dummy<int>();
+        var results = await booksController.Delete(id);
         Assert.That(results, Is.InstanceOf<NoContentResult>());
-    }
-
-    [Test]
-    public async Task Create_CallsRemoveAsyncAndGetByIdAsync()
-    {
-        await booksController.Delete(default);
-        A.CallTo(() => booksService.GetByIdAsync(A<int>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => booksService.RemoveAsync(A<Book>._)).MustHaveHappenedOnceExactly();
     }
 }

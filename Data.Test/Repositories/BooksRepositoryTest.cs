@@ -1,76 +1,40 @@
-﻿using Data.Repositories;
-using Domain.Exceptions;
-using Domain.Models;
-
-namespace Data.Test.Repositories;
+﻿namespace Data.Test.Repositories;
 
 public class BooksRepositoryTest
 {
-    private DbContextOptions<AppDbContext> options;
     private BooksRepository booksRepository;
     private AppDbContext dbContext;
-
     [SetUp]
     public void Setup()
     {
-        options = CreateNewInMemoryDatabase();
+        var options = DataGenerator.CreateNewInMemoryDatabase();
         dbContext = new AppDbContext(options);
         booksRepository = new BooksRepository(dbContext);
     }
-
     [TearDown]
     public void TearDown()
     {
         dbContext.Database.EnsureDeleted();
         dbContext.Dispose();
     }
-    private DbContextOptions<AppDbContext> CreateNewInMemoryDatabase()
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
-            .Options;
-    }
     [Test]
-    public async Task GetQueriedItemsAsync_ReturnsDbExistentCountOfBooks()
+    public async Task GetQueriedItemsAsync_ReturnsExistingBooks()
     {
-        var id = 99;
-        await dbContext.Books.AddAsync(new Book
-        {
-            Id = id,
-            BookFile = new BookFile()
-            {
-                Id = default,
-                Url = ""
-            },
-            Author = "",
-            Genre = "",
-            Image = "",
-            Info = "",
-            Name = "",
-        });
+        var newBook = DataGenerator.CreateTestBook(1);
+        var newBook2 = DataGenerator.CreateTestBook(2);
+        await dbContext.AddAsync(newBook);
+        await dbContext.AddAsync(newBook2);
         await dbContext.SaveChangesAsync();
-        var results = await booksRepository.GetQueriedItemsAsync(A.Dummy<Query>());
-        Assert.That(results.Count, Is.EqualTo(1));
+        var query = A.Dummy<Query>();
+        var results = await booksRepository.GetQueriedItemsAsync(query);
+        Assert.That(results.Count, Is.EqualTo(2));
     }
-
     [Test]
     public async Task GetIncludingBookFilesAsync_WithCorrectId_ReturnsBookWithNoNullBookFile()
     {
         var id = 99;
-        await dbContext.Books.AddAsync(new Book
-        {
-            Id = id,
-            BookFile = new BookFile()
-            {
-                Id = default,
-                Url = ""
-            },
-            Author = "",
-            Genre = "",
-            Image = "",
-            Info = "",
-            Name = "",
-        });
+        var newBook = DataGenerator.CreateTestBook(id);
+        await dbContext.AddAsync(newBook);
         await dbContext.SaveChangesAsync();
         var results = await booksRepository.GetIncludingBookFilesAsync(id);
         Assert.That(results.BookFile, Is.Not.Null);

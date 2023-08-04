@@ -10,7 +10,7 @@ public class EntityNotFoundException : BaseException
     public override string Message { get; }
     public override HttpStatusCode StatusCode { get; } = HttpStatusCode.NotFound;
 
-    public EntityNotFoundException(Type entityType, string propertyName, string? propertyValue=null)
+    public EntityNotFoundException(Type entityType, string propertyName, string propertyValue=null)
     {
         Entity = entityType.Name;
         PropertyName = propertyName;
@@ -19,7 +19,7 @@ public class EntityNotFoundException : BaseException
     }
     private string GenerateMessage()
     {
-        if (PropertyValue == null)
+        if (PropertyValue is null)
             return $"{PropertyName} of current {Entity} is not found.";
         return @$"{Entity} with {PropertyName} ""{PropertyValue}"" is not found.";
     }

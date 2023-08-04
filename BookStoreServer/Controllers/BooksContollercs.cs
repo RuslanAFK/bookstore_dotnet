@@ -23,9 +23,9 @@ public class BooksController : Controller
 
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> All([FromQuery] Query query)
+    public async Task<IActionResult> GetQueried([FromQuery] Query query)
     {
-        var books = await _booksService.GetBooksAsync(query);
+        var books = await _booksService.GetQueriedAsync(query);
         var res = 
             _mapper.Map<ListResponse<Book>, ListResponseResource<GetBooksResource>>(books);
         return Ok(res);
@@ -33,7 +33,7 @@ public class BooksController : Controller
 
     [HttpGet("{bookId}")]
     [Authorize]
-    public async Task<IActionResult> Get(int bookId)
+    public async Task<IActionResult> GetById(int bookId)
     {
         var bookToReturn = await _booksService.GetByIdAsync(bookId);
         var res = _mapper.Map<Book, GetSingleBookResource>(bookToReturn);

@@ -1,45 +1,45 @@
-﻿using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.Hosting;
-
-namespace Services.Test
+﻿namespace Services.Test
 {
     public class FileManagerTest
     {
-        private IHostEnvironment host;
         private IFileSystem fileSystem;
         private FileManager fileManager;
-
         [SetUp]
         public void SetUp()
         {
-            host = A.Fake<IHostEnvironment>();
+            var host = A.Fake<IHostEnvironment>();
             fileSystem = A.Fake<IFileSystem>();
             fileManager = new FileManager(host, fileSystem);
         }
 
         [Test]
-        public async Task StoreFileAndGetPath__ReturnsGuidAndExtension()
+        public async Task StoreFileAndGetPath_ReturnsGuidAndExtension()
         {
-            var fileName = "name.ext";
-            var formFile = new FormFile(A.Dummy<Stream>(), 0, 0, "", fileName);
+            var extension = "ext";
+            var fileName = "something" + "." + extension;
+            var formFile = DataGenerator.CreateTestFormFile(fileName);
             var newName = await fileManager.StoreFileAndGetPath(formFile);
-            var parts = newName.Split('.');
-            Assert.That(Guid.Parse(parts[0]), Is.InstanceOf<Guid>());
-            Assert.That(parts[1], Is.EqualTo("ext"));
+
+            var splittedName = newName.Split('.');
+            var guidPart = splittedName[0];
+            var extensionPart = splittedName[1];
+            var parsedGuidPart = Guid.Parse(guidPart);
+            Assert.That(parsedGuidPart, Is.InstanceOf<Guid>());
+            Assert.That(extensionPart, Is.EqualTo(extension));
         }
         [Test]
-        public async Task StoreFileAndGetPath__CallsWriteToFileAndCreateDirectoryIfNotExists()
+        public async Task StoreFileAndGetPath_CallsWriteToFileAndCreateDirectoryIfNotExists()
         {
-            var fileName = "name.ext";
-            var formFile = new FormFile(A.Dummy<Stream>(), 0, 0, "", fileName);
+            var formFile = DataGenerator.CreateTestFormFile();
             await fileManager.StoreFileAndGetPath(formFile);
-            A.CallTo(() => fileSystem.CreateFileAndWriteDataToItAsync(formFile, A<string>._)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fileSystem.CreateFileAndWriteDataToItAsync(A<IFormFile>._, A<string>._)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fileSystem.CreateDirectoryIfNotExists(A<string>._)).MustHaveHappenedOnceExactly();
         }
         [Test]
-        public async Task DeleteFile__CallsDeleteFileIfExistsAndCreateDirectoryIfNotExists()
+        public void DeleteFile_CallsDeleteFileIfExistsAndCreateDirectoryIfNotExists()
         {
-            fileManager.DeleteFile(A.Dummy<string>());
+            var fileName = A.Dummy<string>();
+            fileManager.DeleteFile(fileName);
             A.CallTo(() => fileSystem.DeleteFileIfExists(A<string>._)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fileSystem.CreateDirectoryIfNotExists(A<string>._)).MustHaveHappenedOnceExactly();
         }

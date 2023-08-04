@@ -1,36 +1,22 @@
-﻿using Data.Repositories;
-using Domain.Exceptions;
-using Domain.Models;
-
-namespace Data.Test.Repositories;
+﻿namespace Data.Test.Repositories;
 
 public class UsersRepositoryTest
 {
-    private DbContextOptions<AppDbContext> options;
     private UsersRepository repository;
     private AppDbContext dbContext;
-
     [SetUp]
     public void Setup()
     {
-        options = CreateNewInMemoryDatabase();
+        var options = DataGenerator.CreateNewInMemoryDatabase();
         dbContext = new AppDbContext(options);
         repository = new UsersRepository(dbContext);
     }
-
     [TearDown]
     public void TearDown()
     {
         dbContext.Database.EnsureDeleted();
         dbContext.Dispose();
     }
-    private DbContextOptions<AppDbContext> CreateNewInMemoryDatabase()
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
-            .Options;
-    }
-
     [Test]
     public async Task GetQueriedAsync_NothingInDb_ReturnsCount0()
     {
@@ -40,152 +26,133 @@ public class UsersRepositoryTest
     [Test]
     public async Task GetQueriedAsync_OneInDb_ReturnsCount1()
     {
-        var user = new User { Id = 1, Name = "", Password = "", RoleId = 1 };
+        var user = DataGenerator.CreateTestUser();
         await dbContext.AddAsync(user);
         await dbContext.SaveChangesAsync();
 
-        var results = await repository.GetQueriedItemsAsync(A.Dummy<Query>());
+        var query = A.Dummy<Query>();
+        var results = await repository.GetQueriedItemsAsync(query);
         Assert.That(results.Count, Is.EqualTo(1));
     }
     [Test]
     // TODO Fix the bug role not mandatory / checking if role exists
-    public async Task GetByIdIncludingRolesAsync_WithCorrectId_ReturnsCorrectUser()
+    public async Task GetByIdIncludingRolesAsync_WithExistingId_ReturnsSameUser()
     {
         var id = 5;
-        var user = new User
-        {
-            Id = id, Name = "Giovanni", Password = "", Role = new Role()
-            {
-                RoleId = 1,
-                RoleName = "Role"
-            },
-        };
-
+        var user = DataGenerator.CreateTestUser(id);
         await dbContext.AddAsync(user);
         await dbContext.SaveChangesAsync();
 
-
         var results = await repository.GetByIdIncludingRolesAsync(id);
-        Assert.That(results.Name, Is.EqualTo(user.Name));
+        var actualName = results.Name;
+        var expectedName = user.Name;
+        Assert.That(actualName, Is.EqualTo(expectedName));
     }
     [Test]
-    public async Task GetByIdIncludingRolesAsync_WithCorrectId_ReturnsUserWithCorrectRole()
+    public async Task GetByIdIncludingRolesAsync_WithExistingId_ReturnsUserWithSameRole()
     {
         var id = 5;
-        var user = new User
-        {
-            Id = id,
-            Name = "Giovanni",
-            Password = "",
-            Role = new Role()
-            {
-                RoleId = 1,
-                RoleName = "Role"
-            },
-        };
-
+        var user = DataGenerator.CreateTestUser(id);
         await dbContext.AddAsync(user);
         await dbContext.SaveChangesAsync();
 
-
         var results = await repository.GetByIdIncludingRolesAsync(id);
-        Assert.That(results.Role.RoleName, Is.EqualTo(user.Role.RoleName));
+        var actualRoleName = results.Role.RoleName;
+        var expectedRoleName = user.Role.RoleName;
+        Assert.That(actualRoleName, Is.EqualTo(expectedRoleName));
     }
     [Test]
-    public void GetByIdIncludingRolesAsync_WithWrongId_ThrowsEntityNotFoundException()
+    public void GetByIdIncludingRolesAsync_WithNonExistingId_ThrowsEntityNotFoundException()
     {
+        var id = 5;
         Assert.ThrowsAsync<EntityNotFoundException>(async () =>
         {
-            await repository.GetByIdIncludingRolesAsync(55);
+            await repository.GetByIdIncludingRolesAsync(id);
         });
     }
 
     [Test]
-    public async Task GetByNameAsync_WithCorrectName_ReturnsCorrectUser()
+    public async Task GetByNameAsync_WithExistingName_ReturnsSameUser()
     {
-        var user = new User
-        {
-            Id = 5,
-            Name = "Giovanni",
-            Password = "",
-            Role = new Role()
-            {
-                RoleId = 1,
-                RoleName = "Role"
-            },
-        };
-
+        var user = DataGenerator.CreateTestUser();
         await dbContext.AddAsync(user);
         await dbContext.SaveChangesAsync();
-
 
         var results = await repository.GetByNameAsync(user.Name);
-        Assert.That(results.Id, Is.EqualTo(user.Id));
+        var actualId = results.Id;
+        var expectedId = user.Id;
+        Assert.That(actualId, Is.EqualTo(expectedId));
     }
-
     [Test]
-    public void GetByNameAsync_WithWrongName_ThrowsEntityNotFoundException()
+    public void GetByNameAsync_WithNonExistingName_ThrowsEntityNotFoundException()
     {
+        var name = A.Dummy<string>();
         Assert.ThrowsAsync<EntityNotFoundException>(async () =>
         {
-            await repository.GetByNameAsync("ejrvf");
+            await repository.GetByNameAsync(name);
         });
     }
     [Test]
-    // TODO Fix the bug role not mandatory / checking if role exists
-    public async Task GetByNameIncludingRolesAsync_WithCorrectName_ReturnsCorrectUser()
+    public async Task GetByNameIncludingRolesAsync_WithExistingName_ReturnsCorrectUser()
     {
         var id = 5;
-        var user = new User
-        {
-            Id = id,
-            Name = "Giovanni",
-            Password = "",
-            Role = new Role()
-            {
-                RoleId = 1,
-                RoleName = "Role"
-            },
-        };
-
+        var user = DataGenerator.CreateTestUser(id);
         await dbContext.AddAsync(user);
         await dbContext.SaveChangesAsync();
 
-
         var results = await repository.GetByNameIncludingRolesAsync(user.Name);
-        Assert.That(results.Id, Is.EqualTo(user.Id));
+        var actualId = results.Id;
+        var expectedId = user.Id;
+        Assert.That(actualId, Is.EqualTo(expectedId));
     }
     [Test]
-    public async Task GetByNameIncludingRolesAsync_WithCorrectName_ReturnsUserWithCorrectRole()
+    public async Task GetByNameIncludingRolesAsync_WithExistingName_ReturnsSameUserRole()
     {
         var id = 5;
-        var user = new User
-        {
-            Id = id,
-            Name = "Giovanni",
-            Password = "",
-            Role = new Role()
-            {
-                RoleId = 1,
-                RoleName = "Role"
-            },
-        };
-
+        var user = DataGenerator.CreateTestUser(id);
         await dbContext.AddAsync(user);
         await dbContext.SaveChangesAsync();
 
-
         var results = await repository.GetByNameIncludingRolesAsync(user.Name);
-        Assert.That(results.Role.RoleName, Is.EqualTo(user.Role.RoleName));
+        var expectedRoleName = user.Role.RoleName;
+        var actualRoleName = results.Role.RoleName;
+        Assert.That(actualRoleName, Is.EqualTo(expectedRoleName));
     }
     [Test]
     public void GetByNameIncludingRolesAsync_WithWrongName_ThrowsEntityNotFoundException()
     {
+        var name = A.Dummy<string>();
         Assert.ThrowsAsync<EntityNotFoundException>(async () =>
         {
-            await repository.GetByNameIncludingRolesAsync("kdhv");
+            await repository.GetByNameIncludingRolesAsync(name);
         });
     }
+    [Test]
+    public async Task AddAsync_NoDuplicate_AddsUsers()
+    {
+        var user = DataGenerator.CreateTestUserWithoutRole(1);
+        await dbContext.AddAsync(user);
+        await dbContext.SaveChangesAsync();
 
+        var user2 = DataGenerator.CreateTestUserWithoutRole(2, "Sabrina");
+        await repository.AddAsync(user2);
+        await dbContext.SaveChangesAsync();
 
+        var storedUsersCount = dbContext.Users.Count();
+        Assert.That(storedUsersCount, Is.EqualTo(2));
+    }
+    [Test]
+    public async Task AddAsync_WithDuplicate_ThrowsEntityAlreadyExistsException()
+    {
+        var user = DataGenerator.CreateTestUserWithoutRole(1);
+        await dbContext.AddAsync(user);
+        await dbContext.SaveChangesAsync();
+
+        var user2 = DataGenerator.CreateTestUserWithoutRole(2);
+
+        Assert.ThrowsAsync<EntityAlreadyExistsException>(async () =>
+        {
+            await repository.AddAsync(user2);
+        });
+    }
 }

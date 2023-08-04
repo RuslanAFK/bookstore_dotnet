@@ -5,86 +5,70 @@ public class BookServiceTest
     private IBooksRepository booksRepository;
     private IFileManager fileManager;
     private IUnitOfWork unitOfWork;
-
-    private BooksService _booksService;
-
+    private BooksService booksService;
     [SetUp]
     public void Setup()
     {
         booksRepository = A.Fake<IBooksRepository>();
         fileManager = A.Fake<IFileManager>();
         unitOfWork = A.Fake<IUnitOfWork>();
-
-        _booksService = new BooksService(booksRepository, unitOfWork, fileManager);
+        booksService = new BooksService(booksRepository, unitOfWork, fileManager);
     }
-
     [Test]
-    public async Task GetBooksAsync__ReturnsListResponseOfBook()
+    public async Task GetQueriedAsync_ReturnsListResponseOfBook()
     {
         var query = A.Dummy<Query>();
-        var returnValue = await _booksService.GetBooksAsync(query);
+        var returnValue = await booksService.GetQueriedAsync(query);
         Assert.That(returnValue, Is.InstanceOf<ListResponse<Book>>());
     }
     [Test]
-    public async Task GetByIdAsync__ReturnsBook()
+    public async Task GetByIdAsync_ReturnsBook()
     {
-        var returnValue = await _booksService.GetByIdAsync(0);
+        var returnValue = await booksService.GetByIdAsync(0);
         Assert.That(returnValue, Is.InstanceOf<Book>());
     }
     [Test]
-    public void AddAsync__CallsAddAsyncAndCompleteAsync()
+    public async Task AddAsync_CallsAddAsyncAndCompleteAsync()
     {
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await _booksService.AddAsync(A.Dummy<Book>());
-        });
+        var book = A.Dummy<Book>();
+        await booksService.AddAsync(book);
         A.CallTo(() => booksRepository.AddAsync(A<Book>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
-    public void UpdateAsync__CallsUpdateAndCompleteAsync()
+    public async Task UpdateAsync_CallsUpdateAndCompleteAsync()
     {
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await _booksService.UpdateAsync(0, A.Dummy<Book>());
-        });
+        var id = A.Dummy<int>();
+        var book = A.Dummy<Book>();
+        await booksService.UpdateAsync(id, book);
         A.CallTo(() => booksRepository.Update(A<Book>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
-    public void UpdateAsync__ChangesIdValue()
+    public async Task UpdateAsync_AssignsId()
     {
-        var id = 158;
-        var book = new Book { Id = 0 };
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await _booksService.UpdateAsync(id, book);
-        });
-        Assert.That(book.Id, Is.EqualTo(id));
+        var expectedId = 158;
+        var book = A.Dummy<Book>();
+        await booksService.UpdateAsync(expectedId, book);
+        var actualId = book.Id;
+        Assert.That(actualId, Is.EqualTo(expectedId));
     }
-
     [Test]
-    public void RemoveAsync_WithoutBookFile_CallsRemoveAndCompleteAsyncButNotDeleteFile()
+    public async Task RemoveAsync_WithoutBookFile_CallsRemoveAndCompleteAsyncButNotDeleteFile()
     {
         var book = A.Dummy<Book>();
         book.BookFile = null;
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await _booksService.RemoveAsync(book);
-        });
+        await booksService.RemoveAsync(book);
         A.CallTo(() => booksRepository.Remove(A<Book>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustNotHaveHappened();
     }
     [Test]
-    public void RemoveAsync_WithBookFile_CallsRemoveAndCompleteAsyncAndDeleteFile()
+    public async Task RemoveAsync_WithBookFile_CallsRemoveAndCompleteAsyncAndDeleteFile()
     {
         var book = A.Dummy<Book>();
         book.BookFile = A.Dummy<BookFile>();
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await _booksService.RemoveAsync(book);
-        });
+        await booksService.RemoveAsync(book);
         A.CallTo(() => booksRepository.Remove(A<Book>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustHaveHappenedOnceExactly();

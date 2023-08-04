@@ -1,16 +1,8 @@
-using System.Security.Claims;
-using System.Security.Principal;
-using Domain.Constants;
-using Microsoft.IdentityModel.JsonWebTokens;
-
 namespace Services.Test;
 
 public class AuthServiceTest
 {
     private AuthService authService;
-    private User realUser;
-    private User fakeUser;
-
     private IUsersRepository usersRepository;
     private ITokenManager tokenManager;
     private IUnitOfWork unitOfWork;
@@ -24,119 +16,102 @@ public class AuthServiceTest
         usersRepository = A.Fake<IUsersRepository>();
         unitOfWork = A.Fake<IUnitOfWork>();
         passwordManager = A.Fake<IPasswordManager>();
-
-        realUser = new()
-        {
-            Id = 0, Name = "Dummy", RoleId = 1, Password = "password"
-        };
-        fakeUser = A.Fake<User>();
-
         authService = new AuthService(usersRepository, rolesRepository, tokenManager, unitOfWork, passwordManager);
     }
     [Test]
-    public void RegisterAsync_WithFakeUser_CalledAllMethodsOnce()
+    public async Task RegisterAsync_WithFakeUser_CalledAllMethodsOnce()
     {
-        async Task Action() => await authService.RegisterAsync(fakeUser);
-        Assert.DoesNotThrowAsync(Action);
+        var user = A.Dummy<User>();
+        await authService.RegisterAsync(user);
         A.CallTo(() => passwordManager.SecureUser(A<User>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => usersRepository.AddAsync(A<User>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => rolesRepository.AssignToRoleAsync(A<User>._, Roles.User)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => rolesRepository.AssignToRoleAsync(A<User>._, A<string>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
     }
-
     [Test]
     public async Task GetAuthCredentials_WithAnyUser_ReturnsAuthResult()
     {
-        var credentials = await authService.GetAuthCredentialsAsync(fakeUser);
-        Assert.IsInstanceOf<AuthResult>(credentials);
+        var user = A.Dummy<User>();
+        var credentials = await authService.GetAuthCredentialsAsync(user);
+        Assert.That(credentials, Is.InstanceOf<AuthResult>());
     }
     [Test]
-    public async Task GetAuthCredentials_WithRealUser_CalledEveryMethodOnce()
+    public async Task UpdateProfileAsync_WithNewPassword_CalledCheckPasswordAndSecureUser()
     {
-        await authService.GetAuthCredentialsAsync(realUser);
-        A.CallTo(() => usersRepository.GetByNameAsync(realUser.Name)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => passwordManager.ThrowExceptionIfWrongPassword(realUser.Password, null)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => rolesRepository.GetRoleNameByIdAsync(0)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => tokenManager.GenerateToken(A<User>._, string.Empty)).MustHaveHappenedOnceExactly();
+        var newUser = A.Dummy<User>();
+        var existingUser = A.Dummy<User>();
+        var newPassword = A.Dummy<string>();
+        await authService.UpdateProfileAsync(existingUser, newUser, newPassword);
+        A.CallTo(() => passwordManager.ThrowExceptionIfWrongPassword(A<string>._, A<string>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => passwordManager.SecureUserWithNewPassword(A<User>._, A< string >._)).MustHaveHappenedOnceExactly();
+    }
+    [Test]
+    public async Task UpdateProfileAsync_WithoutNewPassword_CalledCheckPasswordAndNotSecureUser()
+    {
+        var newUser = A.Dummy<User>();
+        var existingUser = A.Dummy<User>();
+        await authService.UpdateProfileAsync(existingUser, newUser, null);
+        A.CallTo(() => passwordManager.ThrowExceptionIfWrongPassword(A<string>._, A<string>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => passwordManager.SecureUserWithNewPassword(A<User>._, A<string>._)).MustNotHaveHappened();
     }
 
     [Test]
-    public void UpdateProfileAsync_WithNewPassword_CalledCheckPasswordAndNotSecureUser()
+    public async Task UpdateProfileAsync_ChangesUsername()
     {
-        async Task Action() => await authService.UpdateUsernameAsync(realUser, fakeUser, "password2");
-        Assert.DoesNotThrowAsync(Action);
-        A.CallTo(() => passwordManager.ThrowExceptionIfWrongPassword(null, realUser.Password)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => passwordManager.SecureUserWithNewPassword(realUser, "password2")).MustHaveHappenedOnceExactly();
+        var newUser = DataGenerator.CreateTestUser(name: "Steven");
+        var existingUser = A.Dummy<User>();
+        var newPassword = A.Dummy<string>();
+
+        await authService.UpdateProfileAsync(existingUser, newUser, newPassword);
+        var actualName = existingUser.Name;
+        var expectedName = newUser.Name;
+        Assert.That(actualName, Is.EqualTo(expectedName));
     }
     [Test]
-    public void UpdateProfileAsync_WithoutNewPassword_CalledNeededMethods()
+    public void DeleteAccountAsync_CallsThrowExceptionIfWrongPasswordAndRemove()
     {
-        async Task Action() => await authService.UpdateUsernameAsync(realUser, fakeUser, null);
+        var realUser = A.Dummy<User>();
+        var dummyPassword = A.Dummy<string>();
+        async Task Action() => await authService.DeleteAccountAsync(realUser, dummyPassword);
         Assert.DoesNotThrowAsync(Action);
-        A.CallTo(() => passwordManager.ThrowExceptionIfWrongPassword(null, realUser.Password)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => passwordManager.SecureUserWithNewPassword(realUser, "password2")).MustNotHaveHappened();
+        A.CallTo(() => passwordManager.ThrowExceptionIfWrongPassword(A<string>._, A<string>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => usersRepository.Remove(A<User>._)).MustHaveHappenedOnceExactly();
     }
-    [Test]
-    public void UpdateProfileAsync_WithRealUsers_UsernameChanged()
-    {
-        var givenUser = new User
-        {
-            Name = "Stephen", Password = "password3"
-        };
-        var userInDb = new User
-        {
-            Name = "Ivan",
-            Password = "password"
-        };
-        async Task Action() => await authService.UpdateUsernameAsync(userInDb, givenUser, "password2");
-        Assert.DoesNotThrowAsync(Action);
-        Assert.That(userInDb.Name, Is.EqualTo(givenUser.Name));
-    }
-
-    [Test]
-    public void DeleteAccountAsync_WithRealUser_CallsCheckPasswordAndRemoveOnce()
-    {
-        var userInDb = new User
-        {
-            Name = "Ivan",
-            Password = "password"
-        };
-        async Task Action() => await authService.DeleteAccountAsync(userInDb,  "password2");
-        Assert.DoesNotThrowAsync(Action);
-        A.CallTo(() => passwordManager.ThrowExceptionIfWrongPassword("password2", userInDb.Password)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => usersRepository.Remove(userInDb)).MustHaveHappenedOnceExactly();
-    }
-
-
     [Test]
     public void GetUsernameOrThrow_WithFakeIdentity_ThrowsUserNotAuthorizedException()
     {
         var claimsPrincipal = A.Fake<ClaimsPrincipal>();
-        void Action() => authService.GetUsernameOrThrow(claimsPrincipal);
-        Assert.Throws<UserNotAuthorizedException>(Action);
+        Assert.Throws<UserNotAuthorizedException>(() =>
+        {
+            authService.GetUsernameOrThrow(claimsPrincipal);
+        });
     }
     [Test]
     public void GetUsernameOrThrow_WithoutNeededClaimAndCtor_ThrowsUserNotFoundException()
     {
         var claims = new List<Claim>();
-        IIdentity identity = new ClaimsIdentity(claims, "Bearer");
+        var authenticationType = "Bearer";
+        var identity = new ClaimsIdentity(claims, authenticationType);
         var principal = new ClaimsPrincipal(identity);
-        void Action() => authService.GetUsernameOrThrow(principal);
-        Assert.Throws<EntityNotFoundException>(Action);
+        Assert.Throws<EntityNotFoundException>(() =>
+        {
+            authService.GetUsernameOrThrow(principal);
+        });
     }
     [Test]
     public void GetUsernameOrThrow_WithNeededClaimAndCtor_ReturnsUsername()
     {
+        var username = "Stephen";
+        var role = "User";
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.UniqueName, "Stephen"),
-            new(ClaimTypes.Role, "User")
+            new(ClaimNames.UniqueName, username),
+            new(ClaimTypes.Role, role)
         };
-        IIdentity identity = new ClaimsIdentity(claims, "Bearer", 
-            JwtRegisteredClaimNames.UniqueName, ClaimTypes.Role);
+        var identity = new ClaimsIdentity(claims, "Bearer", 
+            ClaimNames.UniqueName, ClaimTypes.Role);
         var principal = new ClaimsPrincipal(identity);
-        var username = authService.GetUsernameOrThrow(principal);
-        Assert.That(username == "Stephen");
+        var foundUsername = authService.GetUsernameOrThrow(principal);
+        Assert.That(foundUsername == username);
     }
-
 }

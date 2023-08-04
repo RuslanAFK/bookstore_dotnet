@@ -1,4 +1,5 @@
-﻿using Domain.Exceptions;
+﻿using BCrypt.Net;
+using Domain.Exceptions;
 using Domain.Models;
 
 namespace Services;
@@ -21,7 +22,16 @@ public class PasswordManager : IPasswordManager
     }
     public void ThrowExceptionIfWrongPassword(string realPassword, string hashedPassword)
     {
-        if (!BCrypt.Net.BCrypt.Verify(realPassword, hashedPassword))
-            throw new WrongPasswordException();
+        try
+        {
+            var passwordCorrect = 
+                BCrypt.Net.BCrypt.Verify(realPassword, hashedPassword);
+            if (!passwordCorrect)
+                throw new WrongPasswordException();
+        }
+        catch (SaltParseException)
+        {
+            throw new PasswordNotParseableException();
+        }
     }
 }

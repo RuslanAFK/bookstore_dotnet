@@ -6,19 +6,20 @@ using Domain.Models;
 
 namespace Services;
 
-public class AuthService : BaseService, IAuthService
+public class AuthService : IAuthService
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IRolesRepository _rolesRepository;
     private readonly ITokenManager _tokenManager;
     private readonly IPasswordManager _passwordManager;
-
+    private readonly IUnitOfWork _unitOfWork;
     public AuthService(IUsersRepository usersRepository, IRolesRepository rolesRepository, ITokenManager tokenManager, 
-        IUnitOfWork unitOfWork, IPasswordManager passwordManager) : base(unitOfWork)
+        IUnitOfWork unitOfWork, IPasswordManager passwordManager)
     {
         _usersRepository = usersRepository;
         _rolesRepository = rolesRepository;
         _tokenManager = tokenManager;
+        _unitOfWork = unitOfWork;
         _passwordManager = passwordManager;
     }
     public async Task RegisterAsync(User userToCreate)
@@ -26,7 +27,7 @@ public class AuthService : BaseService, IAuthService
         _passwordManager.SecureUser(userToCreate);
         await _usersRepository.AddAsync(userToCreate);
         await _rolesRepository.AssignToRoleAsync(userToCreate, Roles.User);
-        await CompleteAndCheckIfCompleted();
+        await _unitOfWork.CompleteOrThrowAsync();
     }
     public async Task<AuthResult> GetAuthCredentialsAsync(User user)
     {
@@ -36,12 +37,17 @@ public class AuthService : BaseService, IAuthService
         var token = _tokenManager.GenerateToken(foundUser, roleName);
         return new AuthResult(foundUser, token, roleName);
     }
-    public async Task UpdateUsernameAsync(User userInDb, User givenUser, string? newPassword)
+    public async Task UpdateProfileAsync(User existingUser, User newUser, string? newPassword)
     {
-        _passwordManager.ThrowExceptionIfWrongPassword(givenUser.Password, userInDb.Password);
-        userInDb.Name = givenUser.Name;
-        SetNewPasswordIfPresent(userInDb, newPassword);
-        await CompleteAndCheckIfCompleted();
+        _passwordManager.ThrowExceptionIfWrongPassword(newUser.Password, existingUser.Password);
+        ChangeUsername(existingUser, newUser.Name);
+        SetNewPasswordIfPresent(existingUser, newPassword);
+        await _unitOfWork.CompleteOrThrowAsync();
+    }
+
+    private void ChangeUsername(User existingUser, string newUsername)
+    {
+        existingUser.Name = newUsername;
     }
     private void SetNewPasswordIfPresent(User userInDb, string? newPassword)
     {
@@ -53,7 +59,7 @@ public class AuthService : BaseService, IAuthService
     {
         _passwordManager.ThrowExceptionIfWrongPassword(inputtedPassword, user.Password);
         _usersRepository.Remove(user);
-        await CompleteAndCheckIfCompleted();
+        await _unitOfWork.CompleteOrThrowAsync();
     }
     public string GetUsernameOrThrow(ClaimsPrincipal? claimsPrincipal)
     {

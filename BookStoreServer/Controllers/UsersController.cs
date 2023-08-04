@@ -24,7 +24,7 @@ public class UsersController : Controller
     
     [HttpGet]
     [Authorize(Roles = Roles.Creator)]
-    public async Task<IActionResult> All([FromQuery] Query query)
+    public async Task<IActionResult> GetQueried([FromQuery] Query query)
     {
         var users = await _usersService.GetQueriedAsync(query);
         var res = 
@@ -34,7 +34,7 @@ public class UsersController : Controller
 
     [HttpGet("{userId}")]
     [Authorize(Roles = Roles.Creator)]
-    public async Task<IActionResult> Get(int bookId)
+    public async Task<IActionResult> GetById(int bookId)
     {
         var userToReturn = await _usersService.GetByIdAsync(bookId);
 

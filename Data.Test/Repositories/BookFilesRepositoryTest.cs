@@ -1,86 +1,59 @@
-﻿using Data.Repositories;
-using Domain.Models;
-
-namespace Data.Test.Repositories;
+﻿namespace Data.Test.Repositories;
 
 public class BookFilesRepositoryTest
 {
-    private DbContextOptions<AppDbContext> options;
     private BookFileRepository repository;
     private AppDbContext dbContext;
-
     [SetUp]
     public void Setup()
     {
-        options = CreateNewInMemoryDatabase();
+        var options = DataGenerator.CreateNewInMemoryDatabase();
         dbContext = new AppDbContext(options);
         repository = new BookFileRepository(dbContext);
     }
-
     [TearDown]
     public void TearDown()
     {
         dbContext.Database.EnsureDeleted();
         dbContext.Dispose();
     }
-    private DbContextOptions<AppDbContext> CreateNewInMemoryDatabase()
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
-            .Options;
-    }
-
     [Test]
-    public async Task AddAsync_CreatesNewInstanceInsideDb()
+    public async Task AddAsync_CreatesNewBookFileInsideDb()
     {
-        var bookFile = new BookFile
-        {
-            BookId = 11,
-            Id = 1,
-            Url = ""
-        };
-        await repository.AddAsync(bookFile);
+        var newItem = DataGenerator.CreateTestBookFile();
+        await repository.AddAsync(newItem);
         await dbContext.SaveChangesAsync();
 
-        var fileFound = await dbContext.BookFiles.FindAsync(bookFile.Id);
-        Assert.IsNotNull(fileFound);
+        var foundItem = await dbContext.BookFiles.FindAsync(newItem.Id);
+        Assert.That(foundItem, Is.Not.Null);
     }
     [Test]
-    public async Task Update_ChangesValues()
+    public async Task Update_ChangesBookFile()
     {
         var newUrl = "newUrl";
-        var bookFile = new BookFile
-        {
-            BookId = 55,
-            Id = 1,
-            Url = ""
-        };
-        await dbContext.AddAsync(bookFile);
+        var newItem = DataGenerator.CreateTestBookFile();
+        await dbContext.AddAsync(newItem);
         await dbContext.SaveChangesAsync();
 
-        bookFile.Url = newUrl;
-        repository.Update(bookFile);
+        newItem.Url = newUrl;
+        repository.Update(newItem);
         await dbContext.SaveChangesAsync();
 
-        var fileFound = await dbContext.BookFiles.FindAsync(bookFile.Id);
-        Assert.That(fileFound.Url, Is.EqualTo(newUrl));
+        var foundItem = await dbContext.BookFiles.FindAsync(newItem.Id);
+        var actualUrl = foundItem?.Url;
+        Assert.That(actualUrl, Is.EqualTo(newUrl));
     }
     [Test]
-    public async Task Remove_DeletesData()
+    public async Task Remove_DeletesBookFile()
     {
-        var bookFile = new BookFile
-        {
-            BookId = 55,
-            Id = 1,
-            Url = ""
-        };
-        await dbContext.AddAsync(bookFile);
+        var newItem = DataGenerator.CreateTestBookFile();
+        await dbContext.AddAsync(newItem);
         await dbContext.SaveChangesAsync();
 
-        repository.Remove(bookFile);
+        repository.Remove(newItem);
         await dbContext.SaveChangesAsync();
 
-        var fileFound = await dbContext.BookFiles.FindAsync(bookFile.Id);
-        Assert.That(fileFound, Is.Null);
+        var foundItem = await dbContext.BookFiles.FindAsync(newItem.Id);
+        Assert.That(foundItem, Is.Null);
     }
 }

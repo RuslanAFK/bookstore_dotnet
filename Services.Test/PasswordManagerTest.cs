@@ -1,6 +1,4 @@
-﻿using BCrypt.Net;
-
-namespace Services.Test;
+﻿namespace Services.Test;
 
 public class PasswordManagerTest
 {
@@ -10,32 +8,28 @@ public class PasswordManagerTest
     {
         passwordManager = new PasswordManager();
     }
-
     [Test]
-    public void SecureUser_VerifyWithBCrypt_HashingWorks()
+    public void SecureUser_VerifyWithBCrypt()
     {
         var textPassword = "password";
-        var user = new User { Password = textPassword };
-
+        var user = DataGenerator.CreateTestUser(password: textPassword);
         passwordManager.SecureUser(user);
-
         var isHashingCorrect = BCrypt.Net.BCrypt.Verify(textPassword, user.Password);
-        Assert.IsTrue(isHashingCorrect);
+        Assert.That(isHashingCorrect, Is.True);
     }
     [Test]
-    public void SecureUserWithNewPassword_VerifyWithBCrypt_HashingWorks()
+    public void SecureUserWithNewPassword_VerifyWithBCrypt()
     {
+        var oldPassword = "oldPassword";
         var newPassword = "password";
-        var user = new User { Password = "Whatever" };
-
+        var user = DataGenerator.CreateTestUser(password: oldPassword);
         passwordManager.SecureUserWithNewPassword(user, newPassword);
-
         var isHashingCorrect = BCrypt.Net.BCrypt.Verify(newPassword, user.Password);
-        Assert.IsTrue(isHashingCorrect);
+        Assert.That(isHashingCorrect, Is.True);
     }
 
     [Test]
-    public void ThrowExceptionIfWrongPassword_WithCorrentPassword_Passes()
+    public void ThrowExceptionIfWrongPassword_WithCorrectPassword_Passes()
     {
         var password = "password";
         var hashed = BCrypt.Net.BCrypt.HashPassword(password);
@@ -46,23 +40,19 @@ public class PasswordManagerTest
     public void ThrowExceptionIfWrongPassword_WithWrongPassword_ThrowsWrongPasswordException()
     {
         var password = "password";
+        var wrongPassword = "wrong";
         var hashed = BCrypt.Net.BCrypt.HashPassword(password);
-        Assert.Throws<WrongPasswordException>(() =>
-        {
-            passwordManager.ThrowExceptionIfWrongPassword("another", hashed);
-        });
+        Assert.Throws<WrongPasswordException>(() => 
+            passwordManager.ThrowExceptionIfWrongPassword(wrongPassword, hashed));
     }
-
-    //  Integration tests
-    // TODO catch error
-
     [Test]
-    public void ThrowExceptionIfWrongPassword_WithNotHashedValue_ThrowsWrongPasswordException()
+    public void ThrowExceptionIfWrongPassword_WithNotHashedValue_PasswordNotParseableException()
     {
         var password = "password";
-        Assert.Throws<SaltParseException>(() =>
+        var notHashedPassword = "not hashed at all";
+        Assert.Throws<PasswordNotParseableException>(() =>
         {
-            passwordManager.ThrowExceptionIfWrongPassword("another", "not hashed");
+            passwordManager.ThrowExceptionIfWrongPassword(password, notHashedPassword);
         });
     }
 }

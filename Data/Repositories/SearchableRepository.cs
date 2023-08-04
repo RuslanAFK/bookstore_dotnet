@@ -35,6 +35,6 @@ public abstract class SearchableRepository<TEntity> : BaseRepository<TEntity> wh
     protected async Task<TEntity> GetByNameAsync(string name, IQueryable<TEntity> items)
     {
         var item = await items.SingleOrDefaultAsync(e => e.Name == name);
-        return GetItemOrThrowNullError(item, name.ToString(), nameof(name));
+        return GetItemOrThrowNullError(item, name, nameof(name));
     }
 }

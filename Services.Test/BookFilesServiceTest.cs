@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-
-namespace Services.Test;
+﻿namespace Services.Test;
 
 public class BookFilesServiceTest
 {
-    private BookFilesService _bookFilesService;
-
+    private BookFilesService bookFilesService;
     private IUnitOfWork unitOfWork;
     private IBaseRepository<BookFile> bookFileRepository;
     private IFileManager fileManager;
@@ -16,82 +12,74 @@ public class BookFilesServiceTest
         bookFileRepository = A.Fake<IBaseRepository<BookFile>>();
         unitOfWork = A.Fake<IUnitOfWork>();
         fileManager = A.Fake<IFileManager>();
-
-        _bookFilesService = new BookFilesService(unitOfWork, fileManager, bookFileRepository);
+        bookFilesService = new BookFilesService(unitOfWork, fileManager, bookFileRepository);
     }
-
     [Test]
-    public void AddAsync_WithNullBookFile_CallsStoreFileAndGetPathAndAddAsyncAndNotDeleteFile()
+    public async Task AddAsync_WithoutBookFile_Throws3MethodsAndSkips1()
     {
         var book = A.Dummy<Book>();
         book.BookFile = null;
         var formFile = A.Fake<IFormFile>();
-        async Task Action() => await _bookFilesService.AddAsync(book, formFile);
-        Assert.DoesNotThrowAsync(Action);
-        A.CallTo(() => fileManager.StoreFileAndGetPath(formFile)).MustHaveHappenedOnceExactly();
+        await bookFilesService.AddAsync(book, formFile);
+        A.CallTo(() => fileManager.StoreFileAndGetPath(A<IFormFile>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => bookFileRepository.AddAsync(A<BookFile>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustNotHaveHappened();
     }
     [Test]
-    public void AddAsync_WithBookFile_NotCallsDeleteFile()
+    public async Task AddAsync_WithBookFile_Calls4Methods()
     {
         var book = A.Dummy<Book>();
         book.BookFile = A.Dummy<BookFile>();
         var formFile = A.Fake<IFormFile>();
-        async Task Action() => await _bookFilesService.AddAsync(book, formFile);
-        Assert.DoesNotThrowAsync(Action);
+        await bookFilesService.AddAsync(book, formFile);
+        A.CallTo(() => fileManager.StoreFileAndGetPath(A<IFormFile>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => bookFileRepository.AddAsync(A<BookFile>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustHaveHappenedOnceExactly();
     }
-
     [Test]
-    public void RemoveAsync_WithNullBookFile_ThrowsEntityNotFoundException()
+    public void RemoveAsync_WithoutBookFile_ThrowsEntityNotFoundException()
     {
         var book = A.Dummy<Book>();
         book.BookFile = null;
-        var formFile = A.Fake<IFormFile>();
-        async Task Action() => await _bookFilesService.RemoveAsync(book);
-        Assert.ThrowsAsync<EntityNotFoundException>(Action);
+        Assert.ThrowsAsync<EntityNotFoundException>(async() =>
+        {
+            await bookFilesService.RemoveAsync(book);
+        });
     }
     [Test]
-    public void RemoveAsync_WithBookFile_CallsDeleteFileAndRemove()
+    public async Task RemoveAsync_WithBookFile_CallsDeleteFileAndRemove()
     {
         var book = A.Dummy<Book>();
         book.BookFile = A.Dummy<BookFile>();
-        var formFile = A.Fake<IFormFile>();
-        async Task Action() => await _bookFilesService.RemoveAsync(book);
-        Assert.DoesNotThrowAsync(Action);
+        await bookFilesService.RemoveAsync(book);
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => bookFileRepository.Remove(A<BookFile>._)).MustHaveHappenedOnceExactly();
     }
-
     [Test]
     public void ThrowIfFileNotPermitted_FileLength0_ThrowsFileEmptyException()
     {
-        var baseStream = A.Dummy<Stream>();
-        var length = 0;
-        var fileName = A.Dummy<string>();
-        IFormFile formFile = new FormFile(baseStream, 0, length, string.Empty, fileName);
-        void Action() => _bookFilesService.ThrowIfFileNotPermitted(formFile);
-        Assert.Throws<FileEmptyException>(Action);
+        var formFile = DataGenerator.CreateTestFormFile(length: 0);
+        Assert.Throws<FileEmptyException>(() =>
+            bookFilesService.ThrowIfFileNotPermitted(formFile));
     }
     [Test]
-    public void ThrowIfFileNotPermitted_FileNameRandom_ThrowsUnsupportedFileTypeException()
+    public void ThrowIfFileNotPermitted_FileTypeIncorrect_ThrowsUnsupportedFileTypeException()
     {
-        var baseStream = A.Dummy<Stream>();
         var length = 1;
         var fileName = A.Dummy<string>();
-        IFormFile formFile = new FormFile(baseStream, 0, length, string.Empty, fileName);
-        void Action() => _bookFilesService.ThrowIfFileNotPermitted(formFile);
-        Assert.Throws<UnsupportedFileTypeException>(Action);
+        IFormFile formFile = DataGenerator.CreateTestFormFile(fileName, length);
+        Assert.Throws<UnsupportedFileTypeException>(() => 
+            bookFilesService.ThrowIfFileNotPermitted(formFile));
     }
     [Test]
-    public void ThrowIfFileNotPermitted_LengthMoreThan0AndFileNameEndsWithPdf_AllPasses()
+    public void ThrowIfFileNotPermitted_LengthMoreThan0AndFileNameEndsWithPdf_Passes()
     {
-        var baseStream = A.Dummy<Stream>();
         var length = 1;
-        var fileName = "askdsjbv.pdf";
-        IFormFile formFile = new FormFile(baseStream, 0, length, string.Empty, fileName);
-        void Action() => _bookFilesService.ThrowIfFileNotPermitted(formFile);
-        Assert.DoesNotThrow(Action);
+        var fileName = "someFile.pdf";
+        IFormFile formFile = DataGenerator.CreateTestFormFile(fileName, length);
+        bookFilesService.ThrowIfFileNotPermitted(formFile);
+        Assert.Pass();
     }
 }

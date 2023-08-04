@@ -2,69 +2,38 @@
 
 public class PositiveIntegerTest
 {
-    [Test]
-    public void GetValue_WhenThresholdIsNotSetAndDesiredIsNotNull_ReturnsDesiredValue()
+    [Theory]
+    [TestCase(15, 10, 15)]
+    [TestCase(null, 10, 10)]
+    public void GetValue_WhenThresholdIsNotSet
+        (int? desiredValue, int defaultValue, int expectedValue)
     {
-        var desired = 100;
-        var obj = new PositiveThresholdedInteger(5);
-        var results = obj.GetValue(desired);
-        Assert.That(results, Is.EqualTo(desired));
-    }
-    [Test]
-    public void GetValue_WhenThresholdIsNotSetAndDesiredIsNull_ReturnsDefaultValue()
-    {
-        var defaultValue = 100;
         var obj = new PositiveThresholdedInteger(defaultValue);
-        var results = obj.GetValue();
-        Assert.That(results, Is.EqualTo(defaultValue));
+        var results = obj.GetValue(desiredValue);
+        Assert.That(results, Is.EqualTo(expectedValue));
     }
-    [Test]
-    public void GetValue_WhenThresholdIsGreaterThanDesired_ReturnsDesiredValue()
+    [Theory]
+    [TestCase(5, 10, 15, 5)]
+    [TestCase(20, 10, 15, 10)]
+    [TestCase(15, 10, 5, 5)]
+    [TestCase(null, 10, 15, 10)]
+    [TestCase(null, 10, 5, 5)]
+    public void GetValue_WhenThresholdIsSet
+        (int? desiredValue, int defaultValue, int threshold, int expectedValue)
+
     {
-        var defaultValue = 100;
-        var desired = 50;
-        var max = 150;
         var obj = new PositiveThresholdedInteger(defaultValue);
-        obj.SetMaxThreshold(max);
-        var results = obj.GetValue(desired);
-        Assert.That(results, Is.EqualTo(desired));
-    }
-    [Test]
-    public void GetValue_WhenThresholdIsSmallerThanDesired_ReturnsDefaultValue()
-    {
-        var defaultValue = 100;
-        var desired = 500;
-        var max = 105;
-        var obj = new PositiveThresholdedInteger(defaultValue);
-        obj.SetMaxThreshold(max);
-        var results = obj.GetValue(desired);
-        Assert.That(results, Is.EqualTo(defaultValue));
-    }
-    [Test]
-    public void GetValue_WhenThresholdIsSetAndDesiredIsNull_ReturnsDefaultValue()
-    {
-        var defaultValue = 100;
-        var obj = new PositiveThresholdedInteger(defaultValue);
-        obj.SetMaxThreshold(155);
-        var results = obj.GetValue();
-        Assert.That(results, Is.EqualTo(defaultValue));
-    }
-    [Test]
-    public void GetValue_MaxIsSmallerThanDefault_ReturnsMax()
-    {
-        var defaultValue = 100;
-        var max = 90;
-        var obj = new PositiveThresholdedInteger(defaultValue);
-        obj.SetMaxThreshold(max);
-        var results = obj.GetValue();
-        Assert.That(results, Is.EqualTo(max));
+        obj.SetMaxThreshold(threshold);
+        var results = obj.GetValue(desiredValue);
+        Assert.That(results, Is.EqualTo(expectedValue));
     }
     [Test]
     public void AnyMethod_NegativeValuePasses_ThrowsArgumentOutOfRangeException()
     {
+        var negativeValue = -15;
         Assert.Throws<ArgumentOutOfRangeException>(() =>
         {
-            new PositiveThresholdedInteger(-10);
+            var _ = new PositiveThresholdedInteger(negativeValue);
         });
     }
 }

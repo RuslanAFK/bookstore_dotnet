@@ -5,13 +5,15 @@ using Microsoft.AspNetCore.Http;
 
 namespace Services;
 
-public class BookFilesService : BaseService, IBookFilesService
+public class BookFilesService : IBookFilesService
 {
     private readonly IFileManager _fileManager;
     private readonly IBaseRepository<BookFile> _bookFilesRepository;
+    private readonly IUnitOfWork _unitOfWork;
     public BookFilesService(IUnitOfWork unitOfWork, IFileManager fileManager,
-        IBaseRepository<BookFile> bookFilesRepository) : base(unitOfWork)
+        IBaseRepository<BookFile> bookFilesRepository)
     {
+        _unitOfWork = unitOfWork;
         _fileManager = fileManager;
         _bookFilesRepository = bookFilesRepository;
     }
@@ -23,7 +25,7 @@ public class BookFilesService : BaseService, IBookFilesService
         var relativePath = await _fileManager.StoreFileAndGetPath(file);
         var bookFile = GenerateNewBookFile(book, relativePath);
         await _bookFilesRepository.AddAsync(bookFile);
-        await CompleteAndCheckIfCompleted();
+        await _unitOfWork.CompleteOrThrowAsync();
     }
 
     private void DeleteFileIfExists(BookFile? bookFile)
@@ -45,7 +47,7 @@ public class BookFilesService : BaseService, IBookFilesService
         var bookFile = GetBookFileOrThrow(book);
         _fileManager.DeleteFile(bookFile.Url);
         _bookFilesRepository.Remove(bookFile);
-        await CompleteAndCheckIfCompleted();
+        await _unitOfWork.CompleteOrThrowAsync();
     }
 
     public void ThrowIfFileNotPermitted(IFormFile file)

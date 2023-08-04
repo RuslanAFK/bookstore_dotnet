@@ -1,2 +1,14 @@
 global using NUnit.Framework;
 global using FakeItEasy;
+global using AutoMapper;
+global using BookStoreServer.Controllers;
+global using BookStoreServer.Controllers.Resources.Books;
+global using Domain.Abstractions;
+global using Domain.Models;
+global using Microsoft.AspNetCore.Mvc;
+global using BookStoreServer.Controllers.Resources.Users;
+global using Microsoft.AspNetCore.Http;
+global using BookStoreServer.Controllers.Resources.Auth;
+global using System.ComponentModel.DataAnnotations;
+global using BookStoreServer.ExceptionHandlers;
+global using Domain.Exceptions;

@@ -1,52 +1,43 @@
-﻿using System.ComponentModel.DataAnnotations;
-using BookStoreServer.ExceptionHandlers;
-using Domain.Exceptions;
-using Microsoft.AspNetCore.Http;
-
-namespace BookStoreServer.Test.ExceptionHandlers;
+﻿namespace BookStoreServer.Test.ExceptionHandlers;
 
 public class ExceptionHandlerMiddlewareTest
 {
+    private HttpContext httpContext;
     [SetUp]
     public void Setup()
     {
-        
+        httpContext = new DefaultHttpContext();
     }
-
     [Test]
     public async Task Invoke_WithBaseException_ReturnsResponseWithCorrectStatusCode()
     {
-        var context = new DefaultHttpContext();
-        RequestDelegate nextDelegate = (_) => 
-            throw new EntityNotFoundException(typeof(object), "");
-        var middleware = new ExceptionHandlerMiddleware(nextDelegate);
-
-        await middleware.Invoke(context);
-        
-        Assert.That(context.Response.StatusCode, Is.EqualTo(404));
+        Task NextDelegate(HttpContext _)
+        {
+            var type = A.Dummy<Type>();
+            var str = A.Dummy<string>();
+            throw new EntityNotFoundException(type, str);
+        }
+        var middleware = new ExceptionHandlerMiddleware(NextDelegate);
+        await middleware.Invoke(httpContext);
+        var statusCode = httpContext.Response.StatusCode;
+        Assert.That(statusCode, Is.EqualTo(StatusCodes.Status404NotFound));
     }
     [Test]
     public async Task Invoke_WithValidationException_ReturnsResponseWith400StatusCode()
     {
-        var context = new DefaultHttpContext();
-        RequestDelegate nextDelegate = (context) =>
-            throw new ValidationException();
-        var middleware = new ExceptionHandlerMiddleware(nextDelegate);
-
-        await middleware.Invoke(context);
-
-        Assert.That(context.Response.StatusCode, Is.EqualTo(400));
+        Task NextDelegate(HttpContext _) => throw new ValidationException();
+        var middleware = new ExceptionHandlerMiddleware(NextDelegate);
+        await middleware.Invoke(httpContext);
+        var statusCode = httpContext.Response.StatusCode;
+        Assert.That(statusCode, Is.EqualTo(StatusCodes.Status400BadRequest));
     }
     [Test]
     public async Task Invoke_WithOtherException_ReturnsResponseWith500StatusCode()
     {
-        var context = new DefaultHttpContext();
-        RequestDelegate nextDelegate = (context) =>
-            throw new Exception();
-        var middleware = new ExceptionHandlerMiddleware(nextDelegate);
-
-        await middleware.Invoke(context);
-
-        Assert.That(context.Response.StatusCode, Is.EqualTo(500));
+        Task NextDelegate(HttpContext _) => throw new Exception();
+        var middleware = new ExceptionHandlerMiddleware(NextDelegate);
+        await middleware.Invoke(httpContext);
+        var statusCode = httpContext.Response.StatusCode;
+        Assert.That(statusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
     }
 }

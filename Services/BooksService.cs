@@ -3,17 +3,19 @@ using Domain.Models;
 
 namespace Services;
 
-public class BooksService : BaseService, IBooksService
+public class BooksService : IBooksService
 {
     private readonly IBooksRepository _booksRepository;
     private readonly IFileManager _fileManager;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public BooksService(IBooksRepository booksRepository, IUnitOfWork unitOfWork, IFileManager fileManager) : base(unitOfWork)
+    public BooksService(IBooksRepository booksRepository, IUnitOfWork unitOfWork, IFileManager fileManager)
     {
         _booksRepository = booksRepository;
+        _unitOfWork = unitOfWork;
         _fileManager = fileManager;
     }
-    public async Task<ListResponse<Book>> GetBooksAsync(Query query)
+    public async Task<ListResponse<Book>> GetQueriedAsync(Query query)
     {
         return await _booksRepository.GetQueriedItemsAsync(query);
     }
@@ -24,20 +26,25 @@ public class BooksService : BaseService, IBooksService
     public async Task AddAsync(Book bookToCreate)
     {
         await _booksRepository.AddAsync(bookToCreate);
-        await CompleteAndCheckIfCompleted();
+        await _unitOfWork.CompleteOrThrowAsync();
     }
 
     public async Task UpdateAsync(int bookId, Book bookToUpdate)
     {
-        bookToUpdate.Id = bookId;
+        AssignId(bookId, bookToUpdate);
         _booksRepository.Update(bookToUpdate);
-        await CompleteAndCheckIfCompleted();
+        await _unitOfWork.CompleteOrThrowAsync();
+    }
+
+    private void AssignId(int bookId, Book bookToUpdate)
+    {
+        bookToUpdate.Id = bookId;
     }
     public async Task RemoveAsync(Book book)
     {
         DeleteFileIfExists(book.BookFile);
         _booksRepository.Remove(book);
-        await CompleteAndCheckIfCompleted();
+        await _unitOfWork.CompleteOrThrowAsync();
     }
     private void DeleteFileIfExists(BookFile? bookFile)
     {
