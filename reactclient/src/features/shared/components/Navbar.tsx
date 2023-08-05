@@ -5,7 +5,6 @@ import {Link, useNavigate} from "react-router-dom";
 import {isAdminOrCreator, isAuthed, isCreator} from "../../auth/store/selectors";
 import {logout} from "../../auth/store/auth-slice";
 import {AppDispatch, RootState} from "../store/store";
-import UserHubConnector, {old} from "../services/user-hub-connector";
 import {notify} from "../services/toast-notifier";
 
 const Navbar = () => {
@@ -18,22 +17,7 @@ const Navbar = () => {
 
 
     useEffect(() => {
-
-        if (authState.user) {
-            const token = authState.user?.token;
-
-            const {subscribe, unsubscribe} = UserHubConnector(token);
-            subscribe((message: string) => {
-                notify(message, "warning");
-                dispatch(logout());
-            });
-            return () => unsubscribe();
-        }
-        else {
-            const connector = old();
-            if (connector) {
-                connector.unsubscribe();
-            }
+        if (!isAuthed(authState)) {
             navigate("/login");
         }
     }, [authState.user])

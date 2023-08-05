@@ -7,7 +7,6 @@ import QueryObject from "../../shared/interfaces/QueryObject";
 import PaginatedList from "../../shared/interfaces/PaginatedList";
 import GetUser from "../interfaces/GetUser";
 import UpdateUserRole from "../interfaces/UpdateUserRole";
-import UserHubConnector from "../../shared/services/user-hub-connector";
 
 export const getUsers = createAsyncThunk(
     "user/getUsers",
@@ -49,8 +48,6 @@ export const updateUserRole = createAsyncThunk(
             const token = getToken(thunkAPI);
             const headers = addBearerToken(token);
             const {data} = await axios.patch<void>(`${USER_URL}/${id}`, updateUserData, {headers: headers});
-            const {roleName, username} = userData;
-            UserHubConnector(token).changeRole(username, roleName);
             return data;
         } catch (e) {
             return handleError(e, thunkAPI.rejectWithValue);
@@ -65,7 +62,6 @@ export const deleteUser = createAsyncThunk(
             const token = getToken(thunkAPI);
             const headers = addBearerToken(token);
             const {data} = await axios.delete<void>(`${USER_URL}/${userData.id}`, {headers: headers});
-            UserHubConnector(token).deleteUser(userData.username);
             return data;
         } catch (e) {
             return handleError(e, thunkAPI.rejectWithValue);
