@@ -11,6 +11,6 @@ public class SameValueAssignException : BaseException
     public SameValueAssignException(string propertyName)
     {
         PropertyName = propertyName;
-        Message = $"Property {PropertyName} had the same value you are assigning.";
+        Message = $"Property {PropertyName} had the same value you are assigning. Operation is not needed.";
     }
 }

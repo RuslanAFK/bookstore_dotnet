@@ -35,7 +35,6 @@ public class UsersRepositoryTest
         Assert.That(results.Count, Is.EqualTo(1));
     }
     [Test]
-    // TODO Fix the bug role not mandatory / checking if role exists
     public async Task GetByIdIncludingRolesAsync_WithExistingId_ReturnsSameUser()
     {
         var id = 5;

@@ -9,6 +9,7 @@ public class EntityAlreadyExistsException : BaseException
     public string Entity { get; }
     public string PropertyName { get; }
     public string? PropertyValue { get; }
+    public string Recommendation { get; } = "Consider changing it and trying again.";
     public EntityAlreadyExistsException(Type entityType, string propertyName, string propertyValue = null)
     {
         Entity = entityType.Name;
@@ -19,7 +20,7 @@ public class EntityAlreadyExistsException : BaseException
     private string GenerateMessage()
     {
         if (PropertyValue is null)
-            return $"{PropertyName} of current {Entity} is already found.";
-        return @$"{Entity} with {PropertyName} ""{PropertyValue}"" is already found.";
+            return $"{Entity} with current {PropertyName} already exists. {Recommendation}";
+        return @$"{Entity} with {PropertyName} ""{PropertyValue}"" already exists. {Recommendation}";
     }
 }
