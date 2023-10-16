@@ -8,16 +8,12 @@ namespace Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IUsersRepository _usersRepository;
-    private readonly IRolesRepository _rolesRepository;
     private readonly ITokenManager _tokenManager;
     private readonly IPasswordManager _passwordManager;
     private readonly IUnitOfWork _unitOfWork;
-    public AuthService(IUsersRepository usersRepository, IRolesRepository rolesRepository, ITokenManager tokenManager, 
+    public AuthService(ITokenManager tokenManager, 
         IUnitOfWork unitOfWork, IPasswordManager passwordManager)
     {
-        _usersRepository = usersRepository;
-        _rolesRepository = rolesRepository;
         _tokenManager = tokenManager;
         _unitOfWork = unitOfWork;
         _passwordManager = passwordManager;
@@ -25,15 +21,15 @@ public class AuthService : IAuthService
     public async Task RegisterAsync(User userToCreate)
     {
         _passwordManager.SecureUser(userToCreate);
-        await _usersRepository.AddAsync(userToCreate);
-        await _rolesRepository.AssignToRoleAsync(userToCreate, Roles.User);
+        await _unitOfWork.Users.AddAsync(userToCreate);
+        await _unitOfWork.Roles.AssignToRoleAsync(userToCreate, Roles.User);
         await _unitOfWork.CompleteOrThrowAsync();
     }
     public async Task<AuthResult> GetAuthCredentialsAsync(User user)
     {
-        var foundUser = await _usersRepository.GetByNameAsync(user.Name);
+        var foundUser = await _unitOfWork.Users.GetByNameAsync(user.Name);
         _passwordManager.ThrowExceptionIfWrongPassword(user.Password, foundUser.Password);
-        var roleName = await _rolesRepository.GetRoleNameByIdAsync(foundUser.RoleId);
+        var roleName = await _unitOfWork.Roles.GetRoleNameByIdAsync(foundUser.RoleId);
         var token = _tokenManager.GenerateToken(foundUser, roleName);
         return new AuthResult(foundUser, token, roleName);
     }
@@ -58,7 +54,7 @@ public class AuthService : IAuthService
     public async Task DeleteAccountAsync(User user, string inputtedPassword)
     {
         _passwordManager.ThrowExceptionIfWrongPassword(inputtedPassword, user.Password);
-        _usersRepository.Remove(user);
+        _unitOfWork.Users.Remove(user);
         await _unitOfWork.CompleteOrThrowAsync();
     }
     public string GetUsernameOrThrow(ClaimsPrincipal? claimsPrincipal)

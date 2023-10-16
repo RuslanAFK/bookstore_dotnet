@@ -49,7 +49,7 @@ public class RolesRepositoryTest
 
         var user = A.Dummy<User>();
         await repository.AssignToRoleAsync(user, name);
-        var actualRoleId = user.Role.RoleId;
+        var actualRoleId = user.Role!.RoleId;
         Assert.That(actualRoleId, Is.EqualTo(id));
     }
     [Test]

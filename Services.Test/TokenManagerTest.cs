@@ -2,8 +2,8 @@
 
 public class TokenManagerTest
 {
-    private IConfiguration configuration;
-    private TokenManager tokenManager;
+    private IConfiguration configuration = null!;
+    private TokenManager tokenManager = null!;
     [SetUp]
     public void Setup()
     {

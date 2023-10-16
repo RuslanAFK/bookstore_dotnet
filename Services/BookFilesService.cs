@@ -8,14 +8,11 @@ namespace Services;
 public class BookFilesService : IBookFilesService
 {
     private readonly IFileManager _fileManager;
-    private readonly IBaseRepository<BookFile> _bookFilesRepository;
     private readonly IUnitOfWork _unitOfWork;
-    public BookFilesService(IUnitOfWork unitOfWork, IFileManager fileManager,
-        IBaseRepository<BookFile> bookFilesRepository)
+    public BookFilesService(IUnitOfWork unitOfWork, IFileManager fileManager)
     {
         _unitOfWork = unitOfWork;
         _fileManager = fileManager;
-        _bookFilesRepository = bookFilesRepository;
     }
 
     public async Task AddAsync(Book book, IFormFile file)
@@ -24,7 +21,7 @@ public class BookFilesService : IBookFilesService
 
         var relativePath = await _fileManager.StoreFileAndGetPath(file);
         var bookFile = GenerateNewBookFile(book, relativePath);
-        await _bookFilesRepository.AddAsync(bookFile);
+        await _unitOfWork.BookFiles.AddAsync(bookFile);
         await _unitOfWork.CompleteOrThrowAsync();
     }
 
@@ -46,7 +43,7 @@ public class BookFilesService : IBookFilesService
     {
         var bookFile = GetBookFileOrThrow(book);
         _fileManager.DeleteFile(bookFile.Url);
-        _bookFilesRepository.Remove(bookFile);
+        _unitOfWork.BookFiles.Remove(bookFile);
         await _unitOfWork.CompleteOrThrowAsync();
     }
 

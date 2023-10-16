@@ -21,7 +21,7 @@ public class TokenManager : ITokenManager
     public string GenerateToken(User user, string roleName)
     {
         using var rsa = RSA.Create();
-        rsa.ImportRSAPrivateKey(Convert.FromBase64String(_configuration["Jwt:PrivateKey"]), out _);
+        rsa.ImportRSAPrivateKey(Convert.FromBase64String(_configuration["Jwt:PrivateKey"]!), out _);
         var securityKey = new RsaSecurityKey(rsa);
 
         var claims = GenerateClaims(user.Name, roleName);

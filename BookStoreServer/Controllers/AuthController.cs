@@ -47,7 +47,7 @@ public class AuthController : Controller
         var claimsPrincipal = HttpContext?.User;
         var username = _authService.GetUsernameOrThrow(claimsPrincipal);
         var foundUser = await _usersService.GetByNameAsync(username);
-        var user = _mapper.Map<UpdateUserInfoResource, User>(userInfoResource);;
+        var user = _mapper.Map<UpdateUserInfoResource, User>(userInfoResource);
         await _authService.UpdateProfileAsync(foundUser, user, userInfoResource.NewPassword);
         return NoContent();
     }

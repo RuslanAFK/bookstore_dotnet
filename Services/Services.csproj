@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,9 +26,9 @@
     <ItemGroup>
       <PackageReference Include="BCrypt-Official" Version="0.1.109" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0-preview.1.23110.8" />
-      <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.24.0" />
-      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.24.0" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.24.0" />
+      <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.0.2" />
+      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.0.2" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.2" />
     </ItemGroup>
 
 </Project>

@@ -4,15 +4,13 @@ public class BookFilesServiceTest
 {
     private BookFilesService bookFilesService;
     private IUnitOfWork unitOfWork;
-    private IBaseRepository<BookFile> bookFileRepository;
     private IFileManager fileManager;
     [SetUp]
     public void Setup()
     {
-        bookFileRepository = A.Fake<IBaseRepository<BookFile>>();
         unitOfWork = A.Fake<IUnitOfWork>();
         fileManager = A.Fake<IFileManager>();
-        bookFilesService = new BookFilesService(unitOfWork, fileManager, bookFileRepository);
+        bookFilesService = new BookFilesService(unitOfWork, fileManager);
     }
     [Test]
     public async Task AddAsync_WithoutBookFile_Throws3MethodsAndSkips1()
@@ -22,7 +20,6 @@ public class BookFilesServiceTest
         var formFile = A.Fake<IFormFile>();
         await bookFilesService.AddAsync(book, formFile);
         A.CallTo(() => fileManager.StoreFileAndGetPath(A<IFormFile>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => bookFileRepository.AddAsync(A<BookFile>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustNotHaveHappened();
     }
@@ -34,7 +31,6 @@ public class BookFilesServiceTest
         var formFile = A.Fake<IFormFile>();
         await bookFilesService.AddAsync(book, formFile);
         A.CallTo(() => fileManager.StoreFileAndGetPath(A<IFormFile>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => bookFileRepository.AddAsync(A<BookFile>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustHaveHappenedOnceExactly();
     }
@@ -55,7 +51,6 @@ public class BookFilesServiceTest
         book.BookFile = A.Dummy<BookFile>();
         await bookFilesService.RemoveAsync(book);
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => bookFileRepository.Remove(A<BookFile>._)).MustHaveHappenedOnceExactly();
     }
     [Test]
     public void ThrowIfFileNotPermitted_FileLength0_ThrowsFileEmptyException()

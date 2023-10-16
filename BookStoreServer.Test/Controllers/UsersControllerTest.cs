@@ -2,13 +2,19 @@
 
 public class UsersControllerTest
 {
-    private UsersController usersController;
+    private UsersController usersController = null!;
     [SetUp]
     public void Setup()
     {
         var mapper = A.Fake<IMapper>();
         var usersService = A.Fake<IUsersService>();
         usersController = new UsersController(mapper, usersService);
+    }
+
+    [TearDown]
+    public void Teardown()
+    {
+        usersController.Dispose();
     }
     [Test]
     public async Task GetQueried_ReturnValueIsListResponseResourceOfGetUsersResource()

@@ -2,7 +2,7 @@
 
 public class AuthControllerTest
 {
-    private AuthController authController;
+    private AuthController authController = null!;
     [SetUp]
     public void Setup()
     {
@@ -10,6 +10,12 @@ public class AuthControllerTest
         var usersService = A.Fake<IUsersService>();
         var authService = A.Fake<IAuthService>();
         authController = new AuthController(mapper, usersService, authService);
+    }
+
+    [TearDown]
+    public void Teardown()
+    {
+        authController.Dispose();
     }
     [Test]
     public async Task Login_ReturnValueIsAuthResultResource()

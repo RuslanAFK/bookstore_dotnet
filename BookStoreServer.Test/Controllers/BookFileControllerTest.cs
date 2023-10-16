@@ -2,13 +2,19 @@
 
 public class BookFileControllerTest
 {
-    private BookFileController bookFileController;
+    private BookFileController bookFileController = null!;
     [SetUp]
     public void Setup()
     {
         var booksService = A.Fake<IBooksService>();
         var bookFilesService = A.Fake<IBookFilesService>();
         bookFileController = new BookFileController(booksService, bookFilesService);
+    }
+
+    [TearDown]
+    public void Teardown()
+    {
+        bookFileController.Dispose();
     }
     [Test]
     public async Task Create_ReturnsNoContent()

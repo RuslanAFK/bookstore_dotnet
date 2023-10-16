@@ -56,8 +56,8 @@ public class UsersRepositoryTest
         await dbContext.SaveChangesAsync();
 
         var results = await repository.GetByIdIncludingRolesAsync(id);
-        var actualRoleName = results.Role.RoleName;
-        var expectedRoleName = user.Role.RoleName;
+        var actualRoleName = results.Role!.RoleName;
+        var expectedRoleName = user.Role!.RoleName;
         Assert.That(actualRoleName, Is.EqualTo(expectedRoleName));
     }
     [Test]
@@ -113,8 +113,8 @@ public class UsersRepositoryTest
         await dbContext.SaveChangesAsync();
 
         var results = await repository.GetByNameIncludingRolesAsync(user.Name);
-        var expectedRoleName = user.Role.RoleName;
-        var actualRoleName = results.Role.RoleName;
+        var expectedRoleName = user.Role!.RoleName;
+        var actualRoleName = results.Role!.RoleName;
         Assert.That(actualRoleName, Is.EqualTo(expectedRoleName));
     }
     [Test]

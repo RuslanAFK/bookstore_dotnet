@@ -30,7 +30,7 @@ public class MappingProfile : Profile
             .ForMember(resource => resource.Username, opt => 
                 opt.MapFrom(user => user.Name))
             .ForMember(resource => resource.RoleName, opt => 
-                opt.MapFrom(user => user.Role.RoleName));
+                opt.MapFrom(user => user.Role!.RoleName));
         CreateMap<AuthResult, AuthResultResource>();
 
         CreateMap(typeof(ListResponse<>), typeof(ListResponseResource<>));

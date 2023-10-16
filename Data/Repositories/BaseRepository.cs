@@ -16,7 +16,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
     protected IQueryable<TEntity> GetAll()
     {
-        return _dbContext.Set<TEntity>();
+        return _dbContext.Set<TEntity>().AsNoTracking();
     }
 
     public async Task AddAsync(TEntity item)

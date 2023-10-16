@@ -6,10 +6,10 @@ namespace Data;
 
 public sealed class AppDbContext : DbContext
 {
-    public DbSet<Book> Books { get; set; }
-    public DbSet<BookFile> BookFiles { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<Role> Roles { get; set; }
+    public DbSet<Book> Books { get; set; } = null!;
+    public DbSet<BookFile> BookFiles { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Role> Roles { get; set; } = null!;
 
     public AppDbContext(DbContextOptions options): base(options)
     {

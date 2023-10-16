@@ -3,20 +3,16 @@ namespace Services.Test;
 public class AuthServiceTest
 {
     private AuthService authService;
-    private IUsersRepository usersRepository;
     private ITokenManager tokenManager;
     private IUnitOfWork unitOfWork;
     private IPasswordManager passwordManager;
-    private IRolesRepository rolesRepository;
     [SetUp]
     public void Setup()
     {
-        rolesRepository = A.Fake<IRolesRepository>();
         tokenManager = A.Fake<ITokenManager>();
-        usersRepository = A.Fake<IUsersRepository>();
         unitOfWork = A.Fake<IUnitOfWork>();
         passwordManager = A.Fake<IPasswordManager>();
-        authService = new AuthService(usersRepository, rolesRepository, tokenManager, unitOfWork, passwordManager);
+        authService = new AuthService(tokenManager, unitOfWork, passwordManager);
     }
     [Test]
     public async Task RegisterAsync_WithFakeUser_CalledAllMethodsOnce()
@@ -24,8 +20,6 @@ public class AuthServiceTest
         var user = A.Dummy<User>();
         await authService.RegisterAsync(user);
         A.CallTo(() => passwordManager.SecureUser(A<User>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => usersRepository.AddAsync(A<User>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => rolesRepository.AssignToRoleAsync(A<User>._, A<string>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
@@ -75,7 +69,6 @@ public class AuthServiceTest
         async Task Action() => await authService.DeleteAccountAsync(realUser, dummyPassword);
         Assert.DoesNotThrowAsync(Action);
         A.CallTo(() => passwordManager.ThrowExceptionIfWrongPassword(A<string>._, A<string>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => usersRepository.Remove(A<User>._)).MustHaveHappenedOnceExactly();
     }
     [Test]
     public void GetUsernameOrThrow_WithFakeIdentity_ThrowsUserNotAuthorizedException()

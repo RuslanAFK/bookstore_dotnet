@@ -2,17 +2,15 @@
 
 public class BookServiceTest
 {
-    private IBooksRepository booksRepository;
     private IFileManager fileManager;
     private IUnitOfWork unitOfWork;
     private BooksService booksService;
     [SetUp]
     public void Setup()
     {
-        booksRepository = A.Fake<IBooksRepository>();
         fileManager = A.Fake<IFileManager>();
         unitOfWork = A.Fake<IUnitOfWork>();
-        booksService = new BooksService(booksRepository, unitOfWork, fileManager);
+        booksService = new BooksService(unitOfWork, fileManager);
     }
     [Test]
     public async Task GetQueriedAsync_ReturnsListResponseOfBook()
@@ -32,7 +30,6 @@ public class BookServiceTest
     {
         var book = A.Dummy<Book>();
         await booksService.AddAsync(book);
-        A.CallTo(() => booksRepository.AddAsync(A<Book>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
@@ -41,7 +38,6 @@ public class BookServiceTest
         var id = A.Dummy<int>();
         var book = A.Dummy<Book>();
         await booksService.UpdateAsync(id, book);
-        A.CallTo(() => booksRepository.Update(A<Book>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
@@ -59,7 +55,6 @@ public class BookServiceTest
         var book = A.Dummy<Book>();
         book.BookFile = null;
         await booksService.RemoveAsync(book);
-        A.CallTo(() => booksRepository.Remove(A<Book>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustNotHaveHappened();
     }
@@ -69,7 +64,6 @@ public class BookServiceTest
         var book = A.Dummy<Book>();
         book.BookFile = A.Dummy<BookFile>();
         await booksService.RemoveAsync(book);
-        A.CallTo(() => booksRepository.Remove(A<Book>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustHaveHappenedOnceExactly();
     }

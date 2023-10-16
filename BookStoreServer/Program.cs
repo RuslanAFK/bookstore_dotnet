@@ -3,7 +3,6 @@ using BookStoreServer.ExceptionHandlers;
 using Data;
 using Data.Repositories;
 using Domain.Abstractions;
-using Domain.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +15,7 @@ builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreConnection")));
+    o.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreConnection")!));
 
 
 builder.Services.AddScoped<IBooksService, BooksService>();
@@ -25,11 +24,6 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
-builder.Services.AddScoped<IRolesRepository, RolesRepository>();
-builder.Services.AddScoped<IBooksRepository, BooksRepository>();
-builder.Services.AddScoped<IBaseRepository<BookFile>, BookFileRepository>();
-
 
 builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<IFileManager, FileManager>();
@@ -52,7 +46,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton(provider =>
 {
     var rsa = RSA.Create();
-    rsa.ImportRSAPublicKey(Convert.FromBase64String(builder.Configuration["Jwt:PublicKey"]), out _);
+    rsa.ImportRSAPublicKey(Convert.FromBase64String(builder.Configuration["Jwt:PublicKey"]!), out _);
     return new RsaSecurityKey(rsa);
 });
 
@@ -62,7 +56,9 @@ builder.Services.AddAuthentication(x =>
     })
     .AddJwtBearer(options =>
     {
+#pragma warning disable ASP0000
         var rsa = builder.Services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
+#pragma warning restore ASP0000
         
         options.IncludeErrorDetails = true;
         options.TokenValidationParameters = new TokenValidationParameters

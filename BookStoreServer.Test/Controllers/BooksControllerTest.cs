@@ -2,13 +2,19 @@
 
 public class BooksControllerTest
 {
-    private BooksController booksController;
+    private BooksController booksController = null!;
     [SetUp]
     public void Setup()
     {
         var mapper = A.Fake<IMapper>();
         var booksService = A.Fake<IBooksService>();
         booksController = new BooksController(mapper, booksService);
+    }
+
+    [TearDown]
+    public void Teardown()
+    {
+        booksController.Dispose();
     }
     [Test]
     public async Task GetQueried_ReturnsListResponseResourceOfGetBooksResource()

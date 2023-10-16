@@ -10,7 +10,7 @@ public class EntityAlreadyExistsException : BaseException
     public string PropertyName { get; }
     public string? PropertyValue { get; }
     public string Recommendation { get; } = "Consider changing it and trying again.";
-    public EntityAlreadyExistsException(Type entityType, string propertyName, string propertyValue = null)
+    public EntityAlreadyExistsException(Type entityType, string propertyName, string? propertyValue = null)
     {
         Entity = entityType.Name;
         PropertyName = propertyName;

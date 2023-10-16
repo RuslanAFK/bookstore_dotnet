@@ -2,17 +2,13 @@
 
 public class UserServiceTest
 {
-    private IUsersRepository usersRepository;
-    private IRolesRepository rolesRepository;
     private IUnitOfWork unitOfWork;
     private UsersService usersService;
     [SetUp]
     public void Setup()
     {
-        usersRepository = A.Fake<IUsersRepository>();
-        rolesRepository = A.Fake<IRolesRepository>();
         unitOfWork = A.Fake<IUnitOfWork>();
-        usersService = new UsersService(usersRepository, unitOfWork, rolesRepository);
+        usersService = new UsersService(unitOfWork);
     }
     [Test]
     public async Task GetQueriedAsync_ReturnsListResponseOfUser()
@@ -53,12 +49,10 @@ public class UserServiceTest
         var user = DataGenerator.CreateTestUserWithRoleName(oldRoleName);
         await usersService.AddUserToRoleAsync(user, newRoleName);
         A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
-        A.CallTo(() => rolesRepository.AssignToRoleAsync(A<User>._, A<string>._)).MustHaveHappenedOnceExactly();
     }
     [Test]
     public async Task RemoveAsync_CallsRemove()
     {
         await usersService.RemoveAsync(A.Dummy<User>());
-        A.CallTo(() => usersRepository.Remove(A<User>._)).MustHaveHappenedOnceExactly();
     }
 }

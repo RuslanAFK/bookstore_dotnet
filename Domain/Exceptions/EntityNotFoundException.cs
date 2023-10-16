@@ -10,7 +10,7 @@ public class EntityNotFoundException : BaseException
     public override string Message { get; }
     public override HttpStatusCode StatusCode { get; } = HttpStatusCode.NotFound;
     public string Recommendation { get; } = "Please check if you entered the correct data.";
-    public EntityNotFoundException(Type entityType, string propertyName, string propertyValue=null)
+    public EntityNotFoundException(Type entityType, string propertyName, string? propertyValue=null)
     {
         Entity = entityType.Name;
         PropertyName = propertyName;
