@@ -2,7 +2,7 @@
 
 public class ExceptionHandlerMiddlewareTest
 {
-    private HttpContext httpContext;
+    private HttpContext httpContext = null!;
     [SetUp]
     public void Setup()
     {

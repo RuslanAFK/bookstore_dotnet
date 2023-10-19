@@ -24,19 +24,6 @@ export const getUsers = createAsyncThunk(
     }
 )
 
-export const getSingleUser = createAsyncThunk(
-    "user/getSingleUser",
-    async (userId: number, thunkAPI) => {
-        try {
-            const token = getToken(thunkAPI);
-            const headers = addBearerToken(token);
-            const {data} = await axios.get<GetUser>(`${USER_URL}/${userId}`, {headers: headers});
-            return data;
-        } catch (e) {
-            return handleError(e, thunkAPI.rejectWithValue);
-        }
-    }
-)
 
 
 export const updateUserRole = createAsyncThunk(

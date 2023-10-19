@@ -2,7 +2,7 @@
 
 public class PaginatorTest
 {
-    private IQueryable<Book> books;
+    private IQueryable<Book> books = null!;
     [SetUp]
     public void Setup()
     {

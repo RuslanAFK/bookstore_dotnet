@@ -1,11 +1,9 @@
-using AutoMapper;
-using BookStoreServer.Controllers.Resources.Books;
-using BookStoreServer.Controllers.Resources.Users;
-using Domain.Abstractions;
+using BookStoreServer.Resources.Users;
 using Domain.Constants;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.Abstractions;
 
 namespace BookStoreServer.Controllers;
 
@@ -13,12 +11,10 @@ namespace BookStoreServer.Controllers;
 [Route("api/[controller]")]
 public class UsersController : Controller
 {
-    private readonly IMapper _mapper;
     private readonly IUsersService _usersService;
 
-    public UsersController(IMapper mapper, IUsersService usersService)
+    public UsersController(IUsersService usersService)
     {
-        _mapper = mapper;
         _usersService = usersService;
     }
     
@@ -27,19 +23,15 @@ public class UsersController : Controller
     public async Task<IActionResult> GetQueried([FromQuery] Query query)
     {
         var users = await _usersService.GetQueriedAsync(query);
-        var res = 
-            _mapper.Map<ListResponse<User>, ListResponseResource<GetUsersResource>>(users);
-        return Ok(res);
+        return Ok(users);
     }
 
     [HttpGet("{userId}")]
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> GetById(int bookId)
     {
-        var userToReturn = await _usersService.GetByIdAsync(bookId);
-
-        var res = _mapper.Map<User, GetUsersResource>(userToReturn);
-        return Ok(res);
+        var userToReturn = await _usersService.GetUserDtoByIdAsync(bookId);
+        return Ok(userToReturn);
     }
     
     [HttpPatch("{id:int}")]

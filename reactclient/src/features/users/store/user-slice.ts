@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {deleteUser, getSingleUser, getUsers, updateUserRole} from "./effects";
+import {deleteUser, getUsers, updateUserRole} from "./effects";
 import {getSingleItemSuccessful, getItemsSuccessful} from "./reducers";
 import {
     changePending,
@@ -35,9 +35,7 @@ const userSlice = createSlice({
         }
     },
     extraReducers: {
-        [getSingleUser.pending.toString()]: getPending,
-        [getSingleUser.rejected.toString()]: getRejected,
-        [getSingleUser.fulfilled.toString()]: getSingleItemSuccessful,
+
 
         [getUsers.pending.toString()]: getPending,
         [getUsers.rejected.toString()]: getRejected,

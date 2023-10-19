@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
+using Data.Abstractions;
 using Microsoft.EntityFrameworkCore;
-using Domain.Abstractions;
 using Domain.Exceptions;
 
 namespace Data.Repositories;
@@ -14,7 +14,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         _dbContext = context;
     }
 
-    protected IQueryable<TEntity> GetAll()
+    public IQueryable<TEntity> GetAll()
     {
         return _dbContext.Set<TEntity>().AsNoTracking();
     }
@@ -35,7 +35,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         _dbContext.Set<TEntity>().Remove(item);
     }
 
-    protected IQueryable<TEntity> GetItemsIncluding<TProperty>(IQueryable<TEntity> items, 
+    public IQueryable<TEntity> GetItemsIncluding<TProperty>(IQueryable<TEntity> items, 
         Expression<Func<TEntity, TProperty>> func)
     {
         return items.Include(func);

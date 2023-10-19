@@ -31,9 +31,6 @@ public class PositiveIntegerTest
     public void AnyMethod_NegativeValuePasses_ThrowsArgumentOutOfRangeException()
     {
         var negativeValue = -15;
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-        {
-            var _ = new PositiveThresholdedInteger(negativeValue);
-        });
+        Assert.Throws<ArgumentOutOfRangeException>(() => { _ = new PositiveThresholdedInteger(negativeValue); });
     }
 }

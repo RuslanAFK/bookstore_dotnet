@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
+using Data.Abstractions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Domain.Abstractions;
 
 namespace Data.Repositories;
 

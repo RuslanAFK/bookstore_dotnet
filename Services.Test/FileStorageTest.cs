@@ -2,8 +2,8 @@
 
 public class FileStorageTest
 {
-    private string tempDirectory;
-    private FileSystem fileSystem;
+    private string tempDirectory = null!;
+    private FileSystem fileSystem = null!;
     [SetUp]
     public void Setup()
     {

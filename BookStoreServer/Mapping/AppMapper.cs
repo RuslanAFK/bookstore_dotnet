@@ -1,8 +1,9 @@
 using AutoMapper;
-using BookStoreServer.Controllers.Resources.Auth;
-using BookStoreServer.Controllers.Resources.Books;
-using BookStoreServer.Controllers.Resources.Users;
+using BookStoreServer.Resources.Auth;
+using BookStoreServer.Resources.Books;
+using BookStoreServer.Resources.Users;
 using Domain.Models;
+using Services.ResponseDtos;
 
 namespace BookStoreServer.Mapping;
 
@@ -22,17 +23,10 @@ public class MappingProfile : Profile
             .ForMember(user => user.Name, opt =>
                 opt.MapFrom(resource => resource.Username));
         
-        CreateMap<Book, GetBooksResource>();
-        CreateMap<Book, GetSingleBookResource>()
+        CreateMap<Book, GetSingleBookDto>()
             .ForMember(r => r.BookFile, opt =>
                 opt.MapFrom(book => book.BookFile != null ? book.BookFile.Url : null));
-        CreateMap<User, GetUsersResource>()
-            .ForMember(resource => resource.Username, opt => 
-                opt.MapFrom(user => user.Name))
-            .ForMember(resource => resource.RoleName, opt => 
-                opt.MapFrom(user => user.Role!.RoleName));
+       
         CreateMap<AuthResult, AuthResultResource>();
-
-        CreateMap(typeof(ListResponse<>), typeof(ListResponseResource<>));
     }
 }

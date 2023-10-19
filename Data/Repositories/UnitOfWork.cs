@@ -1,9 +1,11 @@
-using Domain.Abstractions;
+using Data;
+using Data.Abstractions;
+using Data.Repositories;
 using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data.Repositories;
+namespace Services;
 
 public class UnitOfWork : IUnitOfWork
 {

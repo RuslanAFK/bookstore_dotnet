@@ -1,23 +1,18 @@
-﻿namespace Services.Test;
+﻿using Services.ResponseDtos;
+
+namespace Services.Test;
 
 public class BookServiceTest
 {
-    private IFileManager fileManager;
-    private IUnitOfWork unitOfWork;
-    private BooksService booksService;
+    private IFileManager fileManager = null!;
+    private IUnitOfWork unitOfWork = null!;
+    private BooksService booksService = null!;
     [SetUp]
     public void Setup()
     {
         fileManager = A.Fake<IFileManager>();
         unitOfWork = A.Fake<IUnitOfWork>();
         booksService = new BooksService(unitOfWork, fileManager);
-    }
-    [Test]
-    public async Task GetQueriedAsync_ReturnsListResponseOfBook()
-    {
-        var query = A.Dummy<Query>();
-        var returnValue = await booksService.GetQueriedAsync(query);
-        Assert.That(returnValue, Is.InstanceOf<ListResponse<Book>>());
     }
     [Test]
     public async Task GetByIdAsync_ReturnsBook()

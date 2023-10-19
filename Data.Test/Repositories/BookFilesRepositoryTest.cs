@@ -2,8 +2,8 @@
 
 public class BookFilesRepositoryTest
 {
-    private BookFileRepository repository;
-    private AppDbContext dbContext;
+    private BookFileRepository repository = null!;
+    private AppDbContext dbContext = null!;
     [SetUp]
     public void Setup()
     {

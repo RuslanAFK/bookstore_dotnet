@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace Data.Test;
+﻿namespace Data.Test;
 
 public static class DataGenerator
 {

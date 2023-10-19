@@ -4,7 +4,7 @@ public static class DataGenerator
 {
     public static User CreateTestUser(int id = 0, string name = "", string password = "")
     {
-        return new User()
+        return new User
         {
             Id = id,
             Name = name,

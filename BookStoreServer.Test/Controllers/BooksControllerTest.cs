@@ -22,14 +22,14 @@ public class BooksControllerTest
         var query = A.Dummy<Query>();
         var results = await booksController.GetQueried(query) as OkObjectResult;
         var resultsValue = results?.Value;
-        Assert.That(resultsValue, Is.InstanceOf<ListResponseResource<GetBooksResource>>());
+        Assert.That(resultsValue, Is.InstanceOf<ListResponse<GetBooksDto>>());
     }
     [Test]
     public async Task GetById_ReturnsGetSingleBookResource()
     {
         var results = await booksController.GetById(default) as OkObjectResult;
         var resultsValue = results?.Value;
-        Assert.That(resultsValue, Is.InstanceOf<GetSingleBookResource>());
+        Assert.That(resultsValue, Is.InstanceOf<GetSingleBookDto>());
     }
     [Test]
     public async Task Create_ReturnsNoContent()
