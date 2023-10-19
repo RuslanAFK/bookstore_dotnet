@@ -20,7 +20,7 @@ public class BooksService : IBooksService
     }
     public async Task<ListResponse<GetBooksDto>> GetQueriedAsync(Query query)
     {
-        var books = _unitOfWork.Books.GetAll();
+        var books = _unitOfWork.Books.GetAll().AsNoTracking();
         
         var itemsSearched = books
             .ApplySearching(query);
@@ -36,7 +36,7 @@ public class BooksService : IBooksService
             Count = itemsCount
         };
     }
-    public async Task<Book> GetByIdAsync(int bookId)
+    public async Task<Book> GetByIdIncludingFilesAsync(int bookId)
     {
         return await _unitOfWork.Books.GetIncludingBookFilesAsync(bookId);
     }
@@ -60,13 +60,13 @@ public class BooksService : IBooksService
     public async Task UpdateAsync(int bookId, Book bookToUpdate)
     {
         AssignId(bookId, bookToUpdate);
-        _unitOfWork.Books.Update(bookToUpdate);
         await _unitOfWork.CompleteOrThrowAsync();
     }
 
     private void AssignId(int bookId, Book bookToUpdate)
     {
         bookToUpdate.Id = bookId;
+        _unitOfWork.Books.Update(bookToUpdate);
     }
     public async Task RemoveAsync(Book book)
     {

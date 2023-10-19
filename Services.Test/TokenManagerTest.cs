@@ -16,7 +16,7 @@ public class TokenManagerTest
         var user = DataGenerator.CreateTestUser(1, "John", "none");
         var roleName = "User";
         configuration["Jwt:PrivateKey"] = DataGenerator.GetPrivateKey();
-        var token = tokenManager.GenerateToken(user, roleName);
+        var token = tokenManager.GenerateToken(user.Name, roleName);
         var handler = new JwtSecurityTokenHandler();
         var decodedToken = handler.ReadJwtToken(token);
 

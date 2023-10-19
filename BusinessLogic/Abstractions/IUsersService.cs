@@ -6,6 +6,7 @@ namespace Services.Abstractions;
 public interface IUsersService
 {
     Task<ListResponse<GetUsersDto>> GetQueriedAsync(Query query);
+    Task<User> GetByIdIncludingRolesAsync(int userId);
     Task<User> GetByIdAsync(int userId);
     Task<GetUsersDto> GetUserDtoByIdAsync(int userId);
     Task<User> GetByNameAsync(string username);

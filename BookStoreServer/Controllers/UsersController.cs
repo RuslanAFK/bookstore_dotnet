@@ -38,7 +38,7 @@ public class UsersController : Controller
     [Authorize(Roles = Roles.Creator)]
     public async Task<IActionResult> UpdateRole(int id, UserRoleResource userRoleResource)
     {
-        var foundUser = await _usersService.GetByIdAsync(id);
+        var foundUser = await _usersService.GetByIdIncludingRolesAsync(id);
         await _usersService.AddUserToRoleAsync(foundUser, userRoleResource.RoleName);
         return NoContent();
     }

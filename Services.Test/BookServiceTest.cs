@@ -17,7 +17,7 @@ public class BookServiceTest
     [Test]
     public async Task GetByIdAsync_ReturnsBook()
     {
-        var returnValue = await booksService.GetByIdAsync(0);
+        var returnValue = await booksService.GetByIdIncludingFilesAsync(0);
         Assert.That(returnValue, Is.InstanceOf<Book>());
     }
     [Test]

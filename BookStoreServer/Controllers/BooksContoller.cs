@@ -59,7 +59,7 @@ public class BooksController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Delete(int bookId)
     {
-        var bookToDelete = await _booksService.GetByIdAsync(bookId);
+        var bookToDelete = await _booksService.GetByIdIncludingFilesAsync(bookId);
         await _booksService.RemoveAsync(bookToDelete);
         return NoContent();
     }

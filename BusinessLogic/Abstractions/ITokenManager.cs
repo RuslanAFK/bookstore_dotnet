@@ -4,5 +4,5 @@ namespace Services.Abstractions;
 
 public interface ITokenManager
 {
-    string GenerateToken(User user, string roleName);
+    string GenerateToken(string username, string roleName);
 }

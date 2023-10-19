@@ -16,6 +16,13 @@ public class UsersRepository : SearchableRepository<User>, IUsersRepository
         var users = GetUsersIncludingRoles();
         return await GetByIdAsync(id, users);
     }
+
+    public async Task<User> GetByIdAsync(int id)
+    {
+        var users = GetAll();
+        return await GetByIdAsync(id, users);
+    }
+
     public async Task<User> GetByNameAsync(string name)
     {
         var users = GetAll();

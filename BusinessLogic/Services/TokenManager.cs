@@ -1,13 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Services.Abstractions;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace Services;
+namespace Services.Services;
 
 public class TokenManager : ITokenManager
 {
@@ -18,13 +17,13 @@ public class TokenManager : ITokenManager
         _configuration = configuration;
     }
     
-    public string GenerateToken(User user, string roleName)
+    public string GenerateToken(string username, string roleName)
     {
         using var rsa = RSA.Create();
         rsa.ImportRSAPrivateKey(Convert.FromBase64String(_configuration["Jwt:PrivateKey"]!), out _);
         var securityKey = new RsaSecurityKey(rsa);
 
-        var claims = GenerateClaims(user.Name, roleName);
+        var claims = GenerateClaims(username, roleName);
         var token = GenerateTokenObject(claims, securityKey);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
