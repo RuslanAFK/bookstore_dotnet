@@ -2,9 +2,9 @@
 
 public class BookFilesServiceTest
 {
-    private BookFilesService bookFilesService;
-    private IUnitOfWork unitOfWork;
-    private IFileManager fileManager;
+    private BookFilesService bookFilesService = null!;
+    private IUnitOfWork unitOfWork = null!;
+    private IFileManager fileManager = null!;
     [SetUp]
     public void Setup()
     {

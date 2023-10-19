@@ -2,8 +2,8 @@
 
 public class RolesRepositoryTest
 {
-    private RolesRepository repository;
-    private AppDbContext dbContext;
+    private RolesRepository repository = null!;
+    private AppDbContext dbContext = null!;
     [SetUp]
     public void Setup()
     {

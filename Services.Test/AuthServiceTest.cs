@@ -2,10 +2,10 @@ namespace Services.Test;
 
 public class AuthServiceTest
 {
-    private AuthService authService;
-    private ITokenManager tokenManager;
-    private IUnitOfWork unitOfWork;
-    private IPasswordManager passwordManager;
+    private AuthService authService = null!;
+    private ITokenManager tokenManager = null!;
+    private IUnitOfWork unitOfWork = null!;
+    private IPasswordManager passwordManager = null!;
     [SetUp]
     public void Setup()
     {

@@ -2,8 +2,8 @@
 
 public class UnitOfWorkTest
 {
-    private AppDbContext dbContext;
-    private UnitOfWork unitOfWork;
+    private AppDbContext dbContext = null!;
+    private UnitOfWork unitOfWork = null!;
     [SetUp]
     public void Setup()
     {

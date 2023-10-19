@@ -2,8 +2,8 @@
 
 public class UsersRepositoryTest
 {
-    private UsersRepository repository;
-    private AppDbContext dbContext;
+    private UsersRepository repository = null!;
+    private AppDbContext dbContext = null!;
     [SetUp]
     public void Setup()
     {
@@ -16,23 +16,6 @@ public class UsersRepositoryTest
     {
         dbContext.Database.EnsureDeleted();
         dbContext.Dispose();
-    }
-    [Test]
-    public async Task GetQueriedAsync_NothingInDb_ReturnsCount0()
-    {
-        var results = await repository.GetQueriedItemsAsync(A.Dummy<Query>());
-        Assert.That(results.Count, Is.EqualTo(0));
-    }
-    [Test]
-    public async Task GetQueriedAsync_OneInDb_ReturnsCount1()
-    {
-        var user = DataGenerator.CreateTestUser();
-        await dbContext.AddAsync(user);
-        await dbContext.SaveChangesAsync();
-
-        var query = A.Dummy<Query>();
-        var results = await repository.GetQueriedItemsAsync(query);
-        Assert.That(results.Count, Is.EqualTo(1));
     }
     [Test]
     public async Task GetByIdIncludingRolesAsync_WithExistingId_ReturnsSameUser()

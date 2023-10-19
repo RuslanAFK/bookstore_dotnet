@@ -2,7 +2,7 @@
 
 public class PasswordManagerTest
 {
-    private PasswordManager passwordManager;
+    private PasswordManager passwordManager = null!;
     [SetUp]
     public void Setup()
     {

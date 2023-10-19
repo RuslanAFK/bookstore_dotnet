@@ -1,21 +1,16 @@
-﻿namespace Services.Test;
+﻿using Services.ResponseDtos;
+
+namespace Services.Test;
 
 public class UserServiceTest
 {
-    private IUnitOfWork unitOfWork;
-    private UsersService usersService;
+    private IUnitOfWork unitOfWork = null!;
+    private UsersService usersService = null!;
     [SetUp]
     public void Setup()
     {
         unitOfWork = A.Fake<IUnitOfWork>();
         usersService = new UsersService(unitOfWork);
-    }
-    [Test]
-    public async Task GetQueriedAsync_ReturnsListResponseOfUser()
-    {
-        var query = A.Dummy<Query>();
-        var result = await usersService.GetQueriedAsync(query);
-        Assert.That(result, Is.InstanceOf<ListResponse<User>>());
     }
     [Test]
     public async Task GetByIdAsync_ReturnsUser()

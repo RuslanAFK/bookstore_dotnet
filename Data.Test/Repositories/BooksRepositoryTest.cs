@@ -2,8 +2,8 @@
 
 public class BooksRepositoryTest
 {
-    private BooksRepository booksRepository;
-    private AppDbContext dbContext;
+    private BooksRepository booksRepository = null!;
+    private AppDbContext dbContext = null!;
     [SetUp]
     public void Setup()
     {
@@ -16,18 +16,6 @@ public class BooksRepositoryTest
     {
         dbContext.Database.EnsureDeleted();
         dbContext.Dispose();
-    }
-    [Test]
-    public async Task GetQueriedItemsAsync_ReturnsExistingBooks()
-    {
-        var newBook = DataGenerator.CreateTestBook(1);
-        var newBook2 = DataGenerator.CreateTestBook(2);
-        await dbContext.AddAsync(newBook);
-        await dbContext.AddAsync(newBook2);
-        await dbContext.SaveChangesAsync();
-        var query = A.Dummy<Query>();
-        var results = await booksRepository.GetQueriedItemsAsync(query);
-        Assert.That(results.Count, Is.EqualTo(2));
     }
     [Test]
     public async Task GetIncludingBookFilesAsync_WithCorrectId_ReturnsBookWithNoNullBookFile()

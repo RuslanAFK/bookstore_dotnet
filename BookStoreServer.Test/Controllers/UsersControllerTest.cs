@@ -22,7 +22,7 @@ public class UsersControllerTest
         var query = A.Dummy<Query>();
         var results = await usersController.GetQueried(query) as OkObjectResult;
         var resultsValue = results?.Value;
-        Assert.That(resultsValue, Is.InstanceOf<ListResponseResource<GetUsersResource>>());
+        Assert.That(resultsValue, Is.InstanceOf<ListResponse<GetUsersDto>>());
     }
     [Test]
     public async Task GetById_ReturnValueIdGetUserResource()
@@ -30,7 +30,7 @@ public class UsersControllerTest
         var id = A.Dummy<int>();
         var results = await usersController.GetById(id) as OkObjectResult;
         var resultsValue = results?.Value;
-        Assert.That(resultsValue, Is.InstanceOf<GetUsersResource>());
+        Assert.That(resultsValue, Is.InstanceOf<GetUsersDto>());
     }
     [Test]
     public async Task Update_ReturnsNoContentResult()
