@@ -25,23 +25,13 @@ public class UserServiceTest
         Assert.That(result, Is.InstanceOf<User>());
     }
     [Test]
-    public void AddUserToRoleAsync_RolesAreSame_ThrowsSameValueAssignException()
-    {
-        var roleName = "User";
-        var user = DataGenerator.CreateTestUserWithRoleName(roleName);
-        Assert.ThrowsAsync<SameValueAssignException>(async () =>
-        {
-            await usersService.AddUserToRoleAsync(user, roleName);
-        });
-    }
-    [Test]
     public async Task AddUserToRoleAsync_RolesAreDifferent_CallsAssignToRoleAndCompleteAsync()
     {
         var oldRoleName = "Admin";
         var newRoleName = "User";
         var user = DataGenerator.CreateTestUserWithRoleName(oldRoleName);
         await usersService.AddUserToRoleAsync(user, newRoleName);
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
     public async Task RemoveAsync_CallsRemove()

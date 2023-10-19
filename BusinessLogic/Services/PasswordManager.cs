@@ -1,6 +1,7 @@
 ﻿using BCrypt.Net;
 using Domain.Exceptions;
 using Domain.Models;
+using Services.Abstractions;
 
 namespace Services.Services;
 
@@ -20,7 +21,7 @@ public class PasswordManager : IPasswordManager
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(passwordToHash);
         user.Password = hashedPassword;
     }
-    public void ThrowExceptionIfWrongPassword(string realPassword, string hashedPassword)
+    public void CheckPassword(string realPassword, string hashedPassword)
     {
         try
         {

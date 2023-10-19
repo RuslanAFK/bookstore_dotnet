@@ -6,9 +6,8 @@ public class BooksControllerTest
     [SetUp]
     public void Setup()
     {
-        var mapper = A.Fake<IMapper>();
         var booksService = A.Fake<IBooksService>();
-        booksController = new BooksController(mapper, booksService);
+        booksController = new BooksController(booksService);
     }
 
     [TearDown]

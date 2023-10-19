@@ -25,7 +25,7 @@ public class BookServiceTest
     {
         var book = A.Dummy<Book>();
         await booksService.AddAsync(book);
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
     public async Task UpdateAsync_CallsUpdateAndCompleteAsync()
@@ -33,7 +33,7 @@ public class BookServiceTest
         var id = A.Dummy<int>();
         var book = A.Dummy<Book>();
         await booksService.UpdateAsync(id, book);
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
     public async Task UpdateAsync_AssignsId()
@@ -50,7 +50,7 @@ public class BookServiceTest
         var book = A.Dummy<Book>();
         book.BookFile = null;
         await booksService.RemoveAsync(book);
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustNotHaveHappened();
     }
     [Test]
@@ -59,7 +59,7 @@ public class BookServiceTest
         var book = A.Dummy<Book>();
         book.BookFile = A.Dummy<BookFile>();
         await booksService.RemoveAsync(book);
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustHaveHappenedOnceExactly();
     }
 }

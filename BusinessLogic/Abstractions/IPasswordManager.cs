@@ -1,10 +1,10 @@
 ﻿using Domain.Models;
 
-namespace Services;
+namespace Services.Abstractions;
 
 public interface IPasswordManager
 {
     void SecureUser(User user);
     public void SecureUserWithNewPassword(User user, string newPassword);
-    void ThrowExceptionIfWrongPassword(string realPassword, string hashedPassword);
+    void CheckPassword(string realPassword, string hashedPassword);
 }

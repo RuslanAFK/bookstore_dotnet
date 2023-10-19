@@ -22,7 +22,7 @@ public class UnitOfWorkTest
     {
         Assert.ThrowsAsync<OperationNotSuccessfulException>(async () =>
         {
-            await unitOfWork.CompleteOrThrowAsync();
+            await unitOfWork.CompleteAsync();
         });
     }
     [Test]
@@ -32,7 +32,7 @@ public class UnitOfWorkTest
         Assert.DoesNotThrowAsync(async () =>
         {
             await dbContext.AddAsync(role);
-            await unitOfWork.CompleteOrThrowAsync();
+            await unitOfWork.CompleteAsync();
         });
     }
     [Test]
@@ -42,7 +42,7 @@ public class UnitOfWorkTest
         Assert.ThrowsAsync<OperationNotSuccessfulException>(async () =>
         {
             await dbContext.AddAsync(dummyRole);
-            await unitOfWork.CompleteOrThrowAsync();
+            await unitOfWork.CompleteAsync();
         });
     }
 }

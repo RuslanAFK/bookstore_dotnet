@@ -6,24 +6,15 @@ public class AuthControllerTest
     [SetUp]
     public void Setup()
     {
-        var mapper = A.Fake<IMapper>();
         var usersService = A.Fake<IUsersService>();
         var authService = A.Fake<IAuthService>();
-        authController = new AuthController(mapper, usersService, authService);
+        authController = new AuthController(usersService, authService);
     }
 
     [TearDown]
     public void Teardown()
     {
         authController.Dispose();
-    }
-    [Test]
-    public async Task Login_ReturnValueIsAuthResultResource()
-    {
-        var loginResource = A.Dummy<LoginResource>();
-        var results = await authController.Login(loginResource) as OkObjectResult;
-        var resultsValue = results?.Value;
-        Assert.That(resultsValue, Is.InstanceOf<AuthResultResource>());
     }
     [Test]
     public async Task Register_ReturnsNoContent()

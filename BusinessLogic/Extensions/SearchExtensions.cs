@@ -1,4 +1,6 @@
-﻿using Domain.Models;
+﻿using Domain.Exceptions;
+using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services.Extensions;
 

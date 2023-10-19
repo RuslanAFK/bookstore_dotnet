@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories;
 
-public class UsersRepository : SearchableRepository<User>, IUsersRepository
+public class UsersRepository : BaseRepository<User>, IUsersRepository
 {
     public UsersRepository(AppDbContext context) : base(context)
     {
@@ -14,42 +14,39 @@ public class UsersRepository : SearchableRepository<User>, IUsersRepository
     public async Task<User> GetByIdIncludingRolesAsync(int id)
     {
         var users = GetUsersIncludingRoles();
-        return await GetByIdAsync(id, users);
+        return await users.GetByIdAsync(id);
     }
 
     public async Task<User> GetByIdAsync(int id)
     {
         var users = GetAll();
-        return await GetByIdAsync(id, users);
+        return await users.GetByIdAsync(id);
     }
 
     public async Task<User> GetByNameAsync(string name)
     {
         var users = GetAll();
-        return await GetByNameAsync(name, users);
+        return await users.GetByNameAsync(name);
     }
     public async Task<User> GetByNameIncludingRolesAsync(string name)
     {
         var users = GetUsersIncludingRoles();
-        return await GetByNameAsync(name, users);
-    }
-    public IQueryable<User> GetUsersIncludingRoles()
-    {
-        var items = GetAll();
-        return GetItemsIncluding(items, user => user.Role);
+        return await users.GetByNameAsync(name);
     }
     public new async Task AddAsync(User item)
     {
-        await ThrowIfUserAlreadyFound(item.Name);
+        await CheckIfUserExists(item.Name);
         await base.AddAsync(item);
     }
-    private async Task ThrowIfUserAlreadyFound(string username)
+    private IQueryable<User> GetUsersIncludingRoles()
     {
-        var foundUser = await GetAll()
-            .SingleOrDefaultAsync(user => user.Name == username);
+        return GetAll().Include(x => x.Role);
+    }
+    private async Task CheckIfUserExists(string username)
+    {
+        var foundUser = await GetAll().GetByNameOrDefaultAsync(username);
         if (foundUser is not null)
             throw new EntityAlreadyExistsException(typeof(User), nameof(User.Name), username);
     }
-
 }
 

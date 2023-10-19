@@ -1,11 +1,9 @@
-using Data;
 using Data.Abstractions;
-using Data.Repositories;
 using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Services;
+namespace Data.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -25,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
     public IRolesRepository Roles { get; set; }
     public IBaseRepository<BookFile> BookFiles { get; set; }
 
-    public async Task CompleteOrThrowAsync()
+    public async Task CompleteAsync()
     {
         try
         {
