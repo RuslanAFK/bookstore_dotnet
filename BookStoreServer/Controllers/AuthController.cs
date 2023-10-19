@@ -59,7 +59,7 @@ public class AuthController : Controller
     {
         var claimsPrincipal = HttpContext?.User;
         var username = _authService.GetUsernameOrThrow(claimsPrincipal);
-        var userToDelete = await _usersService.GetByNameAsync(username);
+        var userToDelete = await _usersService.GetByNameIncludingRolesAsync(username);
         await _authService.DeleteAccountAsync(userToDelete, resource.Password);
         return NoContent();
     }

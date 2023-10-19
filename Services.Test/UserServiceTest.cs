@@ -1,6 +1,4 @@
-﻿using Services.ResponseDtos;
-
-namespace Services.Test;
+﻿namespace Services.Test;
 
 public class UserServiceTest
 {
@@ -23,7 +21,7 @@ public class UserServiceTest
     public async Task GetByNameAsync_ReturnsUser()
     {
         var name = A.Dummy<string>();
-        var result = await usersService.GetByNameAsync(name);
+        var result = await usersService.GetByNameIncludingRolesAsync(name);
         Assert.That(result, Is.InstanceOf<User>());
     }
     [Test]

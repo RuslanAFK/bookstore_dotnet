@@ -49,11 +49,16 @@ public class UsersService : IUsersService
                ?? throw new EntityNotFoundException(typeof(User), nameof(User.Id));
     }
 
-    public async Task<User> GetByNameAsync(string username)
+    public async Task<User> GetByNameIncludingRolesAsync(string username)
     {
         return await _unitOfWork.Users.GetByNameIncludingRolesAsync(username);
     }
-    
+
+    public async Task<User> GetByNameAsync(string username)
+    {
+        return await _unitOfWork.Users.GetByNameAsync(username);
+    }
+
     public async Task RemoveAsync(User user)
     {
         _unitOfWork.Users.Remove(user);
