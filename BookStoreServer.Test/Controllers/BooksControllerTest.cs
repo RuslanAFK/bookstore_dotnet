@@ -29,7 +29,7 @@ public class BooksControllerTest
     {
         var results = await booksController.GetById(default) as OkObjectResult;
         var resultsValue = results?.Value;
-        Assert.That(resultsValue, Is.InstanceOf<GetSingleBookResource>());
+        Assert.That(resultsValue, Is.InstanceOf<GetSingleBookDto>());
     }
     [Test]
     public async Task Create_ReturnsNoContent()

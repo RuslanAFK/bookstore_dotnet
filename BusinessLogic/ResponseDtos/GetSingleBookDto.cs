@@ -1,6 +1,6 @@
-namespace BookStoreServer.Resources.Books;
+namespace Services.ResponseDtos;
 
-public class GetSingleBookResource
+public class GetSingleBookDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = null!;

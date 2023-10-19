@@ -6,7 +6,7 @@ using Services.Abstractions;
 using Services.Extensions;
 using Services.ResponseDtos;
 
-namespace Services;
+namespace Services.Services;
 
 public class UsersService : IUsersService
 {
@@ -39,7 +39,16 @@ public class UsersService : IUsersService
     {
         return await _unitOfWork.Users.GetByIdIncludingRolesAsync(userId);
     }
-    
+
+    public async Task<GetUsersDto> GetUserDtoByIdAsync(int userId)
+    {
+        return await _unitOfWork.Users.GetAll()
+                   .AsNoTracking()
+                   .ToGetUsersDto()
+                   .FirstOrDefaultAsync(x => x.Id == userId)
+               ?? throw new EntityNotFoundException(typeof(User), nameof(User.Id));
+    }
+
     public async Task<User> GetByNameAsync(string username)
     {
         return await _unitOfWork.Users.GetByNameIncludingRolesAsync(username);

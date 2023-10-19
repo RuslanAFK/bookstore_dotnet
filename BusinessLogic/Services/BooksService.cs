@@ -1,4 +1,5 @@
 using Data.Abstractions;
+using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
@@ -39,6 +40,17 @@ public class BooksService : IBooksService
     {
         return await _unitOfWork.Books.GetIncludingBookFilesAsync(bookId);
     }
+
+    public async Task<GetSingleBookDto> GetSingleBookDtoByIdAsync(int bookId)
+    {
+        return await _unitOfWork.Books
+                   .GetAll()
+                   .AsNoTracking()
+                   .ToGetSingleBookDto()
+                   .FirstOrDefaultAsync(x => x.Id == bookId)
+               ?? throw new EntityNotFoundException(typeof(Book), nameof(Book.Id));
+    }
+
     public async Task AddAsync(Book bookToCreate)
     {
         await _unitOfWork.Books.AddAsync(bookToCreate);

@@ -8,7 +8,7 @@ public class UsersControllerTest
     {
         var mapper = A.Fake<IMapper>();
         var usersService = A.Fake<IUsersService>();
-        usersController = new UsersController(mapper, usersService);
+        usersController = new UsersController(usersService);
     }
 
     [TearDown]

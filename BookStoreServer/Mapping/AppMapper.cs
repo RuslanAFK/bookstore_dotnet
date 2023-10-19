@@ -3,6 +3,7 @@ using BookStoreServer.Resources.Auth;
 using BookStoreServer.Resources.Books;
 using BookStoreServer.Resources.Users;
 using Domain.Models;
+using Services.ResponseDtos;
 
 namespace BookStoreServer.Mapping;
 
@@ -22,7 +23,7 @@ public class MappingProfile : Profile
             .ForMember(user => user.Name, opt =>
                 opt.MapFrom(resource => resource.Username));
         
-        CreateMap<Book, GetSingleBookResource>()
+        CreateMap<Book, GetSingleBookDto>()
             .ForMember(r => r.BookFile, opt =>
                 opt.MapFrom(book => book.BookFile != null ? book.BookFile.Url : null));
        

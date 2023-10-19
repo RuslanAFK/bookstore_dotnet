@@ -45,11 +45,15 @@ public class AuthService : IAuthService
     private void ChangeUsername(User existingUser, string newUsername)
     {
         existingUser.Name = newUsername;
+        _unitOfWork.Users.Update(existingUser);
     }
     private void SetNewPasswordIfPresent(User userInDb, string? newPassword)
     {
         if (newPassword != null)
+        {
             _passwordManager.SecureUserWithNewPassword(userInDb, newPassword);
+            _unitOfWork.Users.Update(userInDb);
+        }
     }
 
     public async Task DeleteAccountAsync(User user, string inputtedPassword)

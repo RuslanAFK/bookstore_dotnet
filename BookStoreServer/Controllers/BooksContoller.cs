@@ -33,9 +33,8 @@ public class BooksController : Controller
     [Authorize]
     public async Task<IActionResult> GetById(int bookId)
     {
-        var bookToReturn = await _booksService.GetByIdAsync(bookId);
-        var res = _mapper.Map<Book, GetSingleBookResource>(bookToReturn);
-        return Ok(res);
+        var bookToReturn = await _booksService.GetSingleBookDtoByIdAsync(bookId);
+        return Ok(bookToReturn);
     }
 
     [HttpPost]
