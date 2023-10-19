@@ -1,12 +1,13 @@
 using System.Security.Cryptography;
-using BookStoreServer.ExceptionHandlers;
+// using BookStoreServer.ExceptionHandlers;
 using Data;
-using Data.Repositories;
-using Domain.Abstractions;
+using Data.Abstractions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Services;
+using Services.Abstractions;
+using Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,7 +93,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-app.UseMiddleware<ExceptionHandlerMiddleware>();
+// app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");

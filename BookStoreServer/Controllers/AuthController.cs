@@ -1,10 +1,10 @@
 using AutoMapper;
-using BookStoreServer.Controllers.Resources.Auth;
-using BookStoreServer.Controllers.Resources.Users;
-using Domain.Abstractions;
+using BookStoreServer.Resources.Auth;
+using BookStoreServer.Resources.Users;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.Abstractions;
 
 namespace BookStoreServer.Controllers;
 

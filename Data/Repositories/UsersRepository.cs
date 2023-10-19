@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+﻿using Data.Abstractions;
 using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +11,6 @@ public class UsersRepository : SearchableRepository<User>, IUsersRepository
     {
     }
 
-    public async Task<ListResponse<User>> GetQueriedItemsAsync(Query query)
-    {
-        var users = GetUsersIncludingRoles();
-        return await GetQueriedItemsAsync(query, users);
-    }
     public async Task<User> GetByIdIncludingRolesAsync(int id)
     {
         var users = GetUsersIncludingRoles();
@@ -31,7 +26,7 @@ public class UsersRepository : SearchableRepository<User>, IUsersRepository
         var users = GetUsersIncludingRoles();
         return await GetByNameAsync(name, users);
     }
-    private IQueryable<User> GetUsersIncludingRoles()
+    public IQueryable<User> GetUsersIncludingRoles()
     {
         var items = GetAll();
         return GetItemsIncluding(items, user => user.Role);

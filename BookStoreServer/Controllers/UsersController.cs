@@ -1,11 +1,11 @@
 using AutoMapper;
-using BookStoreServer.Controllers.Resources.Books;
-using BookStoreServer.Controllers.Resources.Users;
-using Domain.Abstractions;
+using BookStoreServer.Resources.Users;
 using Domain.Constants;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.Abstractions;
+using Services.ResponseDtos;
 
 namespace BookStoreServer.Controllers;
 
@@ -27,9 +27,7 @@ public class UsersController : Controller
     public async Task<IActionResult> GetQueried([FromQuery] Query query)
     {
         var users = await _usersService.GetQueriedAsync(query);
-        var res = 
-            _mapper.Map<ListResponse<User>, ListResponseResource<GetUsersResource>>(users);
-        return Ok(res);
+        return Ok(users);
     }
 
     [HttpGet("{userId}")]
@@ -38,7 +36,7 @@ public class UsersController : Controller
     {
         var userToReturn = await _usersService.GetByIdAsync(bookId);
 
-        var res = _mapper.Map<User, GetUsersResource>(userToReturn);
+        var res = _mapper.Map<User, GetUsersDto>(userToReturn);
         return Ok(res);
     }
     
