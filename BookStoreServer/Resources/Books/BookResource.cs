@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Domain.Models;
 
 namespace BookStoreServer.Resources.Books;
 
@@ -18,4 +19,16 @@ public class CreateBookResource
 
     [Required, MaxLength(36), MinLength(3)]
     public string Author { get; set; } = null!;
+
+    public Book ToBook()
+    {
+        return new Book
+        {
+            Name = Name,
+            Info = Info,
+            Genre = Genre,
+            Image = Image,
+            Author = Author
+        };
+    }
 }

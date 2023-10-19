@@ -6,7 +6,6 @@ public class UsersControllerTest
     [SetUp]
     public void Setup()
     {
-        var mapper = A.Fake<IMapper>();
         var usersService = A.Fake<IUsersService>();
         usersController = new UsersController(usersService);
     }

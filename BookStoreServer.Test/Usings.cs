@@ -1,6 +1,5 @@
 global using NUnit.Framework;
 global using FakeItEasy;
-global using AutoMapper;
 global using BookStoreServer.Controllers;
 global using Services.Abstractions;
 global using Domain.Models;

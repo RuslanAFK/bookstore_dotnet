@@ -1,4 +1,3 @@
-using AutoMapper;
 using BookStoreServer.Resources.Books;
 using Domain.Constants;
 using Domain.Models;
@@ -12,12 +11,10 @@ namespace BookStoreServer.Controllers;
 [Route("api/[controller]")]
 public class BooksController : Controller
 {
-    private readonly IMapper _mapper;
     private readonly IBooksService _booksService;
 
-    public BooksController(IMapper mapper, IBooksService booksService)
+    public BooksController(IBooksService booksService)
     {
-        _mapper = mapper;
         _booksService = booksService;
     }
 
@@ -41,7 +38,7 @@ public class BooksController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Create(CreateBookResource bookResource)
     {
-        var bookToCreate = _mapper.Map<CreateBookResource, Book>(bookResource);
+        var bookToCreate = bookResource.ToBook();
         await _booksService.AddAsync(bookToCreate);
         return NoContent();
     }
@@ -50,7 +47,7 @@ public class BooksController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Update(int id, CreateBookResource bookResource)
     {
-        var bookToUpdate = _mapper.Map<CreateBookResource, Book>(bookResource);
+        var bookToUpdate = bookResource.ToBook();
         await _booksService.UpdateAsync(id, bookToUpdate);
         return NoContent();
     }
