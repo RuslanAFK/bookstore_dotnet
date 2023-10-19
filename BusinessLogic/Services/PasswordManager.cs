@@ -2,7 +2,7 @@
 using Domain.Exceptions;
 using Domain.Models;
 
-namespace Services;
+namespace Services.Services;
 
 public class PasswordManager : IPasswordManager
 {
