@@ -18,4 +18,9 @@ public static class SearchableGetExtensions
         var item = await items.FirstOrDefaultAsync(e => e.Name == name);
         return item ?? throw new EntityNotFoundException(typeof(TEntity), nameof(name));
     }
+    public static async Task<TEntity?> GetByNameOrDefaultAsync<TEntity>(this IQueryable<TEntity> items, string name)
+        where TEntity : class, ISearchable
+    {
+        return await items.FirstOrDefaultAsync(e => e.Name == name);
+    }
 }

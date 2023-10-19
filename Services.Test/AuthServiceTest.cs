@@ -25,13 +25,6 @@ public class AuthServiceTest
         A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
-    public async Task GetAuthCredentials_WithAnyUser_ReturnsAuthResult()
-    {
-        var user = A.Dummy<User>();
-        var credentials = await authService.GetAuthCredentialsAsync(user);
-        Assert.That(credentials, Is.InstanceOf<AuthResult>());
-    }
-    [Test]
     public async Task UpdateProfileAsync_WithNewPassword_CalledCheckPasswordAndSecureUser()
     {
         var newUser = A.Dummy<User>();

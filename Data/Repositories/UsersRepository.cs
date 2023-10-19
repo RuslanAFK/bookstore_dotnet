@@ -44,7 +44,7 @@ public class UsersRepository : BaseRepository<User>, IUsersRepository
     }
     private async Task CheckIfUserExists(string username)
     {
-        var foundUser = await GetAll().GetByNameAsync(username);
+        var foundUser = await GetAll().GetByNameOrDefaultAsync(username);
         if (foundUser is not null)
             throw new EntityAlreadyExistsException(typeof(User), nameof(User.Name), username);
     }
