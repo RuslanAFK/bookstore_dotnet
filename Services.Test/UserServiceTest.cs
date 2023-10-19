@@ -14,7 +14,7 @@ public class UserServiceTest
     public async Task GetByIdAsync_ReturnsUser()
     {
         var id = A.Dummy<int>();
-        var result = await usersService.GetByIdAsync(id);
+        var result = await usersService.GetByIdIncludingRolesAsync(id);
         Assert.That(result, Is.InstanceOf<User>());
     }
     [Test]

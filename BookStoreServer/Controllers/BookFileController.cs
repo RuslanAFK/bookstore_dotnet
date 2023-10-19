@@ -23,7 +23,7 @@ public class BookFileController : Controller
     public async Task<IActionResult> Create(int bookId, IFormFile file)
     {
         _bookFilesService.ThrowIfFileNotPermitted(file);
-        var book = await _booksService.GetByIdAsync(bookId);
+        var book = await _booksService.GetByIdIncludingFilesAsync(bookId);
         await _bookFilesService.AddAsync(book, file);
         return NoContent();
     }
@@ -32,7 +32,7 @@ public class BookFileController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Delete(int bookId)
     {
-        var book = await _booksService.GetByIdAsync(bookId);
+        var book = await _booksService.GetByIdIncludingFilesAsync(bookId);
         await _bookFilesService.RemoveAsync(book);
         return NoContent();
     }

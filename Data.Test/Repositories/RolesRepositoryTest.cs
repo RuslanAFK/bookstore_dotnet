@@ -17,27 +17,7 @@ public class RolesRepositoryTest
         dbContext.Database.EnsureDeleted();
         dbContext.Dispose();
     }
-    [Test]
-    public async Task GetRoleNameByIdAsync_WithCorrectId_ReturnsCorrectName()
-    {
-        var id = 10;
-        var name = "myRole";
-        var role = DataGenerator.CreateTestRole(id, name);
-        await dbContext.AddAsync(role);
-        await dbContext.SaveChangesAsync();
-
-        var foundName = await repository.GetRoleNameByIdAsync(id);
-        Assert.That(foundName, Is.EqualTo(name));
-    }
-    [Test]
-    public void GetRoleNameByIdAsync_WithWrongId_ThrowsEntityNotFoundException()
-    {
-        var id = 10;
-        Assert.ThrowsAsync<EntityNotFoundException>(async () =>
-        {
-            await repository.GetRoleNameByIdAsync(id);
-        });
-    }
+    
     [Test]
     public async Task AssignToRoleAsync_WithCorrectRoleName_AssignsCorrectRole()
     {

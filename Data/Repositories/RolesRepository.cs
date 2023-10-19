@@ -10,12 +10,6 @@ public class RolesRepository : BaseRepository<Role>, IRolesRepository
     public RolesRepository(AppDbContext context) : base(context)
     {
     }
-    public async Task<string> GetRoleNameByIdAsync(int id)
-    {
-        var role = await GetWhere(role => id == role.RoleId);
-        var notNullRole = GetItemOrThrowNullError(role, id.ToString(), nameof(id));
-        return notNullRole.RoleName;
-    }
 
     public async Task AssignToRoleAsync(User user, string name)
     {

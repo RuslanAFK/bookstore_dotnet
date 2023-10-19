@@ -17,8 +17,7 @@ public class UsersService : IUsersService
     }
     public async Task<ListResponse<GetUsersDto>> GetQueriedAsync(Query query)
     {
-        var users = _unitOfWork.Users
-            .GetUsersIncludingRoles();
+        var users = _unitOfWork.Users.GetAll().AsNoTracking();
 
         var itemsSearched = users
             .ApplySearching(query);
@@ -35,9 +34,14 @@ public class UsersService : IUsersService
         };
     }
     
-    public async Task<User> GetByIdAsync(int userId)
+    public async Task<User> GetByIdIncludingRolesAsync(int userId)
     {
         return await _unitOfWork.Users.GetByIdIncludingRolesAsync(userId);
+    }
+
+    public async Task<User> GetByIdAsync(int userId)
+    {
+        return await _unitOfWork.Users.GetByIdAsync(userId);
     }
 
     public async Task<GetUsersDto> GetUserDtoByIdAsync(int userId)
@@ -66,7 +70,7 @@ public class UsersService : IUsersService
     }
     public async Task AddUserToRoleAsync(User user, string roleName)
     {
-        CheckIfRoleIsNotIdentical(user.Role?.RoleName, roleName);
+        CheckIfRoleIsNotIdentical(user.Role!.RoleName, roleName);
         await _unitOfWork.Roles.AssignToRoleAsync(user, roleName);
         await _unitOfWork.CompleteOrThrowAsync();
     }
