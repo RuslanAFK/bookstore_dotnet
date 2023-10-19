@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 // using BookStoreServer.ExceptionHandlers;
 using Data;
 using Data.Abstractions;
+using Data.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

@@ -33,7 +33,7 @@ public class PasswordManagerTest
     {
         var password = "password";
         var hashed = BCrypt.Net.BCrypt.HashPassword(password);
-        passwordManager.ThrowExceptionIfWrongPassword(password, hashed);
+        passwordManager.CheckPassword(password, hashed);
         Assert.Pass();
     }
     [Test]
@@ -43,7 +43,7 @@ public class PasswordManagerTest
         var wrongPassword = "wrong";
         var hashed = BCrypt.Net.BCrypt.HashPassword(password);
         Assert.Throws<WrongPasswordException>(() => 
-            passwordManager.ThrowExceptionIfWrongPassword(wrongPassword, hashed));
+            passwordManager.CheckPassword(wrongPassword, hashed));
     }
     [Test]
     public void ThrowExceptionIfWrongPassword_WithNotHashedValue_PasswordNotParseableException()
@@ -52,7 +52,7 @@ public class PasswordManagerTest
         var notHashedPassword = "not hashed at all";
         Assert.Throws<PasswordNotParseableException>(() =>
         {
-            passwordManager.ThrowExceptionIfWrongPassword(password, notHashedPassword);
+            passwordManager.CheckPassword(password, notHashedPassword);
         });
     }
 }

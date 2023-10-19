@@ -45,8 +45,7 @@ public class AuthController : Controller
     [Authorize]
     public async Task<IActionResult> UpdateProfile(UpdateUserInfoResource userInfoResource)
     {
-        var claimsPrincipal = HttpContext?.User;
-        var username = _authService.GetUsernameOrThrow(claimsPrincipal);
+        var username = User.Identity?.Name!;
         var foundUser = await _usersService.GetByNameAsync(username);
         var user = _mapper.Map<UpdateUserInfoResource, User>(userInfoResource);
         await _authService.UpdateProfileAsync(foundUser, user, userInfoResource.NewPassword);
@@ -57,8 +56,7 @@ public class AuthController : Controller
     [Authorize]
     public async Task<IActionResult> DeleteAccount(DeleteUserResource resource)
     {
-        var claimsPrincipal = HttpContext?.User;
-        var username = _authService.GetUsernameOrThrow(claimsPrincipal);
+        var username = User.Identity?.Name!;
         var userToDelete = await _usersService.GetByNameAsync(username);
         await _authService.DeleteAccountAsync(userToDelete, resource.Password);
         return NoContent();

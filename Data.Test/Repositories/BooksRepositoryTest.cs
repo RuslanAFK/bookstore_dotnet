@@ -24,7 +24,7 @@ public class BooksRepositoryTest
         var newBook = DataGenerator.CreateTestBook(id);
         await dbContext.AddAsync(newBook);
         await dbContext.SaveChangesAsync();
-        var results = await booksRepository.GetIncludingBookFilesAsync(id);
+        var results = await booksRepository.GetByIdIncludingBookFilesAsync(id);
         Assert.That(results.BookFile, Is.Not.Null);
     }
     [Test]
@@ -33,7 +33,7 @@ public class BooksRepositoryTest
         var id = 99;
         Assert.ThrowsAsync<EntityNotFoundException>(async () =>
         {
-            await booksRepository.GetIncludingBookFilesAsync(id);
+            await booksRepository.GetByIdIncludingBookFilesAsync(id);
         });
     }
 }

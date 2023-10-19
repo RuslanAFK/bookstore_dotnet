@@ -1,7 +1,4 @@
-﻿using System.Linq.Expressions;
-using Data.Abstractions;
-using Microsoft.EntityFrameworkCore;
-using Domain.Exceptions;
+﻿using Data.Abstractions;
 
 namespace Data.Repositories;
 
@@ -32,18 +29,5 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     public void Remove(TEntity item)
     {
         _dbContext.Remove(item);
-    }
-
-    public IQueryable<TEntity> GetItemsIncluding<TProperty>(IQueryable<TEntity> items, 
-        Expression<Func<TEntity, TProperty>> func)
-    {
-        return items.Include(func);
-    }
-
-    protected TEntity GetItemOrThrowNullError(TEntity? item, string propertyValue, string propertyName)
-    {
-        if (item == null)
-            throw new EntityNotFoundException(typeof(TEntity), propertyName, propertyValue);
-        return item;
     }
 }

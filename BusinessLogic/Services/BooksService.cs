@@ -38,7 +38,7 @@ public class BooksService : IBooksService
     }
     public async Task<Book> GetByIdIncludingFilesAsync(int bookId)
     {
-        return await _unitOfWork.Books.GetIncludingBookFilesAsync(bookId);
+        return await _unitOfWork.Books.GetByIdIncludingBookFilesAsync(bookId);
     }
 
     public async Task<GetSingleBookDto> GetSingleBookDtoByIdAsync(int bookId)

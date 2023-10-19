@@ -4,5 +4,5 @@ namespace Data.Abstractions;
 
 public interface IBooksRepository : IBaseRepository<Book>
 {
-    Task<Book> GetIncludingBookFilesAsync(int id);
+    Task<Book> GetByIdIncludingBookFilesAsync(int id);
 }

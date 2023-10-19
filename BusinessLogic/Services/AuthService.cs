@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Data.Abstractions;
+﻿using Data.Abstractions;
 using Domain.Constants;
 using Domain.Exceptions;
 using Domain.Models;
@@ -39,14 +38,14 @@ public class AuthService : IAuthService
         if (authResult is null)
             throw new EntityNotFoundException(typeof(User), nameof(User.Name), user.Name);
         
-        _passwordManager.ThrowExceptionIfWrongPassword(user.Password, authResult.Password);
+        _passwordManager.CheckPassword(user.Password, authResult.Password);
         authResult.Token = _tokenManager.GenerateToken(authResult.Username, authResult.Role);
         
         return authResult;
     }
     public async Task UpdateProfileAsync(User existingUser, User newUser, string? newPassword)
     {
-        _passwordManager.ThrowExceptionIfWrongPassword(newUser.Password, existingUser.Password);
+        _passwordManager.CheckPassword(newUser.Password, existingUser.Password);
         ChangeUsername(existingUser, newUser.Name);
         SetNewPasswordIfPresent(existingUser, newPassword);
         await _unitOfWork.CompleteAsync();
@@ -68,19 +67,8 @@ public class AuthService : IAuthService
 
     public async Task DeleteAccountAsync(User user, string inputtedPassword)
     {
-        _passwordManager.ThrowExceptionIfWrongPassword(inputtedPassword, user.Password);
+        _passwordManager.CheckPassword(inputtedPassword, user.Password);
         _unitOfWork.Users.Remove(user);
         await _unitOfWork.CompleteAsync();
-    }
-    public string GetUsernameOrThrow(ClaimsPrincipal? claimsPrincipal)
-    {
-        var identity= claimsPrincipal?.Identity;
-        var username = identity?.Name;
-        var authenticated = identity?.IsAuthenticated ?? false;
-        if (!authenticated)
-            throw new UserNotAuthorizedException();
-        if (username == null)
-            throw new EntityNotFoundException(typeof(User), nameof(User.Name));
-        return username;
     }
 }

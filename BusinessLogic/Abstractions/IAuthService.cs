@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Domain.Models;
+﻿using Domain.Models;
 using Services.ResponseDtos;
 
 namespace Services.Abstractions;
@@ -10,5 +9,4 @@ public interface IAuthService
     Task<AuthResult> GetAuthCredentialsAsync(User user);
     Task UpdateProfileAsync(User existingUser, User newUser, string? newPassword);
     Task DeleteAccountAsync(User user, string inputtedPassword);
-    string GetUsernameOrThrow(ClaimsPrincipal? claimsPrincipal);
 }
