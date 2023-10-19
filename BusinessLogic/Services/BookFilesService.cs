@@ -23,7 +23,7 @@ public class BookFilesService : IBookFilesService
         var relativePath = await _fileManager.StoreFileAndGetPath(file);
         var bookFile = GenerateNewBookFile(book, relativePath);
         await _unitOfWork.BookFiles.AddAsync(bookFile);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
 
     private void DeleteFileIfExists(BookFile? bookFile)
@@ -45,7 +45,7 @@ public class BookFilesService : IBookFilesService
         var bookFile = GetBookFileOrThrow(book);
         _fileManager.DeleteFile(bookFile.Url);
         _unitOfWork.BookFiles.Remove(bookFile);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
 
     public void ThrowIfFileNotPermitted(IFormFile file)

@@ -1,5 +1,5 @@
-﻿using System.Linq.Expressions;
-using Data.Abstractions;
+﻿using Data.Abstractions;
+using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,15 +11,15 @@ public class RolesRepository : BaseRepository<Role>, IRolesRepository
     {
     }
 
-    public async Task AssignToRoleAsync(User user, string name)
+    public async Task<int> GetRoleIdByNameAsync(string name)
     {
-        var role = await GetWhere(r => r.RoleName == name);
-        user.Role = GetItemOrThrowNullError(role, name, nameof(name));
-    }
-
-    private async Task<Role?> GetWhere(Expression<Func<Role, bool>> predicate)
-    {
-        var roles = GetAll();
-        return await roles.SingleOrDefaultAsync(predicate);
+        var role = await GetAll()
+            .Where(x => x.RoleName == name)
+            .Select(x => new
+            {
+                x.RoleId
+            })
+            .FirstOrDefaultAsync() ?? throw new EntityNotFoundException(typeof(Role), nameof(Role.RoleName));
+        return role.RoleId;
     }
 }

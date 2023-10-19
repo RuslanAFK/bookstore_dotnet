@@ -22,7 +22,7 @@ public class UsersService : IUsersService
         var itemsSearched = users
             .ApplySearching(query);
         var itemsPaginatedList = await itemsSearched
-            .ApplyPagination(query, 4)
+            .ApplyPagination(query)
             .ToGetUsersDto()
             .ToListAsync();
         var itemsCount = itemsSearched.Count();
@@ -66,20 +66,13 @@ public class UsersService : IUsersService
     public async Task RemoveAsync(User user)
     {
         _unitOfWork.Users.Remove(user);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
     public async Task AddUserToRoleAsync(User user, string roleName)
     {
-        CheckIfRoleIsNotIdentical(user.Role!.RoleName, roleName);
-        await _unitOfWork.Roles.AssignToRoleAsync(user, roleName);
-        await _unitOfWork.CompleteOrThrowAsync();
-    }
-    private void CheckIfRoleIsNotIdentical(string? userRoleName, string? roleName)
-    {
-        if (userRoleName == roleName)
-        {
-            var propName = nameof(Role.RoleName);
-            throw new SameValueAssignException(propName);
-        }
+        var roleId = await _unitOfWork.Roles.GetRoleIdByNameAsync(roleName);
+        user.RoleId = roleId;
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.CompleteAsync();
     }
 }

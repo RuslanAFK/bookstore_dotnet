@@ -25,7 +25,7 @@ public class UnitOfWork : IUnitOfWork
     public IRolesRepository Roles { get; set; }
     public IBaseRepository<BookFile> BookFiles { get; set; }
 
-    public async Task CompleteOrThrowAsync()
+    public async Task CompleteAsync()
     {
         try
         {

@@ -20,7 +20,7 @@ public class BookFilesServiceTest
         var formFile = A.Fake<IFormFile>();
         await bookFilesService.AddAsync(book, formFile);
         A.CallTo(() => fileManager.StoreFileAndGetPath(A<IFormFile>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustNotHaveHappened();
     }
     [Test]
@@ -31,7 +31,7 @@ public class BookFilesServiceTest
         var formFile = A.Fake<IFormFile>();
         await bookFilesService.AddAsync(book, formFile);
         A.CallTo(() => fileManager.StoreFileAndGetPath(A<IFormFile>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
         A.CallTo(() => fileManager.DeleteFile(A<string>._)).MustHaveHappenedOnceExactly();
     }
     [Test]

@@ -25,9 +25,9 @@ public class AuthService : IAuthService
     public async Task RegisterAsync(User userToCreate)
     {
         _passwordManager.SecureUser(userToCreate);
+        userToCreate.RoleId = await _unitOfWork.Roles.GetRoleIdByNameAsync(Roles.User);
         await _unitOfWork.Users.AddAsync(userToCreate);
-        await _unitOfWork.Roles.AssignToRoleAsync(userToCreate, Roles.User);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
     public async Task<AuthResult> GetAuthCredentialsAsync(User user)
     {
@@ -49,7 +49,7 @@ public class AuthService : IAuthService
         _passwordManager.ThrowExceptionIfWrongPassword(newUser.Password, existingUser.Password);
         ChangeUsername(existingUser, newUser.Name);
         SetNewPasswordIfPresent(existingUser, newPassword);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
 
     private void ChangeUsername(User existingUser, string newUsername)
@@ -70,7 +70,7 @@ public class AuthService : IAuthService
     {
         _passwordManager.ThrowExceptionIfWrongPassword(inputtedPassword, user.Password);
         _unitOfWork.Users.Remove(user);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
     public string GetUsernameOrThrow(ClaimsPrincipal? claimsPrincipal)
     {

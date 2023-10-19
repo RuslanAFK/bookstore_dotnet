@@ -22,7 +22,7 @@ public class AuthServiceTest
         var user = A.Dummy<User>();
         await authService.RegisterAsync(user);
         A.CallTo(() => passwordManager.SecureUser(A<User>._)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
     public async Task GetAuthCredentials_WithAnyUser_ReturnsAuthResult()

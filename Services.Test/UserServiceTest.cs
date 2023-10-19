@@ -41,7 +41,7 @@ public class UserServiceTest
         var newRoleName = "User";
         var user = DataGenerator.CreateTestUserWithRoleName(oldRoleName);
         await usersService.AddUserToRoleAsync(user, newRoleName);
-        A.CallTo(() => unitOfWork.CompleteOrThrowAsync()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
     }
     [Test]
     public async Task RemoveAsync_CallsRemove()

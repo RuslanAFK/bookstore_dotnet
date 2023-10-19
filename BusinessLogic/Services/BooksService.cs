@@ -54,13 +54,13 @@ public class BooksService : IBooksService
     public async Task AddAsync(Book bookToCreate)
     {
         await _unitOfWork.Books.AddAsync(bookToCreate);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
 
     public async Task UpdateAsync(int bookId, Book bookToUpdate)
     {
         AssignId(bookId, bookToUpdate);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
 
     private void AssignId(int bookId, Book bookToUpdate)
@@ -72,7 +72,7 @@ public class BooksService : IBooksService
     {
         DeleteFileIfExists(book.BookFile);
         _unitOfWork.Books.Remove(book);
-        await _unitOfWork.CompleteOrThrowAsync();
+        await _unitOfWork.CompleteAsync();
     }
     private void DeleteFileIfExists(BookFile? bookFile)
     {
