@@ -21,18 +21,17 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
     public async Task AddAsync(TEntity item)
     {
-
-        await _dbContext.Set<TEntity>().AddAsync(item);
+        await _dbContext.AddAsync(item);
     }
 
     public void Update(TEntity item)
     {
-        _dbContext.Set<TEntity>().Update(item);
+        _dbContext.Update(item);
     }
 
     public void Remove(TEntity item)
     {
-        _dbContext.Set<TEntity>().Remove(item);
+        _dbContext.Remove(item);
     }
 
     public IQueryable<TEntity> GetItemsIncluding<TProperty>(IQueryable<TEntity> items, 

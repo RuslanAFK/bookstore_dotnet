@@ -3,7 +3,10 @@ using Data.Abstractions;
 using Domain.Constants;
 using Domain.Exceptions;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
+using Services.Extensions;
+using Services.ResponseDtos;
 
 namespace Services.Services;
 
@@ -28,11 +31,18 @@ public class AuthService : IAuthService
     }
     public async Task<AuthResult> GetAuthCredentialsAsync(User user)
     {
-        var foundUser = await _unitOfWork.Users.GetByNameAsync(user.Name);
-        _passwordManager.ThrowExceptionIfWrongPassword(user.Password, foundUser.Password);
-        var roleName = await _unitOfWork.Roles.GetRoleNameByIdAsync(foundUser.RoleId);
-        var token = _tokenManager.GenerateToken(foundUser, roleName);
-        return new AuthResult(foundUser, token, roleName);
+        var authResult = await _unitOfWork.Users
+            .GetAll()
+            .ToAuthResult()
+            .FirstOrDefaultAsync(x => x.Username == user.Name);
+
+        if (authResult is null)
+            throw new EntityNotFoundException(typeof(User), nameof(User.Name), user.Name);
+        
+        _passwordManager.ThrowExceptionIfWrongPassword(user.Password, authResult.Password);
+        authResult.Token = _tokenManager.GenerateToken(authResult.Username, authResult.Role);
+        
+        return authResult;
     }
     public async Task UpdateProfileAsync(User existingUser, User newUser, string? newPassword)
     {

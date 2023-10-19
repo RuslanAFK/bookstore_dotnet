@@ -1,3 +1,5 @@
+using Services.ResponseDtos;
+
 namespace Services.Test;
 
 public class AuthServiceTest

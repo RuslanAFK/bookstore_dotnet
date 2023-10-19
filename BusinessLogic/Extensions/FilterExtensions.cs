@@ -38,4 +38,15 @@ public static class FilterExtensions
             Username = x.Name
         }); 
     }
+    
+    public static IQueryable<AuthResult> ToAuthResult(this IQueryable<User> users)
+    {
+        return users.Select(x => new AuthResult
+        {
+            Id = x.Id,
+            Username = x.Name,
+            Password = x.Password,
+            Role = x.Role!.RoleName
+        }); 
+    }
 }
