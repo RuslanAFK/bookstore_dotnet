@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BookStoreServer.Resources.Users;
+namespace Services.Dtos;
 
-public class UserRoleResource
+public class UserRoleDto
 {
     [Required]
     public string RoleName { get; set; } = null!;

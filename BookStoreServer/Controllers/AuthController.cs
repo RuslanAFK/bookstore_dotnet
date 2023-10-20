@@ -1,8 +1,7 @@
-using BookStoreServer.Resources.Auth;
-using BookStoreServer.Resources.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Services.Dtos;
 
 namespace BookStoreServer.Controllers;
 
@@ -20,9 +19,9 @@ public class AuthController : Controller
     }
 
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(LoginResource loginResource)
+    public async Task<IActionResult> Login(LoginDto loginDto)
     {
-        var user = loginResource.ToUser();
+        var user = loginDto.ToUser();
         var found = await _authService.GetAuthCredentialsAsync(user);
         var res = new
         {
@@ -35,31 +34,31 @@ public class AuthController : Controller
     }
 
     [HttpPost("Register")]
-    public async Task<IActionResult> Register(RegisterResource registerResource)
+    public async Task<IActionResult> Register(RegisterDto registerDto)
     {
-        var userToCreate = registerResource.ToUser();
+        var userToCreate = registerDto.ToUser();
         await _authService.RegisterAsync(userToCreate);
         return NoContent();
     }
 
     [HttpPatch]
     [Authorize]
-    public async Task<IActionResult> UpdateProfile(UpdateUserInfoResource userInfoResource)
+    public async Task<IActionResult> UpdateProfile(UpdateUserDto userDto)
     {
         var username = User?.Identity?.Name ?? "";
         var foundUser = await _usersService.GetByNameAsync(username);
-        var user = userInfoResource.ToUser();
-        await _authService.UpdateProfileAsync(foundUser, user, userInfoResource.NewPassword);
+        var user = userDto.ToUser();
+        await _authService.UpdateProfileAsync(foundUser, user, userDto.NewPassword);
         return NoContent();
     }
     
     [HttpDelete]
     [Authorize]
-    public async Task<IActionResult> DeleteAccount(DeleteUserResource resource)
+    public async Task<IActionResult> DeleteAccount(DeleteUserDto dto)
     {
         var username = User?.Identity?.Name ?? "";
         var userToDelete = await _usersService.GetByNameAsync(username);
-        await _authService.DeleteAccountAsync(userToDelete, resource.Password);
+        await _authService.DeleteAccountAsync(userToDelete, dto.Password);
         return NoContent();
     }
 }

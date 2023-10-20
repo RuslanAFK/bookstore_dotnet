@@ -15,4 +15,10 @@ public class BooksRepository : BaseRepository<Book>, IBooksRepository
         var books = GetAll().Include(x => x.BookFile);
         return await books.GetByIdAsync(id);
     }
+
+    public async Task<Book> GetByIdAsync(int id)
+    {
+        var books = GetAll();
+        return await books.GetByIdAsync(id);
+    }
 }

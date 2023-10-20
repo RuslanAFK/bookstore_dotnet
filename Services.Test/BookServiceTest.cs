@@ -1,6 +1,4 @@
-﻿using Services.ResponseDtos;
-
-namespace Services.Test;
+﻿namespace Services.Test;
 
 public class BookServiceTest
 {
@@ -26,23 +24,6 @@ public class BookServiceTest
         var book = A.Dummy<Book>();
         await booksService.AddAsync(book);
         A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
-    }
-    [Test]
-    public async Task UpdateAsync_CallsUpdateAndCompleteAsync()
-    {
-        var id = A.Dummy<int>();
-        var book = A.Dummy<Book>();
-        await booksService.UpdateAsync(id, book);
-        A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
-    }
-    [Test]
-    public async Task UpdateAsync_AssignsId()
-    {
-        var expectedId = 158;
-        var book = A.Dummy<Book>();
-        await booksService.UpdateAsync(expectedId, book);
-        var actualId = book.Id;
-        Assert.That(actualId, Is.EqualTo(expectedId));
     }
     [Test]
     public async Task RemoveAsync_WithoutBookFile_CallsRemoveAndCompleteAsyncButNotDeleteFile()

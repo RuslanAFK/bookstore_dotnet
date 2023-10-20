@@ -11,15 +11,10 @@ public class RolesRepository : BaseRepository<Role>, IRolesRepository
     {
     }
 
-    public async Task<int> GetRoleIdByNameAsync(string name)
+    public async Task<Role> GetByNameAsync(string name)
     {
-        var role = await GetAll()
+        return await GetAll()
             .Where(x => x.RoleName == name)
-            .Select(x => new
-            {
-                x.RoleId
-            })
             .FirstOrDefaultAsync() ?? throw new EntityNotFoundException(typeof(Role), nameof(Role.RoleName));
-        return role.RoleId;
     }
 }

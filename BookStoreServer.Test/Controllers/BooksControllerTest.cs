@@ -33,14 +33,14 @@ public class BooksControllerTest
     [Test]
     public async Task Create_ReturnsNoContent()
     {
-        var resource = A.Dummy<CreateBookResource>();
+        var resource = A.Dummy<BookDto>();
         var results = await booksController.Create(resource);
         Assert.That(results, Is.InstanceOf<NoContentResult>());
     }
     [Test]
     public async Task Update_ReturnsNoContent()
     {
-        var resource = A.Dummy<CreateBookResource>();
+        var resource = A.Dummy<BookDto>();
         var id = A.Dummy<int>();
         var results = await booksController.Update(id, resource);
         Assert.That(results, Is.InstanceOf<NoContentResult>());

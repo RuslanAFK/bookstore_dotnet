@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Models;
 
-namespace BookStoreServer.Resources.Auth;
+namespace Services.Dtos;
 
-public class RegisterResource
+public class RegisterDto
 {
     [Required, MaxLength(16), MinLength(3)]
     public string Username { get; set; } = null!;

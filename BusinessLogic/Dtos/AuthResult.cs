@@ -1,4 +1,4 @@
-namespace Services.ResponseDtos;
+namespace Services.Dtos;
 
 public class AuthResult
 {

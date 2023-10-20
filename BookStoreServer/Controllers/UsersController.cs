@@ -1,9 +1,9 @@
-using BookStoreServer.Resources.Users;
 using Domain.Constants;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Services.Dtos;
 
 namespace BookStoreServer.Controllers;
 
@@ -36,10 +36,10 @@ public class UsersController : Controller
     
     [HttpPatch("{id:int}")]
     [Authorize(Roles = Roles.Creator)]
-    public async Task<IActionResult> UpdateRole(int id, UserRoleResource userRoleResource)
+    public async Task<IActionResult> UpdateRole(int id, UserRoleDto userRoleDto)
     {
         var foundUser = await _usersService.GetByIdAsync(id);
-        await _usersService.AddUserToRoleAsync(foundUser, userRoleResource.RoleName);
+        await _usersService.AddUserToRoleAsync(foundUser, userRoleDto.RoleName);
         return NoContent();
     }
 

@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BookStoreServer.Resources.Users;
+namespace Services.Dtos;
 
-public class DeleteUserResource
+public class DeleteUserDto
 {
     [Required]
     public string Password { get; set; } = null!;

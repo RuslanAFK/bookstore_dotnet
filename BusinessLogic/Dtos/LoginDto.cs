@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Models;
 
-namespace BookStoreServer.Resources.Auth;
+namespace Services.Dtos;
 
-public class LoginResource
+public class LoginDto
 {
     [Required]
     public string Username { get; set; } = null!;

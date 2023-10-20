@@ -1,5 +1,5 @@
 ﻿using Domain.Models;
-using Services.ResponseDtos;
+using Services.Dtos;
 
 namespace Services.Abstractions;
 

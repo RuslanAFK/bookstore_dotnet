@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Models;
 
-namespace BookStoreServer.Resources.Users;
+namespace Services.Dtos;
 
-public class UpdateUserInfoResource
+public class UpdateUserDto
 {
     [Required, MaxLength(16), MinLength(3)]
     public string Username { get; set; } = null!;

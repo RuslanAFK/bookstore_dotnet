@@ -3,8 +3,8 @@ using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
+using Services.Dtos;
 using Services.Extensions;
-using Services.ResponseDtos;
 
 namespace Services.Services;
 
@@ -70,8 +70,8 @@ public class UsersService : IUsersService
     }
     public async Task AddUserToRoleAsync(User user, string roleName)
     {
-        var roleId = await _unitOfWork.Roles.GetRoleIdByNameAsync(roleName);
-        user.RoleId = roleId;
+        var role = await _unitOfWork.Roles.GetByNameAsync(roleName);
+        user.Role = role;
         _unitOfWork.Users.Update(user);
         await _unitOfWork.CompleteAsync();
     }

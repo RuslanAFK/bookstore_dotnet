@@ -3,8 +3,8 @@ using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
+using Services.Dtos;
 using Services.Extensions;
-using Services.ResponseDtos;
 
 namespace Services.Services;
 
@@ -41,6 +41,11 @@ public class BooksService : IBooksService
         return await _unitOfWork.Books.GetByIdIncludingBookFilesAsync(bookId);
     }
 
+    public async Task<Book> GetByIdAsync(int bookId)
+    {
+        return await _unitOfWork.Books.GetByIdAsync(bookId);
+    }
+
     public async Task<GetSingleBookDto> GetSingleBookDtoByIdAsync(int bookId)
     {
         return await _unitOfWork.Books
@@ -57,17 +62,13 @@ public class BooksService : IBooksService
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task UpdateAsync(int bookId, Book bookToUpdate)
+    public async Task UpdateAsync(Book foundBook, BookDto updateBook)
     {
-        AssignId(bookId, bookToUpdate);
+        updateBook.ToBook(ref foundBook);
+        _unitOfWork.Books.Update(foundBook);
         await _unitOfWork.CompleteAsync();
     }
 
-    private void AssignId(int bookId, Book bookToUpdate)
-    {
-        bookToUpdate.Id = bookId;
-        _unitOfWork.Books.Update(bookToUpdate);
-    }
     public async Task RemoveAsync(Book book)
     {
         DeleteFileIfExists(book.BookFile);

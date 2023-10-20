@@ -1,6 +1,6 @@
 using Domain.Models;
 
-namespace Services.ResponseDtos;
+namespace Services.Dtos;
 
 public class GetUsersDto : ISearchable
 {

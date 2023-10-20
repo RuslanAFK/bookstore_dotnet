@@ -4,8 +4,8 @@ using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
+using Services.Dtos;
 using Services.Extensions;
-using Services.ResponseDtos;
 
 namespace Services.Services;
 
@@ -23,8 +23,8 @@ public class AuthService : IAuthService
     }
     public async Task RegisterAsync(User userToCreate)
     {
-        _passwordManager.SecureUser(userToCreate);
-        userToCreate.RoleId = await _unitOfWork.Roles.GetRoleIdByNameAsync(Roles.User);
+        userToCreate.Password = _passwordManager.SecureUser(userToCreate);
+        userToCreate.Role = await _unitOfWork.Roles.GetByNameAsync(Roles.User);
         await _unitOfWork.Users.AddAsync(userToCreate);
         await _unitOfWork.CompleteAsync();
     }
@@ -33,10 +33,8 @@ public class AuthService : IAuthService
         var authResult = await _unitOfWork.Users
             .GetAll()
             .ToAuthResult()
-            .FirstOrDefaultAsync(x => x.Username == user.Name);
-
-        if (authResult is null)
-            throw new EntityNotFoundException(typeof(User), nameof(User.Name), user.Name);
+            .FirstOrDefaultAsync(x => x.Username == user.Name) 
+            ?? throw new EntityNotFoundException(typeof(User), nameof(User.Name), user.Name);
         
         _passwordManager.CheckPassword(user.Password, authResult.Password);
         authResult.Token = _tokenManager.GenerateToken(authResult.Username, authResult.Role);
@@ -46,23 +44,11 @@ public class AuthService : IAuthService
     public async Task UpdateProfileAsync(User existingUser, User newUser, string? newPassword)
     {
         _passwordManager.CheckPassword(newUser.Password, existingUser.Password);
-        ChangeUsername(existingUser, newUser.Name);
-        SetNewPasswordIfPresent(existingUser, newPassword);
-        await _unitOfWork.CompleteAsync();
-    }
-
-    private void ChangeUsername(User existingUser, string newUsername)
-    {
-        existingUser.Name = newUsername;
-        _unitOfWork.Users.Update(existingUser);
-    }
-    private void SetNewPasswordIfPresent(User userInDb, string? newPassword)
-    {
+        existingUser.Name = newUser.Name;
         if (newPassword != null)
-        {
-            _passwordManager.SecureUserWithNewPassword(userInDb, newPassword);
-            _unitOfWork.Users.Update(userInDb);
-        }
+            existingUser.Password = _passwordManager.SecureUserWithNewPassword(existingUser, newPassword);
+        _unitOfWork.Users.Update(existingUser);
+        await _unitOfWork.CompleteAsync();
     }
 
     public async Task DeleteAccountAsync(User user, string inputtedPassword)

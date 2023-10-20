@@ -8,7 +8,4 @@ global using Microsoft.AspNetCore.Http;
 global using System.ComponentModel.DataAnnotations;
 global using BookStoreServer.ExceptionHandlers;
 global using Domain.Exceptions;
-global using BookStoreServer.Resources.Auth;
-global using BookStoreServer.Resources.Users;
-global using Services.ResponseDtos;
-global using BookStoreServer.Resources.Books;
+global using Services.Dtos;
