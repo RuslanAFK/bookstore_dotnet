@@ -6,6 +6,5 @@ global using Domain.Models;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Http;
 global using System.ComponentModel.DataAnnotations;
-global using BookStoreServer.ExceptionHandlers;
 global using Domain.Exceptions;
 global using Services.Dtos;

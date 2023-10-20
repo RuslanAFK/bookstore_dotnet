@@ -3,7 +3,7 @@ using System.Net;
 using Domain.Exceptions;
 using Newtonsoft.Json;
 
-namespace BookStoreServer.ExceptionHandlers;
+namespace BookStoreServer.Middleware;
 
 public class ExceptionHandlerMiddleware
 {

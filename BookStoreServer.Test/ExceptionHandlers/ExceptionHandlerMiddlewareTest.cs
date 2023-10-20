@@ -1,4 +1,6 @@
-﻿namespace BookStoreServer.Test.ExceptionHandlers;
+﻿using BookStoreServer.Middleware;
+
+namespace BookStoreServer.Test.ExceptionHandlers;
 
 public class ExceptionHandlerMiddlewareTest
 {

@@ -1,5 +1,5 @@
 using System.Security.Cryptography;
-// using BookStoreServer.ExceptionHandlers;
+using BookStoreServer.Middleware;
 using Data;
 using Data.Abstractions;
 using Data.Repositories;
@@ -92,7 +92,9 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-// app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<DefaultsMiddleware>();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");

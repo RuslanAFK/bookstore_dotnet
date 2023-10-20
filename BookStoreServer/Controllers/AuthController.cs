@@ -35,7 +35,7 @@ public class AuthController : Controller
     public async Task<IActionResult> Register(RegisterDto registerDto)
     {
         var userToCreate = registerDto.ToUser();
-        await _authService.RegisterAsync(userToCreate);
+        await _authService.RegisterUserAsync(userToCreate);
         return NoContent();
     }
 

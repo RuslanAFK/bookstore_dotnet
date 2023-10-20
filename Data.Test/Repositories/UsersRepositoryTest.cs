@@ -17,42 +17,7 @@ public class UsersRepositoryTest
         dbContext.Database.EnsureDeleted();
         dbContext.Dispose();
     }
-    [Test]
-    public async Task GetByIdIncludingRolesAsync_WithExistingId_ReturnsSameUser()
-    {
-        var id = 5;
-        var user = DataGenerator.CreateTestUser(id);
-        await dbContext.AddAsync(user);
-        await dbContext.SaveChangesAsync();
-
-        var results = await repository.GetByIdIncludingRolesAsync(id);
-        var actualName = results.Name;
-        var expectedName = user.Name;
-        Assert.That(actualName, Is.EqualTo(expectedName));
-    }
-    [Test]
-    public async Task GetByIdIncludingRolesAsync_WithExistingId_ReturnsUserWithSameRole()
-    {
-        var id = 5;
-        var user = DataGenerator.CreateTestUser(id);
-        await dbContext.AddAsync(user);
-        await dbContext.SaveChangesAsync();
-
-        var results = await repository.GetByIdIncludingRolesAsync(id);
-        var actualRoleName = results.Role!.RoleName;
-        var expectedRoleName = user.Role!.RoleName;
-        Assert.That(actualRoleName, Is.EqualTo(expectedRoleName));
-    }
-    [Test]
-    public void GetByIdIncludingRolesAsync_WithNonExistingId_ThrowsEntityNotFoundException()
-    {
-        var id = 5;
-        Assert.ThrowsAsync<EntityNotFoundException>(async () =>
-        {
-            await repository.GetByIdIncludingRolesAsync(id);
-        });
-    }
-
+  
     [Test]
     public async Task GetByNameAsync_WithExistingName_ReturnsSameUser()
     {
@@ -72,41 +37,6 @@ public class UsersRepositoryTest
         Assert.ThrowsAsync<EntityNotFoundException>(async () =>
         {
             await repository.GetByNameAsync(name);
-        });
-    }
-    [Test]
-    public async Task GetByNameIncludingRolesAsync_WithExistingName_ReturnsCorrectUser()
-    {
-        var id = 5;
-        var user = DataGenerator.CreateTestUser(id);
-        await dbContext.AddAsync(user);
-        await dbContext.SaveChangesAsync();
-
-        var results = await repository.GetByNameIncludingRolesAsync(user.Name);
-        var actualId = results.Id;
-        var expectedId = user.Id;
-        Assert.That(actualId, Is.EqualTo(expectedId));
-    }
-    [Test]
-    public async Task GetByNameIncludingRolesAsync_WithExistingName_ReturnsSameUserRole()
-    {
-        var id = 5;
-        var user = DataGenerator.CreateTestUser(id);
-        await dbContext.AddAsync(user);
-        await dbContext.SaveChangesAsync();
-
-        var results = await repository.GetByNameIncludingRolesAsync(user.Name);
-        var expectedRoleName = user.Role!.RoleName;
-        var actualRoleName = results.Role!.RoleName;
-        Assert.That(actualRoleName, Is.EqualTo(expectedRoleName));
-    }
-    [Test]
-    public void GetByNameIncludingRolesAsync_WithWrongName_ThrowsEntityNotFoundException()
-    {
-        var name = A.Dummy<string>();
-        Assert.ThrowsAsync<EntityNotFoundException>(async () =>
-        {
-            await repository.GetByNameIncludingRolesAsync(name);
         });
     }
     [Test]

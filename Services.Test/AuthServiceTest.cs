@@ -12,13 +12,13 @@ public class AuthServiceTest
         tokenManager = A.Fake<ITokenManager>();
         unitOfWork = A.Fake<IUnitOfWork>();
         passwordManager = A.Fake<IPasswordManager>();
-        authService = new AuthService(tokenManager, unitOfWork, passwordManager);
+        authService = new AuthService(tokenManager, unitOfWork, passwordManager, A.Fake<IConfiguration>());
     }
     [Test]
     public async Task RegisterAsync_WithFakeUser_CalledAllMethodsOnce()
     {
         var user = A.Dummy<User>();
-        await authService.RegisterAsync(user);
+        await authService.RegisterUserAsync(user);
         A.CallTo(() => passwordManager.SecureUser(A<User>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
     }

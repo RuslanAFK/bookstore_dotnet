@@ -85,7 +85,7 @@ const Profile = () => {
                             <div className="my-2 w-100">
                                 <SpinnerButton/>
                             </div> :
-                            <button disabled={isCreator(authState)} type="button"
+                            <button disabled={false} type="button"
                                     className="btn btn-danger w-100 my-2"
                                     onClick={onDeleteAccount}
                             >Delete Account</button>

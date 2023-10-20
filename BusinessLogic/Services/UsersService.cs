@@ -11,6 +11,7 @@ namespace Services.Services;
 public class UsersService : IUsersService
 {
     private readonly IUnitOfWork _unitOfWork;
+
     public UsersService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;

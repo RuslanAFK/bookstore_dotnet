@@ -1,4 +1,5 @@
 ﻿using Data.Abstractions;
+using Domain.Constants;
 using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +10,6 @@ public class UsersRepository : BaseRepository<User>, IUsersRepository
 {
     public UsersRepository(AppDbContext context) : base(context)
     {
-    }
-
-    public async Task<User> GetByIdIncludingRolesAsync(int id)
-    {
-        var users = GetUsersIncludingRoles();
-        return await users.GetByIdAsync(id);
     }
 
     public async Task<User> GetByIdAsync(int id)
@@ -28,20 +23,20 @@ public class UsersRepository : BaseRepository<User>, IUsersRepository
         var users = GetAll();
         return await users.GetByNameAsync(name);
     }
-    public async Task<User> GetByNameIncludingRolesAsync(string name)
+
+    public async Task<bool> CreatorExists()
     {
-        var users = GetUsersIncludingRoles();
-        return await users.GetByNameAsync(name);
+        return await GetAll()
+            .AsNoTracking()
+            .AnyAsync(x => x.Role!.RoleName == Roles.Creator);
     }
+
     public new async Task AddAsync(User item)
     {
         await CheckIfUserExists(item.Name);
         await base.AddAsync(item);
     }
-    private IQueryable<User> GetUsersIncludingRoles()
-    {
-        return GetAll().Include(x => x.Role);
-    }
+
     private async Task CheckIfUserExists(string username)
     {
         var foundUser = await GetAll().GetByNameOrDefaultAsync(username);
