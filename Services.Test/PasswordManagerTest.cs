@@ -13,7 +13,7 @@ public class PasswordManagerTest
     {
         var textPassword = "password";
         var user = DataGenerator.CreateTestUser(password: textPassword);
-        passwordManager.SecureUser(user);
+        user.Password = passwordManager.SecureUser(user);
         var isHashingCorrect = BCrypt.Net.BCrypt.Verify(textPassword, user.Password);
         Assert.That(isHashingCorrect, Is.True);
     }
@@ -23,7 +23,7 @@ public class PasswordManagerTest
         var oldPassword = "oldPassword";
         var newPassword = "password";
         var user = DataGenerator.CreateTestUser(password: oldPassword);
-        passwordManager.SecureUserWithNewPassword(user, newPassword);
+        user.Password = passwordManager.SecureUserWithNewPassword(user, newPassword);
         var isHashingCorrect = BCrypt.Net.BCrypt.Verify(newPassword, user.Password);
         Assert.That(isHashingCorrect, Is.True);
     }
