@@ -10,7 +10,7 @@ public class AuthControllerTest
     {
         var usersService = A.Fake<IUsersService>();
         var authService = A.Fake<IAuthService>();
-        authController = new AuthController(usersService, authService);
+        authController = new AuthController(authService);
     }
 
     [TearDown]

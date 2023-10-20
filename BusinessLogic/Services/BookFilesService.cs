@@ -16,8 +16,9 @@ public class BookFilesService : IBookFilesService
         _fileManager = fileManager;
     }
 
-    public async Task AddAsync(Book book, IFormFile file)
+    public async Task AddAsync(int bookId, IFormFile file)
     {
+        var book = await _unitOfWork.Books.GetByIdIncludingBookFilesAsync(bookId);
         DeleteFileIfExists(book.BookFile);
 
         var relativePath = await _fileManager.StoreFileAndGetPath(file);
@@ -40,9 +41,10 @@ public class BookFilesService : IBookFilesService
         };
     }
 
-    public async Task RemoveAsync(Book book)
+    public async Task RemoveAsync(int bookId)
     {
-        var bookFile = GetBookFileOrThrow(book);
+        var book = await _unitOfWork.Books.GetByIdIncludingBookFilesAsync(bookId);
+        var bookFile = book.BookFile ?? throw new EntityNotFoundException(typeof(Book), nameof(Book.BookFile));
         _fileManager.DeleteFile(bookFile.Url);
         _unitOfWork.BookFiles.Remove(bookFile);
         await _unitOfWork.CompleteAsync();
@@ -55,13 +57,5 @@ public class BookFilesService : IBookFilesService
             throw new FileEmptyException();
         if (!file.FileName.EndsWith(permittedType))
             throw new UnsupportedFileTypeException(permittedType);
-    }
-
-    private BookFile GetBookFileOrThrow(Book book)
-    {
-        var bookFile = book.BookFile;
-        if (bookFile == null)
-            throw new EntityNotFoundException(typeof(Book), nameof(Book.BookFile));
-        return bookFile;
     }
 }

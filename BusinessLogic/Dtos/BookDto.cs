@@ -19,15 +19,6 @@ public class BookDto
 
     [Required, MaxLength(36), MinLength(3)]
     public string Author { get; set; } = null!;
-
-    public void ToBook(ref Book book)
-    {
-        book.Name = Name;
-        book.Info = Info;
-        book.Genre = Genre;
-        book.Image = Image;
-        book.Author = Author;
-    }
     
     public Book ToBook()
     {

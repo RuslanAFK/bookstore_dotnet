@@ -36,15 +36,6 @@ public class BooksService : IBooksService
             Count = itemsCount
         };
     }
-    public async Task<Book> GetByIdIncludingFilesAsync(int bookId)
-    {
-        return await _unitOfWork.Books.GetByIdIncludingBookFilesAsync(bookId);
-    }
-
-    public async Task<Book> GetByIdAsync(int bookId)
-    {
-        return await _unitOfWork.Books.GetByIdAsync(bookId);
-    }
 
     public async Task<GetSingleBookDto> GetSingleBookDtoByIdAsync(int bookId)
     {
@@ -62,15 +53,21 @@ public class BooksService : IBooksService
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task UpdateAsync(Book foundBook, BookDto updateBook)
+    public async Task UpdateAsync(int bookId, BookDto updateBook)
     {
-        updateBook.ToBook(ref foundBook);
-        _unitOfWork.Books.Update(foundBook);
+        var book = await _unitOfWork.Books.GetByIdAsync(bookId);
+        book.Name = updateBook.Name;
+        book.Info = updateBook.Info;
+        book.Genre = updateBook.Genre;
+        book.Image = updateBook.Image;
+        book.Author = updateBook.Author;
+        _unitOfWork.Books.Update(book);
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task RemoveAsync(Book book)
+    public async Task RemoveAsync(int bookId)
     {
+        var book = await _unitOfWork.Books.GetByIdIncludingBookFilesAsync(bookId);
         DeleteFileIfExists(book.BookFile);
         _unitOfWork.Books.Remove(book);
         await _unitOfWork.CompleteAsync();

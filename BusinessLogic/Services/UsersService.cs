@@ -33,16 +33,6 @@ public class UsersService : IUsersService
             Count = itemsCount
         };
     }
-    
-    public async Task<User> GetByIdIncludingRolesAsync(int userId)
-    {
-        return await _unitOfWork.Users.GetByIdIncludingRolesAsync(userId);
-    }
-
-    public async Task<User> GetByIdAsync(int userId)
-    {
-        return await _unitOfWork.Users.GetByIdAsync(userId);
-    }
 
     public async Task<GetUsersDto> GetUserDtoByIdAsync(int userId)
     {
@@ -53,23 +43,15 @@ public class UsersService : IUsersService
                ?? throw new EntityNotFoundException(typeof(User), nameof(User.Id));
     }
 
-    public async Task<User> GetByNameIncludingRolesAsync(string username)
+    public async Task RemoveAsync(int userId)
     {
-        return await _unitOfWork.Users.GetByNameIncludingRolesAsync(username);
-    }
-
-    public async Task<User> GetByNameAsync(string username)
-    {
-        return await _unitOfWork.Users.GetByNameAsync(username);
-    }
-
-    public async Task RemoveAsync(User user)
-    {
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
         _unitOfWork.Users.Remove(user);
         await _unitOfWork.CompleteAsync();
     }
-    public async Task AddUserToRoleAsync(User user, string roleName)
+    public async Task AddUserToRoleAsync(int userId, string roleName)
     {
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
         var role = await _unitOfWork.Roles.GetByNameAsync(roleName);
         user.Role = role;
         _unitOfWork.Users.Update(user);

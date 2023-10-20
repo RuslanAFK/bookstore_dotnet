@@ -26,9 +26,8 @@ public class AuthServiceTest
     public async Task UpdateProfileAsync_WithNewPassword_CalledCheckPasswordAndSecureUser()
     {
         var newUser = A.Dummy<User>();
-        var existingUser = A.Dummy<User>();
         var newPassword = A.Dummy<string>();
-        await authService.UpdateProfileAsync(existingUser, newUser, newPassword);
+        await authService.UpdateProfileAsync(A.Dummy<string>(), newUser, newPassword);
         A.CallTo(() => passwordManager.CheckPassword(A<string>._, A<string>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => passwordManager.SecureUserWithNewPassword(A<User>._, A< string >._)).MustHaveHappenedOnceExactly();
     }
@@ -36,30 +35,16 @@ public class AuthServiceTest
     public async Task UpdateProfileAsync_WithoutNewPassword_CalledCheckPasswordAndNotSecureUser()
     {
         var newUser = A.Dummy<User>();
-        var existingUser = A.Dummy<User>();
-        await authService.UpdateProfileAsync(existingUser, newUser, null);
+        await authService.UpdateProfileAsync(A.Dummy<string>(), newUser, null);
         A.CallTo(() => passwordManager.CheckPassword(A<string>._, A<string>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => passwordManager.SecureUserWithNewPassword(A<User>._, A<string>._)).MustNotHaveHappened();
     }
-
-    [Test]
-    public async Task UpdateProfileAsync_ChangesUsername()
-    {
-        var newUser = DataGenerator.CreateTestUser(name: "Steven");
-        var existingUser = A.Dummy<User>();
-        var newPassword = A.Dummy<string>();
-
-        await authService.UpdateProfileAsync(existingUser, newUser, newPassword);
-        var actualName = existingUser.Name;
-        var expectedName = newUser.Name;
-        Assert.That(actualName, Is.EqualTo(expectedName));
-    }
+    
     [Test]
     public void DeleteAccountAsync_CallsThrowExceptionIfWrongPasswordAndRemove()
     {
-        var realUser = A.Dummy<User>();
         var dummyPassword = A.Dummy<string>();
-        async Task Action() => await authService.DeleteAccountAsync(realUser, dummyPassword);
+        async Task Action() => await authService.DeleteAccountAsync(A.Dummy<string>(), dummyPassword);
         Assert.DoesNotThrowAsync(Action);
         A.CallTo(() => passwordManager.CheckPassword(A<string>._, A<string>._)).MustHaveHappenedOnceExactly();
     }

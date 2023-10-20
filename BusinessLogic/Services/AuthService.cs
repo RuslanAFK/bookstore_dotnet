@@ -41,20 +41,22 @@ public class AuthService : IAuthService
         
         return authResult;
     }
-    public async Task UpdateProfileAsync(User existingUser, User newUser, string? newPassword)
+    public async Task UpdateProfileAsync(string username, User newUser, string? newPassword)
     {
-        _passwordManager.CheckPassword(newUser.Password, existingUser.Password);
-        existingUser.Name = newUser.Name;
+        var foundUser = await _unitOfWork.Users.GetByNameAsync(username);
+        _passwordManager.CheckPassword(newUser.Password, foundUser.Password);
+        foundUser.Name = newUser.Name;
         if (newPassword != null)
-            existingUser.Password = _passwordManager.SecureUserWithNewPassword(existingUser, newPassword);
-        _unitOfWork.Users.Update(existingUser);
+            foundUser.Password = _passwordManager.SecureUserWithNewPassword(foundUser, newPassword);
+        _unitOfWork.Users.Update(foundUser);
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task DeleteAccountAsync(User user, string inputtedPassword)
+    public async Task DeleteAccountAsync(string username, string inputtedPassword)
     {
-        _passwordManager.CheckPassword(inputtedPassword, user.Password);
-        _unitOfWork.Users.Remove(user);
+        var foundUser = await _unitOfWork.Users.GetByNameAsync(username);
+        _passwordManager.CheckPassword(inputtedPassword, foundUser.Password);
+        _unitOfWork.Users.Remove(foundUser);
         await _unitOfWork.CompleteAsync();
     }
 }

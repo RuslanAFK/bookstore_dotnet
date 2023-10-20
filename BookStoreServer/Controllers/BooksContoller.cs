@@ -47,8 +47,7 @@ public class BooksController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Update(int id, BookDto bookDto)
     {
-        var foundBook = await _booksService.GetByIdAsync(id);
-        await _booksService.UpdateAsync(foundBook, bookDto);
+        await _booksService.UpdateAsync(id, bookDto);
         return NoContent();
     }
 
@@ -56,8 +55,7 @@ public class BooksController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Delete(int bookId)
     {
-        var bookToDelete = await _booksService.GetByIdIncludingFilesAsync(bookId);
-        await _booksService.RemoveAsync(bookToDelete);
+        await _booksService.RemoveAsync(bookId);
         return NoContent();
     }
 }

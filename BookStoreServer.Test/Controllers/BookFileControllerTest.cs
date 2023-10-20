@@ -8,7 +8,7 @@ public class BookFileControllerTest
     {
         var booksService = A.Fake<IBooksService>();
         var bookFilesService = A.Fake<IBookFilesService>();
-        bookFileController = new BookFileController(booksService, bookFilesService);
+        bookFileController = new BookFileController(bookFilesService);
     }
 
     [TearDown]
