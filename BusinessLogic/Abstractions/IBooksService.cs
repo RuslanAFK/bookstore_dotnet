@@ -1,14 +1,13 @@
 using Domain.Models;
-using Services.ResponseDtos;
+using Services.Dtos;
 
 namespace Services.Abstractions;
 
 public interface IBooksService
 {
     Task<ListResponse<GetBooksDto>> GetQueriedAsync(Query query);
-    Task<Book> GetByIdIncludingFilesAsync(int bookId);
     Task<GetSingleBookDto> GetSingleBookDtoByIdAsync(int bookId);
     Task AddAsync(Book bookToCreate);
-    Task UpdateAsync(int bookId, Book bookToUpdate);
-    Task RemoveAsync(Book book);
+    Task UpdateAsync(int bookId, BookDto updateBook);
+    Task RemoveAsync(int bookId);
 }

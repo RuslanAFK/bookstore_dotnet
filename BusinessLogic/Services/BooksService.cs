@@ -3,8 +3,8 @@ using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
+using Services.Dtos;
 using Services.Extensions;
-using Services.ResponseDtos;
 
 namespace Services.Services;
 
@@ -36,10 +36,6 @@ public class BooksService : IBooksService
             Count = itemsCount
         };
     }
-    public async Task<Book> GetByIdIncludingFilesAsync(int bookId)
-    {
-        return await _unitOfWork.Books.GetByIdIncludingBookFilesAsync(bookId);
-    }
 
     public async Task<GetSingleBookDto> GetSingleBookDtoByIdAsync(int bookId)
     {
@@ -57,19 +53,21 @@ public class BooksService : IBooksService
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task UpdateAsync(int bookId, Book bookToUpdate)
+    public async Task UpdateAsync(int bookId, BookDto updateBook)
     {
-        AssignId(bookId, bookToUpdate);
+        var book = await _unitOfWork.Books.GetByIdAsync(bookId);
+        book.Name = updateBook.Name;
+        book.Info = updateBook.Info;
+        book.Genre = updateBook.Genre;
+        book.Image = updateBook.Image;
+        book.Author = updateBook.Author;
+        _unitOfWork.Books.Update(book);
         await _unitOfWork.CompleteAsync();
     }
 
-    private void AssignId(int bookId, Book bookToUpdate)
+    public async Task RemoveAsync(int bookId)
     {
-        bookToUpdate.Id = bookId;
-        _unitOfWork.Books.Update(bookToUpdate);
-    }
-    public async Task RemoveAsync(Book book)
-    {
+        var book = await _unitOfWork.Books.GetByIdIncludingBookFilesAsync(bookId);
         DeleteFileIfExists(book.BookFile);
         _unitOfWork.Books.Remove(book);
         await _unitOfWork.CompleteAsync();

@@ -1,9 +1,9 @@
-using BookStoreServer.Resources.Books;
 using Domain.Constants;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Services.Dtos;
 
 namespace BookStoreServer.Controllers;
 
@@ -36,19 +36,18 @@ public class BooksController : Controller
 
     [HttpPost]
     [Authorize(Roles = Roles.AdminAndCreator)]
-    public async Task<IActionResult> Create(CreateBookResource bookResource)
+    public async Task<IActionResult> Create(BookDto bookDto)
     {
-        var bookToCreate = bookResource.ToBook();
+        var bookToCreate = bookDto.ToBook();
         await _booksService.AddAsync(bookToCreate);
         return NoContent();
     }
 
     [HttpPatch("{id:int}")]
     [Authorize(Roles = Roles.AdminAndCreator)]
-    public async Task<IActionResult> Update(int id, CreateBookResource bookResource)
+    public async Task<IActionResult> Update(int id, BookDto bookDto)
     {
-        var bookToUpdate = bookResource.ToBook();
-        await _booksService.UpdateAsync(id, bookToUpdate);
+        await _booksService.UpdateAsync(id, bookDto);
         return NoContent();
     }
 
@@ -56,8 +55,7 @@ public class BooksController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Delete(int bookId)
     {
-        var bookToDelete = await _booksService.GetByIdIncludingFilesAsync(bookId);
-        await _booksService.RemoveAsync(bookToDelete);
+        await _booksService.RemoveAsync(bookId);
         return NoContent();
     }
 }

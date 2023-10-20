@@ -1,6 +1,8 @@
-﻿namespace Data.Abstractions;
+﻿using Domain.Models;
+
+namespace Data.Abstractions;
 
 public interface IRolesRepository
 {
-    Task<int> GetRoleIdByNameAsync(string name);
+    Task<Role> GetByNameAsync(string name);
 }

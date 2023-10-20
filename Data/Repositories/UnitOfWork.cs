@@ -29,9 +29,7 @@ public class UnitOfWork : IUnitOfWork
         {
             var stateEntries = await _context.SaveChangesAsync();
             if (stateEntries <= 0)
-            {
-                throw new OperationNotSuccessfulException();
-            }
+                throw new OperationNotSuccessfulException("Nothing to change");
         }
         catch (DbUpdateException ex)
         {

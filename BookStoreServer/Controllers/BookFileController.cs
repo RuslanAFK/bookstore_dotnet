@@ -9,12 +9,10 @@ namespace BookStoreServer.Controllers;
 [Route("api/[controller]")]
 public class BookFileController : Controller
 {
-    private readonly IBooksService _booksService;
     private readonly IBookFilesService _bookFilesService;
 
-    public BookFileController(IBooksService booksService, IBookFilesService bookFilesService)
+    public BookFileController(IBookFilesService bookFilesService)
     {
-        _booksService = booksService;
         _bookFilesService = bookFilesService;
     }
 
@@ -23,8 +21,7 @@ public class BookFileController : Controller
     public async Task<IActionResult> Create(int bookId, IFormFile file)
     {
         _bookFilesService.ThrowIfFileNotPermitted(file);
-        var book = await _booksService.GetByIdIncludingFilesAsync(bookId);
-        await _bookFilesService.AddAsync(book, file);
+        await _bookFilesService.AddAsync(bookId, file);
         return NoContent();
     }
     
@@ -32,8 +29,7 @@ public class BookFileController : Controller
     [Authorize(Roles = Roles.AdminAndCreator)]
     public async Task<IActionResult> Delete(int bookId)
     {
-        var book = await _booksService.GetByIdIncludingFilesAsync(bookId);
-        await _bookFilesService.RemoveAsync(book);
+        await _bookFilesService.RemoveAsync(bookId);
         return NoContent();
     }
 }

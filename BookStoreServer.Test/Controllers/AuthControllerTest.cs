@@ -1,4 +1,6 @@
-﻿namespace BookStoreServer.Test.Controllers;
+﻿using Services.Dtos;
+
+namespace BookStoreServer.Test.Controllers;
 
 public class AuthControllerTest
 {
@@ -8,7 +10,7 @@ public class AuthControllerTest
     {
         var usersService = A.Fake<IUsersService>();
         var authService = A.Fake<IAuthService>();
-        authController = new AuthController(usersService, authService);
+        authController = new AuthController(authService);
     }
 
     [TearDown]
@@ -19,21 +21,21 @@ public class AuthControllerTest
     [Test]
     public async Task Register_ReturnsNoContent()
     {
-        var resource = A.Dummy<RegisterResource>();
+        var resource = A.Dummy<RegisterDto>();
         var result = await authController.Register(resource);
         Assert.That(result, Is.InstanceOf<NoContentResult>());
     }
     [Test]
     public async Task UpdateProfile_ReturnsNoContent()
     {
-        var resource = A.Dummy<UpdateUserInfoResource>();
+        var resource = A.Dummy<UpdateUserDto>();
         var result = await authController.UpdateProfile(resource);
         Assert.That(result, Is.InstanceOf<NoContentResult>());
     }
     [Test]
     public async Task DeleteAccount_ReturnsNoContentResult()
     {
-        var resource = A.Dummy<DeleteUserResource>();
+        var resource = A.Dummy<DeleteUserDto>();
         var result = await authController.DeleteAccount(resource);
         Assert.That(result, Is.InstanceOf<NoContentResult>());
     }

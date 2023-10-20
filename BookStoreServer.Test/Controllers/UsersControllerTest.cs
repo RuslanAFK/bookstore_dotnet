@@ -34,7 +34,7 @@ public class UsersControllerTest
     [Test]
     public async Task Update_ReturnsNoContentResult()
     {
-        var resource = A.Dummy<UserRoleResource>();
+        var resource = A.Dummy<UserRoleDto>();
         var id = A.Dummy<int>();
         var results = await usersController.UpdateRole(id, resource);
         Assert.That(results, Is.InstanceOf<NoContentResult>());
