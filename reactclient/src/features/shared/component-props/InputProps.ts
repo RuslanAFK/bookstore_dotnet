@@ -6,6 +6,7 @@ interface InputProps {
     setter: Function,
     className?: "form-control" | "form-check",
     value?: any,
+    placeholder?: string,
 
     // Type of input
     type?: HTMLInputTypeAttribute,
@@ -14,6 +15,8 @@ interface InputProps {
     minLength?: number,
     maxLength?: number,
     required?: boolean,
+    min?: number,
+    max?: number,
 
     // Text props
     textStyle?: "warning" | "danger",

@@ -32,8 +32,9 @@ public class AuthService : IAuthService
     {
         var authResult = await _unitOfWork.Users
             .GetAll()
+            .Where(x => x.Name == user.Name || x.Email == user.Email) 
             .ToAuthResult()
-            .FirstOrDefaultAsync(x => x.Username == user.Name) 
+            .FirstOrDefaultAsync() 
             ?? throw new EntityNotFoundException(typeof(User), nameof(User.Name), user.Name);
         
         _passwordManager.CheckPassword(user.Password, authResult.Password);

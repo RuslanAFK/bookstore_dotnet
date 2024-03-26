@@ -2,16 +2,21 @@ import React from "react";
 import InputProps from "../component-props/InputProps";
 
 const Input = ({name, setter, className="form-control", text, textarea=false, required=true,
-                   textStyle="warning", value, rows, type="text", minLength, maxLength}: InputProps) => {
+                   textStyle="warning", value, rows, type="text", minLength, maxLength, placeholder,
+                    min, max
+}: InputProps) => {
     return (
         <div className="my-2">
-            <div className="form-floating my-3">
+            <label>
+                {name}
+            </label>
+            <div className="my-3">
                 {textarea ? <textarea
                         minLength={minLength}
                         maxLength={maxLength}
                         required={required}
                         id={name}
-                        placeholder={name}
+                        placeholder={placeholder}
                         className="form-control"
                         onChange={(e) => setter(e.target.value)}
                         value={value}
@@ -22,7 +27,7 @@ const Input = ({name, setter, className="form-control", text, textarea=false, re
                         maxLength={maxLength}
                         required={required}
                         id={name}
-                        placeholder={name}
+                        placeholder={placeholder}
                         className={className}
                         onChange={(e) => {
                             if (className === "form-control")
@@ -32,10 +37,9 @@ const Input = ({name, setter, className="form-control", text, textarea=false, re
                         }}
                         value={value}
                         type={type}
+                        min={min}
+                        max={max}
                     />}
-                <label htmlFor={name} className="floating-label">
-                    {name}
-                </label>
                 {text && <div className={`form-text text-${textStyle}`}>{text}</div>}
             </div>
         </div>
