@@ -23,16 +23,27 @@ const BookManagement = ({book}: Props) => {
     }
 
     return (
-        <div className="clickableIconBox">
-            <Link to={`/update/${book.id}`} className="mx-4">
-                <img src="/icons/exchange.png" className="clickableIcon" alt="Update"/>
-            </Link>
-            <div onClick={() => onBookDelete(book)} className="mx-4">
-                <img src="/icons/delete.png" className="clickableIcon" alt="Delete"/>
+        <div>
+            <hr/>
+            <div className="row">
+                <div className="col">
+                    <Link to={`/update/${book.id}`}>
+                        <div className="clickableIcon">Edit</div>
+                    </Link>
+                </div>
+                <div className="col">
+                    <a onClick={() => onBookDelete(book)} className="link-primary">
+                        <div className="clickableIcon">Delete</div>
+                    </a>
+                </div>
             </div>
-            <Link to={`/upload-file/${book.id}`} className="mx-4">
-                <img src="/icons/folder.png" className="clickableIcon" alt="Manage File"/>
-            </Link>
+            <div className="row">
+                <div className="col">
+                    <Link to={`/upload-file/${book.id}`}>
+                        <div className="clickableIcon">Manage file</div>
+                    </Link>
+                </div>
+            </div>
         </div>
     )
 }

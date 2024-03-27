@@ -19,7 +19,7 @@ interface InputProps {
     max?: number,
 
     // Text props
-    textStyle?: "warning" | "danger",
+    textStyle?: "warning" | "danger" | "black",
     text?: string,
 
     // Textarea props

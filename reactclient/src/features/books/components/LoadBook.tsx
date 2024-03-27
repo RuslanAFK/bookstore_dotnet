@@ -111,16 +111,26 @@ const LoadBook = ({page}: LoadBookProps) => {
                     <form className="w-50 p-3 mx-auto" onSubmit={onUploadClicked}>
                         <MainLabel text="Upload Book"/>
                         <Input name="Name" value={name} setter={setName} minLength={3} maxLength={36}
-                               text="The name must have minimum 3 and maximum 36 letters."/>
+                               text="The name must have minimum 3 and maximum 36 letters."
+                               placeholder="Alice in Wonderland"
+                        />
                         <Input name="Author" value={author} setter={setAuthor} minLength={3} maxLength={36}
-                               text="The author name must have 3 to 36 letters."/>
+                               text="The author name must have 3 to 36 letters."
+                               placeholder="Charles Dickens"
+                        />
                         <Input name="Genres" value={genre} setter={setGenre} minLength={3} maxLength={36}
-                               text="Enter genre names divided by commas."/>
+                               text="Enter genre names divided by commas."
+                               placeholder="horror, comedy"
+                        />
                         <Input name="Description" value={info} textarea rows={4}
                                setter={setInfo} minLength={10} maxLength={400}
-                               text="Your textarea must be 10-400 characters long."/>
+                               text="Your textarea must be 10-400 characters long."
+                               placeholder="Book about..."
+                        />
                         <Input name="Book image url" textarea rows={2} value={image} setter={setImage}
-                               text="Enter valid image url." type="url"/>
+                               text="Enter valid image url." type="url"
+                               placeholder="www.poster-image.img"
+                        />
                         {bookState.changing ? <div className="my-3 w-100"><SpinnerButton/></div> :
                             <button className="my-3 w-100 btn btn-primary">Upload</button>
                         }

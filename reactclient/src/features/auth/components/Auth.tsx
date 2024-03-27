@@ -2,7 +2,7 @@ import React, {FormEvent, useEffect, useState} from "react";
 import Input from "../../shared/components/Input";
 import {useDispatch, useSelector} from "react-redux";
 import {login, register} from "../store/effects";
-import {Link, Navigate, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {isAuthed} from "../store/selectors";
 import {ToastContainer} from "react-toastify";
 import {notify} from "../../shared/services/toast-notifier";
@@ -28,14 +28,14 @@ const Auth = ({page}: AuthProps) => {
         if (isAuthed(authState)) {
             navigate("/books");
         }
-    }, [authState, navigate])
+    }, [authState.user])
 
     useEffect(() => {
         if (!isAuthed(authState) && authState.error) {
             notify(authState.error, "error");
             dispatch(clearError());
         }
-    }, [authState, navigate, dispatch])
+    }, [authState.error])
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -67,15 +67,26 @@ const Auth = ({page}: AuthProps) => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit} className="w-25 p-3 mx-auto">
+            <form onSubmit={handleSubmit} className="p-3 w-50 mx-auto">
                 <MainLabel text={getPageName()} />
-                {isPageRegister() &&
-                    <Input name="Email" setter={setEmail} minLength={3} maxLength={16} placeholder={"example@gmail.com"} />}
-                <Input name="Name" setter={setUsername} minLength={3} maxLength={16} placeholder={"user101"} />
-                <Input name="Password" setter={setPassword} type="password" minLength={3} maxLength={16} placeholder={"KJRHIYF76876&^d658%$%"} />
-                {isPageRegister() && <Input name="Age" setter={setAge} value={age} type="number" />}
+                {isPageRegister() ?
+                    (<div>
+                            <Input name="Email" setter={setEmail} minLength={3} maxLength={16} placeholder={"example@gmail.com"} />
+                            <Input name="Name" setter={setUsername} minLength={5} maxLength={16} placeholder={"user101"}
+                                   text={"Minimum length is 5. Use only letters and numbers"} textStyle={"black"}/>
+                            <Input name="Password" setter={setPassword} type="password" minLength={3} maxLength={16}
+                                   placeholder={"KJRHIYF76876&^d658%$%"} text={"Minimum length is 8. Use uppercase and lowercase letters, at least one number and special symbol"} textStyle={"black"} />
+                            <Input name="Age" setter={setAge} value={age} type="number" />
+                    </div>
+                    ) : (
+                        <div>
+                            <Input name="Name" setter={setUsername} minLength={5} maxLength={16} placeholder={"user101"} />
+                            <Input name="Password" setter={setPassword} type="password" minLength={3} maxLength={16}
+                                   placeholder={"KJRHIYF76876&^d658%$%"} />
+                        </div>
+                    )}
 
-                <Link to={isPageRegister() ? '/login': '/register'}>
+                <Link className="my-5" to={isPageRegister() ? '/login': '/register'}>
                     {getBelowLinkText()}
                 </Link>
 
@@ -83,9 +94,10 @@ const Auth = ({page}: AuthProps) => {
                     <div className="my-3 w-100">
                         <SpinnerButton/>
                     </div> :
-                    <div>
-                        <button className="btn btn-primary my-3 mx-3 w-25" type={"button"} onClick={toDefaultPage}>Cancel</button>
-                        <button className="btn btn-primary my-3 mx-3 w-25" type={"submit"}>{getPageName()}</button>
+                    <div className="row">
+                        <button className="btn btn-primary my-5 col-5" type={"button"} onClick={toDefaultPage}>Cancel</button>
+                        <span className="col-2"></span>
+                        <button className="btn btn-primary my-5 col-5" type={"submit"}>{getPageName()}</button>
                     </div>
                 }
             </form>

@@ -68,11 +68,11 @@ const Profile = () => {
             {authState.fetching ? <Spinner/> :
                 <div>
                     <MainLabel text="User Profile"/>
-                    <form className="mx-auto w-25" onSubmit={onSubmit}>
+                    <form className="mx-auto w-50" onSubmit={onSubmit}>
                         <Input name="Username" setter={setUsername} value={username} text="Required."
-                               textStyle="danger" maxLength={16} minLength={3} />
-                        <Input name="Password" setter={setPassword} text="Required." textStyle="danger"
-                               type="password" maxLength={16} minLength={3} />
+                               maxLength={16} minLength={3} />
+                        <Input name="Password" setter={setPassword} text="Required."
+                               type="password" maxLength={16} minLength={3}/>
                         <Input name="New Password" setter={setNewPassword} text="Optional."
                                type="password" maxLength={16} minLength={3} required={false} />
                         {authState.changing ?

@@ -73,7 +73,7 @@ const FileUpload = () => {
             <form onSubmit={uploadFile} className="mx-auto my-auto w-25">
                 <MainLabel text="Manage Book File"/>
                 <label htmlFor="file-upload" className="form-label">Upload .pdf file</label>
-                <input type="file" className="form-control" onChange={onChange} id="file-upload" />
+                <input type="file" className="form-control w-100" onChange={onChange} id="file-upload" />
                 {bookState.changing ?
                     <div className="w-100 my-2">
                         <SpinnerButton/>

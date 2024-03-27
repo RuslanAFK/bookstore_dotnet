@@ -1,9 +1,18 @@
 .bookViewImage {
-    width: 18em;
-    height: 28em;
+    width: 30em;
+    height: 40em;
+    float: right;
 }
 
 .clickableIconInView {
     width: 3em;
     cursor: pointer;
+}
+
+.link-primary {
+    cursor: pointer;
+}
+
+.embedded-pdf {
+    padding: 10px;
 }

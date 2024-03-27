@@ -2,16 +2,16 @@ import React from "react";
 import InputProps from "../component-props/InputProps";
 
 const Input = ({name, setter, className="form-control", text, textarea=false, required=true,
-                   textStyle="warning", value, rows, type="text", minLength, maxLength, placeholder,
+                   textStyle="black", value, rows, type="text", minLength, maxLength, placeholder,
                     min, max
 }: InputProps) => {
     return (
-        <div className="my-2">
-            <label>
-                {name}
-            </label>
-            <div className="my-3">
-                {textarea ? <textarea
+        <div className="my-4 row">
+            <div className="col-4">
+                <label>{name}</label>
+            </div>
+            <div className="col-8">
+            {textarea ? <textarea
                         minLength={minLength}
                         maxLength={maxLength}
                         required={required}
