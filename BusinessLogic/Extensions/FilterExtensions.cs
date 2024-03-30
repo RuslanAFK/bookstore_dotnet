@@ -11,7 +11,8 @@ public static class FilterExtensions
         {
             Id = x.Id,
             Name = x.Name,
-            Image = x.Image
+            Image = x.Image,
+            Author = x.Author
         }); 
     }
     
