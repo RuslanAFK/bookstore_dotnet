@@ -13,6 +13,7 @@ import MainLabel from "../../shared/components/MainLabel";
 import "../stylesheets/BookList.css";
 import {applyChanges} from "../store/book-slice";
 
+
 const BookList = () => {
 
     const dispatch = useDispatch<AppDispatch>();
@@ -21,6 +22,16 @@ const BookList = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState('');
+
+    useEffect(() => {
+        let date = new Date();
+        if (bookState.fetching) {
+            console.log("Opened", date.getTime())
+        }
+        if (!bookState.fetching) {
+            console.log("Fetched", date.getTime())
+        }
+    }, [bookState.fetching]);
 
     useEffect(() => {
         const input: QueryObject = {page: currentPage, search};

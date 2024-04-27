@@ -13,7 +13,7 @@ const BookItem = ({book, isAdmin, changing}: BookItemProps) => {
             <Link to={`/book/${book.id}`}>
                 <img src={book.image} alt={book.name} className="imageOfBook"/>
             </Link>
-            <p className="text-center text-secondary">{book.name}</p>
+            <p className="text-center text-secondary">{book.name}, {book.author}</p>
             {isAdmin &&
                 <div className="my-1">
                     {changing ?

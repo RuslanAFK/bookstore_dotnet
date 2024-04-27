@@ -9,9 +9,6 @@ import Spinner from "../../shared/components/Spinner";
 import MainLabel from "../../shared/components/MainLabel";
 
 import "../stylesheets/BookView.css";
-import BookManagement from "../../shared/components/BookManagement";
-import SpinnerButton from "../../shared/components/SpinnerButton";
-import {isAdminOrCreator} from "../../auth/store/selectors";
 import {applyChanges, clearError} from "../store/book-slice";
 
 const BookView = () => {
@@ -19,8 +16,8 @@ const BookView = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const [book, setBook] = useState<any>();
+    const [isBookOpened, setBookOpened] = useState(false);
     const bookState = useSelector((state: RootState) => state.book);
-    const authState = useSelector((state: RootState) => state.auth);
 
     const navigate = useNavigate();
 
@@ -28,6 +25,7 @@ const BookView = () => {
     useEffect(() => {
         const bookId = BookViewService.getBookIdFromParams(params, navigate);
         dispatch(getBook(bookId));
+        setBookOpened(false);
     }, [params.id]);
 
 
@@ -61,33 +59,34 @@ const BookView = () => {
         <div>
             {bookState.fetching ? <Spinner/>:
                 <div>
-                    <MainLabel text={name}/>
                     <div className="container">
                         <div className="row">
-                            <div className="col-sm">
-                                <img className='bookViewImage' src={image} alt={name} />
-                            </div>
-                            <div className="col-8">
-
+                            <div className="col-6">
+                                <MainLabel text={name}/>
                                 <h6>Author: {author}</h6>
                                 <h6>Tags: {genre}</h6>
                                 <h6>Description: {info}</h6>
-                                <div className="text-center my-4">
-                                    {bookFile &&
-                                        <a href={API_URL+'uploads/'+bookFile} target="_blank">
-                                            <img src="/icons/pdf-file.png" alt="Go to File" className="clickableIconInView"/>
-                                        </a>
+
+                                <div>
+                                    {bookFile && !isBookOpened &&
+                                        <div>
+                                            <h6>File actions:</h6>
+                                            <div className="link-primary" onClick={() => setBookOpened(true)}>
+                                                Open
+                                            </div>
+                                        </div>
                                     }
                                 </div>
-
-                                {isAdminOrCreator(authState) &&
-                                    <div className="my-1">
-                                        {bookState.changing ?
-                                            <div className="w-100">
-                                                <SpinnerButton/>
-                                            </div> : <BookManagement book={book}/>
-                                        }
-                                    </div>
+                            </div>
+                            <div className="col-6">
+                                {isBookOpened ?
+                                    <embed
+                                        src={API_URL + 'uploads/' + bookFile}
+                                        width="100%"
+                                        height="600px"
+                                        className="my-2"
+                                    ></embed> :
+                                    <img className='bookViewImage my-2' src={image} alt={name}/>
                                 }
                             </div>
                         </div>

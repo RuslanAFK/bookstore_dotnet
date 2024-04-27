@@ -11,6 +11,7 @@ import UserList from "./features/users/components/UserList";
 import Profile from "./features/auth/components/Profile";
 import FileUpload from "./features/books/components/FileUpload";
 import React from "react";
+import Info from "./features/info/components/Info";
 
 const App = () => {
     return (
@@ -32,6 +33,7 @@ const App = () => {
                     <Route path="/upload-file/:id" element={<FileUpload />} />
 
                     <Route path="/users" element={<UserList />} />
+                    <Route path="/docs" element={<Info />} />
 
                 </Routes>
             </Router>

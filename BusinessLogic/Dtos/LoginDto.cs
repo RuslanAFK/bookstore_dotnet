@@ -16,6 +16,7 @@ public class LoginDto
         return new User
         {
             Name = Username,
+            Email = Username,
             Password = Password
         };
     }

@@ -2,6 +2,20 @@
     margin-left: auto;
 }
 
-.nav-item {
+.nav-link {
     cursor: pointer;
+    color: rgba(255, 255, 255, 1) !important;
+    opacity: 100%;
+}
+
+.nav-link:hover {
+    opacity: 100%;
+}
+
+.nav-link-disabled {
+    opacity: 55%;
+}
+
+.nav-link-active {
+    opacity: 100%;
 }
